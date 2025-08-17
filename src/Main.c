@@ -4,6 +4,7 @@
 #include "/home/codeleaded/System/Static/Library/Files.h"
 #include "/home/codeleaded/System/Static/Library/TransformedView.h"
 #include "/home/codeleaded/System/Static/Library/Geometry.h"
+#include "/home/codeleaded/System/Static/Library/AudioPlayer.h"
 
 #include "World.h"
 #include "Figure.h"
@@ -11,6 +12,7 @@
 Figure mario;
 World world;
 TransformedView tv;
+AudioPlayer ap;
 
 
 int Rect_Rect_Compare(const void* e1,const void* e2) {
@@ -28,6 +30,8 @@ void Setup(AlxWindow* w){
 	TransformedView_Zoom(&tv,(Vec2){ 0.1f,0.1f });
 	//TransformedView_Offset(&tv,(Vec2){ -0.5f,0.0f });
 	TransformedView_Focus(&tv,&mario.r.p);
+
+	ap = AudioPlayer_New();
 
 	world = World_Make("./data/World/Level1.txt",World_Std_Mapper,(Animation[]){
 		Animation_Single("./data/Blocks/Void.png"),
@@ -143,6 +147,9 @@ void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	TransformedView_Border(&tv,(Rect){ { 0.0f,0.0f },{ world.width,world.height } });
 
+	//AudioPlayer_Update(&ap);
+
+
 	if(Stroke(ALX_KEY_A).DOWN){
 		if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
 
@@ -157,7 +164,10 @@ void Update(AlxWindow* w){
 		mario.a.x =  0.0f;
 
 	if(mario.ground){
-		if(Stroke(ALX_KEY_W).PRESSED) mario.v.y = -FIGURE_VEL_JP;
+		if(Stroke(ALX_KEY_W).PRESSED){
+			mario.v.y = -FIGURE_VEL_JP;
+			AudioPlayer_Play(&ap,"./data/Sound/jump.wav");
+		}
 	}
 	if(Stroke(ALX_KEY_W).DOWN){
 		//if(mario.v.y<0.0f)
@@ -168,10 +178,6 @@ void Update(AlxWindow* w){
 		//mario.v.y = 0.0f;
 	}
 	if(Stroke(ALX_KEY_S).DOWN){
-		if(!mario.ground){
-			mario.a.x = 0.0f;
-			mario.v.x = 0.0f;
-		}
 		mario.stamp = FIGURE_TRUE;
 	}
 
@@ -197,6 +203,8 @@ void Update(AlxWindow* w){
 	String_Free(&str);
 }
 void Delete(AlxWindow* w){
+	AudioPlayer_Free(&ap);
+	
 	World_Free(&world);
 	Figure_Free(&mario);
 }
