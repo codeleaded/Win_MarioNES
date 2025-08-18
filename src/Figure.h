@@ -55,56 +55,9 @@ typedef struct Figure{
 	unsigned char dead;
 } Figure;
 
-char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y){
-	Block b = World_Get(w,x,y);
-
-	if(b==BLOCK_COIN){
-		World_Set(w,x,y,BLOCK_NONE);
-		return 1;
-	}else if(b==BLOCK_STAR_COIN){
-		World_Set(w,x,y,BLOCK_NONE);
-		return 1;
-	}else if(b==BLOCK_REDPILZ){
-		World_Set(w,x,y,BLOCK_NONE);
-		f->power = 1;
-		f->r.d.y = 1.8f;
-		return 1;
-	}else if(b==BLOCK_GREENPILZ){
-		World_Set(w,x,y,BLOCK_NONE);
-		f->power = 0;
-		f->r.d.y = 0.9f;
-		return 1;
-	}else if(b==BLOCK_FIRE_FLOWER){
-		World_Set(w,x,y,BLOCK_NONE);
-		f->power = 2;
-		f->r.d.y = 1.8f;
-		return 1;
-	}
-	return 0;
-}
-char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
-
-	if(b==BLOCK_PODEST) return s==SIDE_TOP && f->v.y>0.0f;
-	return 1;
-}
-void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
-
-	if(s==SIDE_BOTTOM || (s==SIDE_TOP && f->stamp && f->v.x==0.0f)){
-		if(b==BLOCK_BRICK) World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_RP){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
-			World_Set(w,x,y-1,BLOCK_REDPILZ);
-		}else if(b==BLOCK_CLOSE_QUEST_GP){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
-			World_Set(w,x,y-1,BLOCK_GREENPILZ);
-		}else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}
-	}
-}
+char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y);
+char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
+void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
 
 
 Figure Figure_New(Vec2 p,Vec2 d){
