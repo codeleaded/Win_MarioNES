@@ -19,23 +19,27 @@ char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int 
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_COIN){
-		World_Set(w,x,y,BLOCK_NONE);
 		AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
+		World_Set(w,x,y,BLOCK_NONE);
 		return 1;
 	}else if(b==BLOCK_STAR_COIN){
+		AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		return 1;
 	}else if(b==BLOCK_REDPILZ){
+		AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		f->power = 1;
 		f->r.d.y = 1.8f;
 		return 1;
 	}else if(b==BLOCK_GREENPILZ){
+		AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		f->power = 0;
 		f->r.d.y = 0.9f;
 		return 1;
 	}else if(b==BLOCK_FIRE_FLOWER){
+		AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		f->power = 2;
 		f->r.d.y = 1.8f;
