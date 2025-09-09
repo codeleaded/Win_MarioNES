@@ -217,7 +217,7 @@ void Update(AlxWindow* w){
 	if(mario.ground){
 		if(Stroke(ALX_KEY_W).PRESSED){
 			mario.v.y = -FIGURE_VEL_JP;
-			AudioPlayer_Add(&ap,"./data/Sound/Beat.wav");
+			AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
 		}
 	}
 	if(Stroke(ALX_KEY_W).DOWN){
