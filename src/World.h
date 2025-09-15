@@ -177,6 +177,11 @@ Block World_Get(World* w,unsigned int x,unsigned int y){
 void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 	if(x<w->width && y<w->height) w->data[y * w->width + x] = b;
 }
+char World_isBg(World* w,Block b){
+	switch(b){
+	default: return 0;
+	}
+}
 Sprite* World_Img(World* w,Block b){
 	if(b!=BLOCK_NONE){
 		if(b<w->animations.size){
@@ -200,10 +205,9 @@ void World_Resize(World* w,unsigned int width,unsigned int height){
 		Animation_Resize(a,width,height);
 	}
 }
-void World_Render(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
+void World_RenderFg(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
-
 	const Vec2 sd = TransformedView_WorldScreenLength(tv,(Vec2){ 1.0f,1.0f });
 
 	World_Resize(w,(unsigned int)F32_Ceil(sd.x),(unsigned int)F32_Ceil(sd.y));
@@ -212,7 +216,24 @@ void World_Render(World* w,TransformedView* tv,Pixel* out,unsigned int width,uns
 		for(int x = tl.x;x<br.x;x++){
 			const Block b = World_Get(w,x,y);
 
-			if(b!=BLOCK_NONE){
+			if(b!=BLOCK_NONE && !World_isBg(w,b)){
+				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
+				Sprite* s = World_Get_Img(w,x,y);
+				if(s) RenderSpriteAlpha(s,sc.x,sc.y);
+			}
+		}
+	}
+}
+void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
+	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
+	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
+	const Vec2 sd = TransformedView_WorldScreenLength(tv,(Vec2){ 1.0f,1.0f });
+	
+	for(int y = tl.y;y<br.y;y++){
+		for(int x = tl.x;x<br.x;x++){
+			const Block b = World_Get(w,x,y);
+			
+			if(b!=BLOCK_NONE && World_isBg(w,b)){
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				Sprite* s = World_Get_Img(w,x,y);
 				if(s) RenderSpriteAlpha(s,sc.x,sc.y);

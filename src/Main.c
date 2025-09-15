@@ -241,13 +241,13 @@ void Update(AlxWindow* w){
 
 	Clear(LIGHT_BLUE);
 
-	World_Render(&world,&tv,WINDOW_STD_ARGS);
+	World_RenderFg(&world,&tv,WINDOW_STD_ARGS);
 	Figure_Render(&mario,&tv,WINDOW_STD_ARGS);
+	World_RenderBg(&world,&tv,WINDOW_STD_ARGS);
 
 	// for(int i = 0;i<world.animations.size;i++){
 	// 	Animation* a = (Animation*)Vector_Get(&world.animations,i);
 	// 	Sprite* s = (Sprite*)Vector_Get(a,0);
-
 	// 	String str = String_Format("S:%d,%d",s->w,s->h);
 	// 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,i * window.AlxFont.CharSizeY,WHITE);
 	// 	String_Free(&str);
