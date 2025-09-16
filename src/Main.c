@@ -91,32 +91,32 @@ void Setup(AlxWindow* w){
 	AudioPlayer_Start(&ap);
 
 	world = World_Make("./data/World/Level1.txt",World_Std_Mapper,(Animation[]){
-		Animation_Single("./data/Blocks/Void.png"),
-		Animation_Single("./data/Blocks/Dirt.png"),
-		Animation_Single("./data/Blocks/Gras.png"),
-		Animation_Single("./data/Blocks/Brick.png"),
-		Animation_Make((char*[]){
+		Animation_Make_Sprite("./data/Blocks/Void.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Gras.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_FG),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Fragezeichen0.png",
 			"./data/Animations/Fragezeichen1.png",
 			"./data/Animations/Fragezeichen2.png",
 			"./data/Animations/Fragezeichen3.png",
 			NULL
-		}),
-		Animation_Make((char*[]){
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Fragezeichen0.png",
 			"./data/Animations/Fragezeichen1.png",
 			"./data/Animations/Fragezeichen2.png",
 			"./data/Animations/Fragezeichen3.png",
 			NULL
-		}),
-		Animation_Make((char*[]){
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Fragezeichen0.png",
 			"./data/Animations/Fragezeichen1.png",
 			"./data/Animations/Fragezeichen2.png",
 			"./data/Animations/Fragezeichen3.png",
 			NULL
-		}),
-		Animation_Make((char*[]){
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Coin0.png",
 			"./data/Animations/Coin1.png",
 			"./data/Animations/Coin2.png",
@@ -124,19 +124,19 @@ void Setup(AlxWindow* w){
 			"./data/Animations/Coin4.png",
 			"./data/Animations/Coin5.png",
 			NULL
-		}),
-		Animation_Single("./data/Blocks/Podest.png"),
-		Animation_Single("./data/Blocks/Pilz.png"),
-		Animation_Single("./data/Blocks/Pilz0.png"),
-		Animation_Single("./data/Blocks/Open_Block.png"),
-		Animation_Single("./data/Blocks/Fake_Block.png"),
-		Animation_Single("./data/Blocks/CheckPoint_0.png"),
-		Animation_Single("./data/Blocks/CheckPoint_1.png"),
-		Animation_Single("./data/Blocks/Checkpoint_u.png"),
-		Animation_Single("./data/Blocks/Rohre_mitte.png"),
-		Animation_Single("./data/Blocks/Rohre_oben.png"),
-		Animation_Single("./data/Blocks/Rohre_unten.png"),
-		Animation_Make((char*[]){
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Pilz.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Pilz0.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Open_Block.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Fake_Block.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/CheckPoint_0.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/CheckPoint_1.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Checkpoint_u.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Rohre_mitte.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Rohre_oben.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Rohre_unten.png",ANIMATIONBG_FG),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Fireflower0.png",
 			"./data/Animations/Fireflower1.png",
 			"./data/Animations/Fireflower2.png",
@@ -146,16 +146,16 @@ void Setup(AlxWindow* w){
 			"./data/Animations/Fireflower6.png",
 			"./data/Animations/Fireflower7.png",
 			NULL
-		}),
-		Animation_Single("./data/Blocks/Lava_Down.png"),
-		Animation_Single("./data/Blocks/Burg_Erde.png"),
-		Animation_Single("./data/Blocks/Burg_Gras.png"),
-		Animation_Single("./data/Blocks/Overworld_Erde.png"),
-		Animation_Single("./data/Blocks/Overworld_Gras.png"),
-		Animation_Single("./data/Blocks/Overworld_Unvisited.png"),
-		Animation_Single("./data/Blocks/Overworld_Red.png"),
-		Animation_Single("./data/Blocks/Overworld_Visited.png"),
-		Animation_Make((char*[]){
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Sprite("./data/Blocks/Lava_Down.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Burg_Erde.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Burg_Gras.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Overworld_Erde.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Overworld_Gras.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Overworld_Unvisited.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Overworld_Red.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Overworld_Visited.png",ANIMATIONBG_FG),
+		Animation_Make_Animation((char*[]){
 			"./data/Animations/Scoin0.png",
 			"./data/Animations/Scoin1.png",
 			"./data/Animations/Scoin2.png",
@@ -169,10 +169,10 @@ void Setup(AlxWindow* w){
 			"./data/Animations/Scoin10.png",
 			"./data/Animations/Scoin11.png",
 			NULL
-		}),
-		Animation_Single("./data/Blocks/Stone.png"),
-		Animation_Single("./data/Blocks/Stonebrick.png"),
-		Animation_Single("./data/Blocks/Stonegrass.png"),
+		},ANIMATIONBG_FG,1.0),
+		Animation_Make_Sprite("./data/Blocks/Stone.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Stonebrick.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Blocks/Stonegrass.png",ANIMATIONBG_FG),
 		Animation_Null()
 	});
 
@@ -196,7 +196,7 @@ void Setup(AlxWindow* w){
 
 	mario = Figure_Make((Vec2){ 1.0f,25.0f },(Vec2){ 0.9f,0.9f },(Sprite[]){
 		//Sprite_Load("./data/Images/MarioAtlas.png"),
-		Sprite_Load("/home/codeleaded/Graphics/MarioNES/MarioAtlas.png"),
+		Sprite_Load("./data/Atlas/MarioAtlas.png"),
 	});
 }
 void Update(AlxWindow* w){
