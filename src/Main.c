@@ -71,10 +71,10 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 		if(b==BLOCK_BRICK)
 			World_Set(w,x,y,BLOCK_NONE);
 		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
+			World_Set(w,x,y,BLOCK_SOLID);
 			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
 		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
+			World_Set(w,x,y,BLOCK_SOLID);
 			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
 		}
 	}
@@ -129,32 +129,35 @@ SubSprite Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	if(World_Get(w,x - 1,y) == BLOCK_CASTLE && World_Get(w,x + 1,y) == BLOCK_CASTLE){
 		if(World_Get(w,x,y - 1) != BLOCK_CASTLE){
-			oy = 1U;
 			ox = 0U;
+		}else if(World_Get(w,x,y + 1) != BLOCK_CASTLE){
+			ox = 5U;
 		}else{
-			oy = 0U;
-			ox = 3U;
+			if(y % 2 == 0){
+				ox = 1U;
+			}else{
+				if(x % 2 == 0){
+					ox = 2U;
+				}else{
+					ox = 5U;
+				}
+			}
 		}
 	}else if(World_Get(w,x - 1,y) == BLOCK_CASTLE){
 		if(World_Get(w,x,y - 1) != BLOCK_CASTLE){
-			oy = 1U;
 			ox = 0U;
 		}else{
-			oy = 0U;
-			ox = 3U;
+			ox = 5U;
 		}
 	}else if(World_Get(w,x + 1,y) == BLOCK_CASTLE){
 		if(World_Get(w,x,y - 1) != BLOCK_CASTLE){
-			oy = 1U;
 			ox = 0U;
 		}else{
-			ox = 6U;
-			if(World_Get(w,x,y + 1) == BLOCK_CASTLE) 	oy = 0U;
-			else 										oy = 1U;
+			if(World_Get(w,x,y + 1) == BLOCK_CASTLE) 	ox = 3U;
+			else 										ox = 4U;
 		}
 	}else{
-		oy = 0U;
-		ox = 3U;
+		ox = 5U;
 	}
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
@@ -190,10 +193,10 @@ SubSprite Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
 	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
-	if(World_Get(w,x,y + 1) == BLOCK_FLAG && World_Get(w,x,y - 1) == BLOCK_FLAG)	ox = 1U;
-	else if(World_Get(w,x,y + 1) == BLOCK_FLAG)										ox = 2U;
+	if(World_Get(w,x,y + 1) == BLOCK_FLAG && World_Get(w,x,y - 1) == BLOCK_FLAG)	ox = 0U;
+	else if(World_Get(w,x,y + 1) == BLOCK_FLAG)										ox = 1U;
 	else if(World_Get(w,x,y - 1) == BLOCK_FLAG)										ox = 0U;
-	else																			ox = 1U;
+	else																			ox = 0U;
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
@@ -225,15 +228,15 @@ void Setup(AlxWindow* w){
 		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,3,1,1.0),
 		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Sprite("./data/Atlas/Podest.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Open_Block.png",ANIMATIONBG_FG),
+		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG),
 		Animation_Make_Atlas("./data/Atlas/Tubes.png",ANIMATIONBG_FG,16,8,Tube_Get),
 		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,4,2,1.0),
 		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,Bush_Get),
-		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_FG,8,2,Castle_Get),
+		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_BG,6,1,Castle_Get),
 		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,4,1,Cloud_Get),
-		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_FG,4,1,Fence_Get),
-		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_FG,4,1,Flag_Get),
+		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_BG,4,1,Fence_Get),
+		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_BG,2,1,Flag_Get),
 		Animation_Null()
 	});
 
@@ -265,6 +268,10 @@ void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	TransformedView_Border(&tv,(Rect){ { 0.0f,0.0f },{ world.width,world.height } });
 
+	if(Stroke(ALX_MOUSE_L).PRESSED){
+		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+		mario.r.p = p;
+	}
 
 	if(Stroke(ALX_KEY_A).DOWN){
 		if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
@@ -302,9 +309,9 @@ void Update(AlxWindow* w){
 
 	Clear(LIGHT_BLUE);
 
-	World_RenderFg(&world,&tv,WINDOW_STD_ARGS);
-	Figure_Render(&mario,&tv,WINDOW_STD_ARGS);
 	World_RenderBg(&world,&tv,WINDOW_STD_ARGS);
+	Figure_Render(&mario,&tv,WINDOW_STD_ARGS);
+	World_RenderFg(&world,&tv,WINDOW_STD_ARGS);
 
 	// for(int i = 0;i<world.animations.size;i++){
 	// 	Animation* a = (Animation*)Vector_Get(&world.animations,i);

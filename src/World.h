@@ -14,7 +14,7 @@
 #define BLOCK_CLOSE_QUEST_SS				4
 #define BLOCK_COIN							5
 #define BLOCK_PODEST						6
-#define BLOCK_OPEN_QUEST					7
+#define BLOCK_SOLID					7
 #define BLOCK_TUBE							8
 #define BLOCK_FIRE_FLOWER					9
 #define BLOCK_SUPER_STAR					10
@@ -254,7 +254,7 @@ Block World_Std_Mapper(char c){
 	case 'S':	return BLOCK_CLOSE_QUEST_SS;
 	case 'o':	return BLOCK_COIN;
 	case 'p':	return BLOCK_PODEST;
-	case '!':	return BLOCK_OPEN_QUEST;
+	case '!':	return BLOCK_SOLID;
 	case '|':	return BLOCK_TUBE;
 	case 'f':	return BLOCK_FIRE_FLOWER;
 	case 's':	return BLOCK_SUPER_STAR;
@@ -267,7 +267,7 @@ Block World_Std_Mapper(char c){
 	//case 'e': return BLOCK_DIRT;
 	//case 'g': return BLOCK_GRAS;
 	//case '#': return BLOCK_BRICK;
-	//case '!': return BLOCK_OPEN_QUEST;
+	//case '!': return BLOCK_SOLID;
 	//case 'q': return BLOCK_CLOSE_QUEST_SS;
 	//case 'Q': return BLOCK_CLOSE_QUEST_FF;
 	//case 'o': return BLOCK_COIN;
@@ -391,14 +391,12 @@ void World_RenderFg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
 	const Vec2 sd = TransformedView_WorldScreenLength(tv,(Vec2){ 1.0f,1.0f });
-
-	World_Resize(w,(unsigned int)F32_Ceil(sd.x),(unsigned int)F32_Ceil(sd.y));
 	
 	for(int y = tl.y;y<br.y;y++){
 		for(int x = tl.x;x<br.x;x++){
 			const Block b = World_Get(w,x,y);
 
-			if(b!=BLOCK_NONE && !World_isBg(w,b)){
+			if(b!=BLOCK_NONE && World_isBg(w,b)){
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				SubSprite ss = World_Get_Img(w,x,y);
 				if(ss.sp)
@@ -411,12 +409,14 @@ void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
 	const Vec2 sd = TransformedView_WorldScreenLength(tv,(Vec2){ 1.0f,1.0f });
+
+	World_Resize(w,(unsigned int)F32_Ceil(sd.x),(unsigned int)F32_Ceil(sd.y));
 	
 	for(int y = tl.y;y<br.y;y++){
 		for(int x = tl.x;x<br.x;x++){
 			const Block b = World_Get(w,x,y);
 			
-			if(b!=BLOCK_NONE && World_isBg(w,b)){
+			if(b!=BLOCK_NONE && !World_isBg(w,b)){
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				SubSprite ss = World_Get_Img(w,x,y);
 				if(ss.sp)
