@@ -22,27 +22,33 @@ char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int 
 		AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		return 1;
-	}else if(b==BLOCK_STAR_COIN){
-		AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		return 1;
-	}else if(b==BLOCK_REDPILZ){
-		AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		f->power = 1;
-		f->r.d.y = 1.8f;
-		return 1;
-	}else if(b==BLOCK_GREENPILZ){
-		AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		f->power = 0;
-		f->r.d.y = 0.9f;
-		return 1;
+	//}else if(b==BLOCK_STAR_COIN){
+	//	AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	return 1;
+	//}else if(b==BLOCK_REDPILZ){
+	//	AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	f->power = 1;
+	//	f->r.d.y = 1.8f;
+	//	return 1;
+	//}else if(b==BLOCK_GREENPILZ){
+	//	AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	f->power = 0;
+	//	f->r.d.y = 0.9f;
+	//	return 1;
 	}else if(b==BLOCK_FIRE_FLOWER){
-		AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+		AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		f->power = 2;
 		f->r.d.y = 1.8f;
+		return 1;
+	}else if(b==BLOCK_SUPER_STAR){
+		AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+		World_Set(w,x,y,BLOCK_NONE);
+		//f->power = 3;
+		//f->r.d.y = 1.8f;
 		return 1;
 	}
 	return 0;
@@ -57,18 +63,70 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 	Block b = World_Get(w,x,y);
 
 	if(s==SIDE_BOTTOM || (s==SIDE_TOP && f->stamp && f->v.x==0.0f)){
-		if(b==BLOCK_BRICK) World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_RP){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
-			World_Set(w,x,y-1,BLOCK_REDPILZ);
-		}else if(b==BLOCK_CLOSE_QUEST_GP){
-			World_Set(w,x,y,BLOCK_OPEN_QUEST);
-			World_Set(w,x,y-1,BLOCK_GREENPILZ);
-		}else if(b==BLOCK_CLOSE_QUEST_FF){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
 			World_Set(w,x,y,BLOCK_OPEN_QUEST);
 			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_OPEN_QUEST);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
 		}
 	}
+}
+SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
+}
+SubSprite Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
+}
+SubSprite Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
+}
+SubSprite Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
+}
+SubSprite Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
+}
+SubSprite Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+
+
+	
+	SubSprite ss;
+	return ss;
 }
 
 int Rect_Rect_Compare(const void* e1,const void* e2) {
@@ -93,86 +151,20 @@ void Setup(AlxWindow* w){
 	world = World_Make("./data/World/Level1.txt",World_Std_Mapper,(Animation[]){
 		Animation_Make_Sprite("./data/Blocks/Void.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Gras.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_FG),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Fragezeichen0.png",
-			"./data/Animations/Fragezeichen1.png",
-			"./data/Animations/Fragezeichen2.png",
-			"./data/Animations/Fragezeichen3.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Fragezeichen0.png",
-			"./data/Animations/Fragezeichen1.png",
-			"./data/Animations/Fragezeichen2.png",
-			"./data/Animations/Fragezeichen3.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Fragezeichen0.png",
-			"./data/Animations/Fragezeichen1.png",
-			"./data/Animations/Fragezeichen2.png",
-			"./data/Animations/Fragezeichen3.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Coin0.png",
-			"./data/Animations/Coin1.png",
-			"./data/Animations/Coin2.png",
-			"./data/Animations/Coin3.png",
-			"./data/Animations/Coin4.png",
-			"./data/Animations/Coin5.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
+		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Pilz.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Pilz0.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Blocks/Open_Block.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Fake_Block.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/CheckPoint_0.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/CheckPoint_1.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Checkpoint_u.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Rohre_mitte.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Rohre_oben.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Rohre_unten.png",ANIMATIONBG_FG),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Fireflower0.png",
-			"./data/Animations/Fireflower1.png",
-			"./data/Animations/Fireflower2.png",
-			"./data/Animations/Fireflower3.png",
-			"./data/Animations/Fireflower4.png",
-			"./data/Animations/Fireflower5.png",
-			"./data/Animations/Fireflower6.png",
-			"./data/Animations/Fireflower7.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
-		Animation_Make_Sprite("./data/Blocks/Lava_Down.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Burg_Erde.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Burg_Gras.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Overworld_Erde.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Overworld_Gras.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Overworld_Unvisited.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Overworld_Red.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Overworld_Visited.png",ANIMATIONBG_FG),
-		Animation_Make_Animation((char*[]){
-			"./data/Animations/Scoin0.png",
-			"./data/Animations/Scoin1.png",
-			"./data/Animations/Scoin2.png",
-			"./data/Animations/Scoin3.png",
-			"./data/Animations/Scoin4.png",
-			"./data/Animations/Scoin5.png",
-			"./data/Animations/Scoin6.png",
-			"./data/Animations/Scoin7.png",
-			"./data/Animations/Scoin8.png",
-			"./data/Animations/Scoin9.png",
-			"./data/Animations/Scoin10.png",
-			"./data/Animations/Scoin11.png",
-			NULL
-		},ANIMATIONBG_FG,1.0),
-		Animation_Make_Sprite("./data/Blocks/Stone.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Stonebrick.png",ANIMATIONBG_FG),
-		Animation_Make_Sprite("./data/Blocks/Stonegrass.png",ANIMATIONBG_FG),
+		Animation_Make_Atlas("./data/Atlas/Tubes.png",ANIMATIONBG_FG,8,4,Tube_Get),
+		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,4,2,1.0),
+		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,4,1,1.0),
+		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,Bush_Get),
+		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_FG,4,1,Castle_Get),
+		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,4,1,Cloud_Get),
+		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_FG,4,1,Fence_Get),
+		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_FG,4,1,Flag_Get),
 		Animation_Null()
 	});
 

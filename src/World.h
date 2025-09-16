@@ -8,37 +8,21 @@
 
 
 #define BLOCK_NONE							0
-#define BLOCK_DIRT							1
-#define BLOCK_GRAS							2
-#define BLOCK_BRICK							3
-#define BLOCK_CLOSE_QUEST_RP				4
-#define BLOCK_CLOSE_QUEST_GP				5
-#define BLOCK_CLOSE_QUEST_FF				6
-#define BLOCK_COIN							7
-#define BLOCK_PODEST						8
-#define BLOCK_REDPILZ						9
-#define BLOCK_GREENPILZ						10
-#define BLOCK_OPEN_QUEST					11
-#define BLOCK_FAKE							12
-#define BLOCK_CHECK							13
-#define BLOCK_VISITED						14
-#define BLOCK_ZIEL							15
-#define BLOCK_MIDDLE_ROHRE					16
-#define BLOCK_UP_ROHRE						17
-#define BLOCK_DOWN_ROHRE					18
-#define BLOCK_FIRE_FLOWER					19
-#define BLOCK_BURG_LAVA						20
-#define BLOCK_BURG_ERDE						21
-#define BLOCK_BURG_GRAS						22
-#define BLOCK_OVER_ERDE						23
-#define BLOCK_OVER_GRAS						24
-#define BLOCK_OVER_UNVISITED_TILE			25
-#define BLOCK_OVER_RED_TILE					26
-#define BLOCK_OVER_VISITED_TILE				27
-#define BLOCK_STAR_COIN						28	
-#define BLOCK_STONE							29
-#define BLOCK_STONE_BRICK					30
-#define BLOCK_STONE_GRAS					31
+#define BLOCK_GRAS							1
+#define BLOCK_BRICK							2
+#define BLOCK_CLOSE_QUEST_FF				3
+#define BLOCK_CLOSE_QUEST_SS				4
+#define BLOCK_COIN							5
+#define BLOCK_PODEST						6
+#define BLOCK_OPEN_QUEST					7
+#define BLOCK_TUBE							8
+#define BLOCK_FIRE_FLOWER					9
+#define BLOCK_SUPER_STAR					10
+#define BLOCK_BUSH							11
+#define BLOCK_CASTLE						12
+#define BLOCK_CLOUD							13
+#define BLOCK_FENCE							14
+#define BLOCK_FLAG							15
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;
@@ -63,8 +47,8 @@ typedef struct Animation {
 			Sprite sprite_img;
 		};
 		struct{
-			unsigned short atlas_dx;
-			unsigned short atlas_dy;
+			unsigned short atlas_cx;
+			unsigned short atlas_cy;
 			Sprite atlas_img;
 			SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int);
 		};
@@ -73,8 +57,8 @@ typedef struct Animation {
 			SubSprite (*sprites_get)(struct Animation*,World*,unsigned int,unsigned int);
 		};
 		struct{
-			unsigned short aatlas_dx;
-			unsigned short aatlas_dy;
+			unsigned short aatlas_cx;
+			unsigned short aatlas_cy;
 			Sprite aatlas_img;
 			Timepoint aatlas_start;
 			FDuration aatlas_duration;
@@ -101,13 +85,13 @@ Animation Animation_Make_Sprite(char* Path,char bg){
 	a.sprite_img = Sprite_Load(Path);
 	return a;
 }
-Animation Animation_Make_Atlas(char* Path,char bg,unsigned short dx,unsigned short dy,SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int)){
+Animation Animation_Make_Atlas(char* Path,char bg,unsigned short cx,unsigned short cy,SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int)){
 	Animation a;
 	a.type = ANIMATIONTYPE_ATLAS;
 	a.bg = bg;
 	a.atlas_img = Sprite_Load(Path);
-	a.atlas_dx = dx;
-	a.atlas_dy = dy;
+	a.atlas_cx = cx;
+	a.atlas_cy = cy;
 	a.atlas_get = atlas_get;
 	return a;
 }
@@ -124,13 +108,13 @@ Animation Animation_Make_Sprites(char** Paths,char bg,SubSprite (*sprites_get)(s
 
 	return a;
 }
-Animation Animation_Make_AnimationAtlas(char* Path,char bg,unsigned short dx,unsigned short dy,FDuration aatlas_duration){
+Animation Animation_Make_AnimationAtlas(char* Path,char bg,unsigned short cx,unsigned short cy,FDuration aatlas_duration){
 	Animation a;
 	a.type = ANIMATIONTYPE_ANIMATIONATLAS;
 	a.bg = bg;
 	a.aatlas_img = Sprite_Load(Path);
-	a.aatlas_dx = dx;
-	a.aatlas_dy = dy;
+	a.aatlas_cx = cx;
+	a.aatlas_cy = cy;
 	a.aatlas_start = Time_Nano();
 	a.aatlas_duration = aatlas_duration;
 	return a;
@@ -165,8 +149,10 @@ void Animation_Resize(Animation* a,unsigned int width,unsigned int height){
 			break;
 		}
 		case ANIMATIONTYPE_ATLAS:{
-			if(a->atlas_img.w != width || a->atlas_img.h != height){
-				Sprite_Reload(&a->atlas_img,width,height);
+			const unsigned int w = a->atlas_img.w / a->atlas_cx;
+			const unsigned int h = a->atlas_img.h / a->atlas_cy;
+			if(w != width || w != height){
+				Sprite_Reload(&a->atlas_img,width * a->atlas_cx,height * a->atlas_cy);
 			}
 			break;
 		}
@@ -181,8 +167,10 @@ void Animation_Resize(Animation* a,unsigned int width,unsigned int height){
 			break;
 		}
 		case ANIMATIONTYPE_ANIMATIONATLAS:{
-			if(a->aatlas_img.w != width || a->aatlas_img.h != height){
-				Sprite_Reload(&a->aatlas_img,width,height);
+			const unsigned int w = a->aatlas_img.w / a->aatlas_cx;
+			const unsigned int h = a->aatlas_img.h / a->aatlas_cy;
+			if(w != width || w != height){
+				Sprite_Reload(&a->aatlas_img,width * a->aatlas_cx,height * a->aatlas_cy);
 			}
 			break;
 		}
@@ -259,38 +247,53 @@ World World_New(unsigned short width,unsigned short height){
 }
 Block World_Std_Mapper(char c){
 	switch (c){
-	case '.': return BLOCK_NONE;
-	case 'e': return BLOCK_DIRT;
-	case 'g': return BLOCK_GRAS;
-	case '#': return BLOCK_BRICK;
-	case '!': return BLOCK_OPEN_QUEST;
-	case '?': return BLOCK_CLOSE_QUEST_RP;
-	case 'q': return BLOCK_CLOSE_QUEST_GP;
-	case 'Q': return BLOCK_CLOSE_QUEST_FF;
-	case 'o': return BLOCK_COIN;
-	case 'p': return BLOCK_PODEST;
-	case 'f': return BLOCK_FAKE;
-	case 'c': return BLOCK_CHECK;
-	case 'v': return BLOCK_VISITED;
-	case 'z': return BLOCK_ZIEL;
-	case 'm': return BLOCK_MIDDLE_ROHRE;
-	case 'u': return BLOCK_UP_ROHRE;
-	case 'd': return BLOCK_DOWN_ROHRE;
-	case '0': return BLOCK_REDPILZ;
-	case '1': return BLOCK_GREENPILZ;
-	case '2': return BLOCK_FIRE_FLOWER;
-	case 'L': return BLOCK_BURG_LAVA;
-	case 'B': return BLOCK_BURG_ERDE;
-	case '=': return BLOCK_BURG_GRAS;
-	case 'E': return BLOCK_OVER_ERDE;
-	case 'G': return BLOCK_OVER_GRAS;
-	case 'U': return BLOCK_OVER_UNVISITED_TILE;
-	case 'R': return BLOCK_OVER_RED_TILE;
-	case 'V': return BLOCK_OVER_VISITED_TILE;
-	case '@': return BLOCK_STAR_COIN;	
-	case 's': return BLOCK_STONE;
-	case 'b': return BLOCK_STONE_BRICK;
-	case 'M': return BLOCK_STONE_GRAS;
+	case '.':	return BLOCK_NONE;
+	case '_':	return BLOCK_GRAS;
+	case '#':	return BLOCK_BRICK;
+	case 'F':	return BLOCK_CLOSE_QUEST_FF;
+	case 'S':	return BLOCK_CLOSE_QUEST_SS;
+	case 'o':	return BLOCK_COIN;
+	case 'p':	return BLOCK_PODEST;
+	case '!':	return BLOCK_OPEN_QUEST;
+	case '|':	return BLOCK_TUBE;
+	case 'f':	return BLOCK_FIRE_FLOWER;
+	case 's':	return BLOCK_SUPER_STAR;
+	case 'b':	return BLOCK_BUSH;
+	case 'c':	return BLOCK_CASTLE;
+	case '~':	return BLOCK_CLOUD;
+	case '+':	return BLOCK_FENCE;
+	case '$':	return BLOCK_FLAG;
+	//case '.': return BLOCK_NONE;
+	//case 'e': return BLOCK_DIRT;
+	//case 'g': return BLOCK_GRAS;
+	//case '#': return BLOCK_BRICK;
+	//case '!': return BLOCK_OPEN_QUEST;
+	//case 'q': return BLOCK_CLOSE_QUEST_SS;
+	//case 'Q': return BLOCK_CLOSE_QUEST_FF;
+	//case 'o': return BLOCK_COIN;
+	//case 'p': return BLOCK_PODEST;
+	//case 'f': return BLOCK_FAKE;
+	//case 'c': return BLOCK_CHECK;
+	//case 'v': return BLOCK_VISITED;
+	//case 'z': return BLOCK_ZIEL;
+	//case ',': return BLOCK_TUBE;
+	//case 'u': return BLOCK_UP_ROHRE;
+	//case 'd': return BLOCK_DOWN_ROHRE;
+	//case '0': return BLOCK_REDPILZ;
+	//case '1': return BLOCK_GREENPILZ;
+	//case '2': return BLOCK_FIRE_FLOWER;
+	//case 'L': return BLOCK_BURG_LAVA;
+	//case 'B': return BLOCK_BURG_ERDE;
+	//case '=': return BLOCK_BURG_GRAS;
+	//case 'E': return BLOCK_OVER_ERDE;
+	//case 'G': return BLOCK_OVER_GRAS;
+	//case 'U': return BLOCK_OVER_UNVISITED_TILE;
+	//case 'R': return BLOCK_OVER_RED_TILE;
+	//case 'V': return BLOCK_OVER_VISITED_TILE;
+	//case '@': return BLOCK_STAR_COIN;	
+	//case 's': return BLOCK_STONE;
+	//case 'b': return BLOCK_STONE_BRICK;
+	//case 'M': return BLOCK_STONE_GRAS;
 	}
 	return BLOCK_NONE;
 }
@@ -356,8 +359,10 @@ SubSprite World_Img(World* w,Block b,unsigned int x,unsigned int y){
 				case ANIMATIONTYPE_ANIMATIONATLAS:{
 					const double t = Time_Nano() / (double)TIME_NANOTOSEC;
 					const double p = (double)t / a->aatlas_duration;
-					const int img = (int)((p - F64_Floor(p)) * a->animation_img.size);
-					return SubSprite_New(&a->aatlas_img,img * a->aatlas_dx,0.0f,a->aatlas_dx,a->aatlas_dy);
+					const int img = (int)((p - F64_Floor(p)) * a->aatlas_cx);
+					const unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+					const unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+					return SubSprite_New(&a->aatlas_img,img * dx,0.0f,dx,dy);
 				}
 				case ANIMATIONTYPE_ANIMATION:{
 					const double t = Time_Nano() / (double)TIME_NANOTOSEC;
