@@ -208,7 +208,7 @@ int Rect_Rect_Compare(const void* e1,const void* e2) {
 
 void Setup(AlxWindow* w){
 	AlxFont_Resize(&window.AlxFont,16,16);
-	
+
 	tv = TransformedView_New((Vec2){ GetHeight(),GetHeight() });
 	TransformedView_Zoom(&tv,(Vec2){ 0.1f,0.1f });
 	//TransformedView_Offset(&tv,(Vec2){ -0.5f,0.0f });
