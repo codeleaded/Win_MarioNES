@@ -14,7 +14,7 @@
 #define BLOCK_CLOSE_QUEST_SS				4
 #define BLOCK_COIN							5
 #define BLOCK_PODEST						6
-#define BLOCK_SOLID					7
+#define BLOCK_SOLID							7
 #define BLOCK_TUBE							8
 #define BLOCK_FIRE_FLOWER					9
 #define BLOCK_SUPER_STAR					10
@@ -23,6 +23,7 @@
 #define BLOCK_CLOUD							13
 #define BLOCK_FENCE							14
 #define BLOCK_FLAG							15
+#define BLOCK_GRASFAKE						16
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;
@@ -244,58 +245,6 @@ World World_New(unsigned short width,unsigned short height){
 	w.width = width;
 	w.height = height;
 	return w;
-}
-Block World_Std_Mapper(char c){
-	switch (c){
-	case '.':	return BLOCK_NONE;
-	case '_':	return BLOCK_GRAS;
-	case '#':	return BLOCK_BRICK;
-	case 'F':	return BLOCK_CLOSE_QUEST_FF;
-	case 'S':	return BLOCK_CLOSE_QUEST_SS;
-	case 'o':	return BLOCK_COIN;
-	case 'p':	return BLOCK_PODEST;
-	case '!':	return BLOCK_SOLID;
-	case '|':	return BLOCK_TUBE;
-	case 'f':	return BLOCK_FIRE_FLOWER;
-	case 's':	return BLOCK_SUPER_STAR;
-	case 'b':	return BLOCK_BUSH;
-	case 'c':	return BLOCK_CASTLE;
-	case '~':	return BLOCK_CLOUD;
-	case '+':	return BLOCK_FENCE;
-	case '$':	return BLOCK_FLAG;
-	//case '.': return BLOCK_NONE;
-	//case 'e': return BLOCK_DIRT;
-	//case 'g': return BLOCK_GRAS;
-	//case '#': return BLOCK_BRICK;
-	//case '!': return BLOCK_SOLID;
-	//case 'q': return BLOCK_CLOSE_QUEST_SS;
-	//case 'Q': return BLOCK_CLOSE_QUEST_FF;
-	//case 'o': return BLOCK_COIN;
-	//case 'p': return BLOCK_PODEST;
-	//case 'f': return BLOCK_FAKE;
-	//case 'c': return BLOCK_CHECK;
-	//case 'v': return BLOCK_VISITED;
-	//case 'z': return BLOCK_ZIEL;
-	//case ',': return BLOCK_TUBE;
-	//case 'u': return BLOCK_UP_ROHRE;
-	//case 'd': return BLOCK_DOWN_ROHRE;
-	//case '0': return BLOCK_REDPILZ;
-	//case '1': return BLOCK_GREENPILZ;
-	//case '2': return BLOCK_FIRE_FLOWER;
-	//case 'L': return BLOCK_BURG_LAVA;
-	//case 'B': return BLOCK_BURG_ERDE;
-	//case '=': return BLOCK_BURG_GRAS;
-	//case 'E': return BLOCK_OVER_ERDE;
-	//case 'G': return BLOCK_OVER_GRAS;
-	//case 'U': return BLOCK_OVER_UNVISITED_TILE;
-	//case 'R': return BLOCK_OVER_RED_TILE;
-	//case 'V': return BLOCK_OVER_VISITED_TILE;
-	//case '@': return BLOCK_STAR_COIN;	
-	//case 's': return BLOCK_STONE;
-	//case 'b': return BLOCK_STONE_BRICK;
-	//case 'M': return BLOCK_STONE_GRAS;
-	}
-	return BLOCK_NONE;
 }
 void World_Load(World* w,char* Path,Block (*MapperFunc)(char c)){
 	FilesSize size;

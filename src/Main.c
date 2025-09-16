@@ -62,6 +62,7 @@ char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned i
 	else if(b==BLOCK_BUSH) 		return 0;
 	else if(b==BLOCK_FLAG) 		return 0;
 	else if(b==BLOCK_CASTLE) 	return 0;
+	else if(b==BLOCK_GRASFAKE) 	return 0;
 	return 1;
 }
 void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
@@ -78,6 +79,59 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
 		}
 	}
+}
+Block World_Std_Mapper(char c){
+	switch (c){
+	case '.':	return BLOCK_NONE;
+	case '_':	return BLOCK_GRAS;
+	case '#':	return BLOCK_BRICK;
+	case 'F':	return BLOCK_CLOSE_QUEST_FF;
+	case 'S':	return BLOCK_CLOSE_QUEST_SS;
+	case 'o':	return BLOCK_COIN;
+	case 'p':	return BLOCK_PODEST;
+	case '!':	return BLOCK_SOLID;
+	case '|':	return BLOCK_TUBE;
+	case 'f':	return BLOCK_FIRE_FLOWER;
+	case 's':	return BLOCK_SUPER_STAR;
+	case 'b':	return BLOCK_BUSH;
+	case 'c':	return BLOCK_CASTLE;
+	case '~':	return BLOCK_CLOUD;
+	case '+':	return BLOCK_FENCE;
+	case '$':	return BLOCK_FLAG;
+	case '-':	return BLOCK_GRASFAKE;
+	//case '.': return BLOCK_NONE;
+	//case 'e': return BLOCK_DIRT;
+	//case 'g': return BLOCK_GRAS;
+	//case '#': return BLOCK_BRICK;
+	//case '!': return BLOCK_SOLID;
+	//case 'q': return BLOCK_CLOSE_QUEST_SS;
+	//case 'Q': return BLOCK_CLOSE_QUEST_FF;
+	//case 'o': return BLOCK_COIN;
+	//case 'p': return BLOCK_PODEST;
+	//case 'f': return BLOCK_FAKE;
+	//case 'c': return BLOCK_CHECK;
+	//case 'v': return BLOCK_VISITED;
+	//case 'z': return BLOCK_ZIEL;
+	//case ',': return BLOCK_TUBE;
+	//case 'u': return BLOCK_UP_ROHRE;
+	//case 'd': return BLOCK_DOWN_ROHRE;
+	//case '0': return BLOCK_REDPILZ;
+	//case '1': return BLOCK_GREENPILZ;
+	//case '2': return BLOCK_FIRE_FLOWER;
+	//case 'L': return BLOCK_BURG_LAVA;
+	//case 'B': return BLOCK_BURG_ERDE;
+	//case '=': return BLOCK_BURG_GRAS;
+	//case 'E': return BLOCK_OVER_ERDE;
+	//case 'G': return BLOCK_OVER_GRAS;
+	//case 'U': return BLOCK_OVER_UNVISITED_TILE;
+	//case 'R': return BLOCK_OVER_RED_TILE;
+	//case 'V': return BLOCK_OVER_VISITED_TILE;
+	//case '@': return BLOCK_STAR_COIN;	
+	//case 's': return BLOCK_STONE;
+	//case 'b': return BLOCK_STONE_BRICK;
+	//case 'M': return BLOCK_STONE_GRAS;
+	}
+	return BLOCK_NONE;
 }
 
 SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
@@ -115,9 +169,9 @@ SubSprite Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_BUSH && World_Get(w,x + 1,y) == BLOCK_BUSH)	ox = 3U;
-	else if(World_Get(w,x - 1,y) == BLOCK_BUSH)									ox = 0U;
-	else if(World_Get(w,x - 1,y) == BLOCK_BUSH)									ox = 1U;
-	else																		ox = 2U;
+	else if(World_Get(w,x + 1,y) == BLOCK_BUSH)										ox = 0U;
+	else if(World_Get(w,x - 1,y) == BLOCK_BUSH)										ox = 1U;
+	else																			ox = 2U;
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
@@ -168,7 +222,7 @@ SubSprite Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_CLOUD && World_Get(w,x + 1,y) == BLOCK_CLOUD)	ox = 3U;
-	else if(World_Get(w,x - 1,y) == BLOCK_CLOUD)									ox = 0U;
+	else if(World_Get(w,x + 1,y) == BLOCK_CLOUD)									ox = 0U;
 	else if(World_Get(w,x - 1,y) == BLOCK_CLOUD)									ox = 1U;
 	else																			ox = 2U;
 	
@@ -181,7 +235,7 @@ SubSprite Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_FENCE && World_Get(w,x + 1,y) == BLOCK_FENCE)	ox = 3U;
-	else if(World_Get(w,x - 1,y) == BLOCK_FENCE)									ox = 0U;
+	else if(World_Get(w,x + 1,y) == BLOCK_FENCE)									ox = 0U;
 	else if(World_Get(w,x - 1,y) == BLOCK_FENCE)									ox = 1U;
 	else																			ox = 2U;
 	
@@ -237,6 +291,7 @@ void Setup(AlxWindow* w){
 		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,4,1,Cloud_Get),
 		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_BG,4,1,Fence_Get),
 		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_BG,2,1,Flag_Get),
+		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_BG),
 		Animation_Null()
 	});
 
