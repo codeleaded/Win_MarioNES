@@ -77,27 +77,63 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
-
+	if(World_Get(w,x,y - 1) != BLOCK_TUBE){
+		oy = 0U;
+		if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
+		else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
+		else{
+			ox = 2U;
+			dx *= 2U;
+			dy *= 2U;
+		}
+	}else if(World_Get(w,x,y - 1) == BLOCK_TUBE){
+		oy = 1U;
+		if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
+		else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
+		else{
+			ox = 2U;
+			dx *= 2U;
+			dy *= 2U;
+		}
+	}
 	
-	SubSprite ss;
+	SubSprite ss = SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 	return ss;
 }
 SubSprite Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
-
+	if(World_Get(w,x - 1,y) == BLOCK_BUSH && orld_Get(w,x + 1,y) == BLOCK_BUSH)	ox = 3U;
+	else if(World_Get(w,x - 1,y) == BLOCK_BUSH)									ox = 0U;
+	else if(World_Get(w,x - 1,y) == BLOCK_BUSH)									ox = 1U;
+	else																		ox = 2U;
 	
-	SubSprite ss;
+	SubSprite ss = SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 	return ss;
 }
 SubSprite Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-
-
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 	
+	if(World_Get(w,x,y - 1) == BLOCK_CASTLE && World_Get(w,x,y + 1) == BLOCK_CASTLE){
+		ox = 1U;
+	}else if(World_Get(w,x,y - 1) == BLOCK_CASTLE){
+		if(World_Get(w,x + 1,y) == BLOCK_CASTLE)	ox = 3U;
+		else										ox = 2U;
+	}else if(World_Get(w,x,y + 1) == BLOCK_CASTLE){
+		ox = 0U;
+	}else{
+		ox = 2U;
+	}
+
 	SubSprite ss;
 	return ss;
 }
@@ -105,7 +141,10 @@ SubSprite Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 
-
+	if(World_Get(w,x - 1,y) == BLOCK_CLOUD && orld_Get(w,x + 1,y) == BLOCK_CLOUD)	ox = 3U;
+	else if(World_Get(w,x - 1,y) == BLOCK_CLOUD)									ox = 0U;
+	else if(World_Get(w,x - 1,y) == BLOCK_CLOUD)									ox = 1U;
+	else																			ox = 2U;
 	
 	SubSprite ss;
 	return ss;
@@ -114,7 +153,10 @@ SubSprite Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 
-
+	if(World_Get(w,x - 1,y) == BLOCK_FENCE && orld_Get(w,x + 1,y) == BLOCK_FENCE)	ox = 3U;
+	else if(World_Get(w,x - 1,y) == BLOCK_FENCE)									ox = 0U;
+	else if(World_Get(w,x - 1,y) == BLOCK_FENCE)									ox = 1U;
+	else																			ox = 2U;
 	
 	SubSprite ss;
 	return ss;
@@ -123,7 +165,10 @@ SubSprite Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 
-
+	if(World_Get(w,x,y + 1) == BLOCK_FLAG && World_Get(w,x,y - 1) == BLOCK_FLAG)	ox = 1U;
+	else if(World_Get(w,x,y + 1) == BLOCK_FLAG)										ox = 2U;
+	else if(World_Get(w,x,y - 1) == BLOCK_FLAG)										ox = 0U;
+	else																			ox = 1U;
 	
 	SubSprite ss;
 	return ss;
@@ -157,7 +202,7 @@ void Setup(AlxWindow* w){
 		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Blocks/Open_Block.png",ANIMATIONBG_FG),
-		Animation_Make_Atlas("./data/Atlas/Tubes.png",ANIMATIONBG_FG,8,4,Tube_Get),
+		Animation_Make_Atlas("./data/Atlas/Tubes.png",ANIMATIONBG_FG,16,8,Tube_Get),
 		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,4,2,1.0),
 		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,Bush_Get),
