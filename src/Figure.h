@@ -46,6 +46,7 @@ typedef struct Figure{
 	Rect r;
 	Vec2 v;
 	Vec2 a;
+	Vec2 spawn;
 	Timepoint start;
 	unsigned char lookdir;
 	unsigned char ground;
@@ -67,6 +68,7 @@ Figure Figure_New(Vec2 p,Vec2 d){
 	f.r = Rect_New(p,d);
 	f.v = (Vec2){ 0.0f,0.0f };
 	f.a = (Vec2){ 0.0f,FIGURE_ACC_GRAVITY };
+	f.spawn = p;
 
 	f.start = 0UL;
 
@@ -83,6 +85,12 @@ Figure Figure_Make(Vec2 p,Vec2 d,Sprite* s){
 	Figure f = Figure_New(p,d);
 	f.img = *s;
 	return f;
+}
+void Figure_Respawn(Figure* f){
+	f->r.p = f->spawn;
+	f->a.x = 0.0f;
+	f->v.x = 0.0f;
+	f->v.y = 0.0f;
 }
 void Figure_Update(Figure* f,const float t){
 	f->a.x = F32_Clamp(f->a.x,-FIGURE_ACC_MAX,FIGURE_ACC_MAX);
@@ -160,6 +168,11 @@ void Figure_Collision(Figure* f,World* w,int (*Rect_Rect_Compare)(const void*,co
 	if(!f->dead && f->r.p.y>w->height){
 		f->dead = FIGURE_TRUE;
 		f->v.y = -FIGURE_VEL_DEAD;
+		f->r.p.y = w->height - f->r.d.y;
+	}
+	if(f->dead && f->r.p.y>w->height){
+		f->dead = FIGURE_FALSE;
+		Figure_Respawn(f);
 	}
 }
 Rect Figure_Get_Img(Figure* f){

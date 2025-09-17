@@ -13,7 +13,8 @@ Figure mario;
 World world;
 TransformedView tv;
 AudioPlayer ap;
-char state = 0;
+int state = 0;
+unsigned int level = 0;
 Block selected = BLOCK_NONE;
 
 
@@ -88,56 +89,78 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 }
 Block World_Std_Mapper(char c){
 	switch (c){
-	case '.':	return BLOCK_NONE;
-	case '_':	return BLOCK_GRAS;
-	case '#':	return BLOCK_BRICK;
-	case 'F':	return BLOCK_CLOSE_QUEST_FF;
-	case 'S':	return BLOCK_CLOSE_QUEST_SS;
-	case 'o':	return BLOCK_COIN;
-	case 'p':	return BLOCK_PODEST;
-	case '!':	return BLOCK_SOLID;
-	case '|':	return BLOCK_TUBE;
-	case 'f':	return BLOCK_FIRE_FLOWER;
-	case 's':	return BLOCK_SUPER_STAR;
-	case 'b':	return BLOCK_BUSH;
-	case 'c':	return BLOCK_CASTLE;
-	case '~':	return BLOCK_CLOUD;
-	case '+':	return BLOCK_FENCE;
-	case '$':	return BLOCK_FLAG;
-	case '-':	return BLOCK_GRASFAKE;
-	//case '.': return BLOCK_NONE;
-	//case 'e': return BLOCK_DIRT;
-	//case 'g': return BLOCK_GRAS;
-	//case '#': return BLOCK_BRICK;
-	//case '!': return BLOCK_SOLID;
-	//case 'q': return BLOCK_CLOSE_QUEST_SS;
-	//case 'Q': return BLOCK_CLOSE_QUEST_FF;
-	//case 'o': return BLOCK_COIN;
-	//case 'p': return BLOCK_PODEST;
-	//case 'f': return BLOCK_FAKE;
-	//case 'c': return BLOCK_CHECK;
-	//case 'v': return BLOCK_VISITED;
-	//case 'z': return BLOCK_ZIEL;
-	//case ',': return BLOCK_TUBE;
-	//case 'u': return BLOCK_UP_ROHRE;
-	//case 'd': return BLOCK_DOWN_ROHRE;
-	//case '0': return BLOCK_REDPILZ;
-	//case '1': return BLOCK_GREENPILZ;
-	//case '2': return BLOCK_FIRE_FLOWER;
-	//case 'L': return BLOCK_BURG_LAVA;
-	//case 'B': return BLOCK_BURG_ERDE;
-	//case '=': return BLOCK_BURG_GRAS;
-	//case 'E': return BLOCK_OVER_ERDE;
-	//case 'G': return BLOCK_OVER_GRAS;
-	//case 'U': return BLOCK_OVER_UNVISITED_TILE;
-	//case 'R': return BLOCK_OVER_RED_TILE;
-	//case 'V': return BLOCK_OVER_VISITED_TILE;
-	//case '@': return BLOCK_STAR_COIN;	
-	//case 's': return BLOCK_STONE;
-	//case 'b': return BLOCK_STONE_BRICK;
-	//case 'M': return BLOCK_STONE_GRAS;
+		case '.':	return BLOCK_NONE;
+		case '_':	return BLOCK_GRAS;
+		case '#':	return BLOCK_BRICK;
+		case 'F':	return BLOCK_CLOSE_QUEST_FF;
+		case 'S':	return BLOCK_CLOSE_QUEST_SS;
+		case 'o':	return BLOCK_COIN;
+		case 'p':	return BLOCK_PODEST;
+		case '!':	return BLOCK_SOLID;
+		case '|':	return BLOCK_TUBE;
+		case 'f':	return BLOCK_FIRE_FLOWER;
+		case 's':	return BLOCK_SUPER_STAR;
+		case 'b':	return BLOCK_BUSH;
+		case 'c':	return BLOCK_CASTLE;
+		case '~':	return BLOCK_CLOUD;
+		case '+':	return BLOCK_FENCE;
+		case '$':	return BLOCK_FLAG;
+		case '-':	return BLOCK_GRASFAKE;
+		//case '.': return BLOCK_NONE;
+		//case 'e': return BLOCK_DIRT;
+		//case 'g': return BLOCK_GRAS;
+		//case '#': return BLOCK_BRICK;
+		//case '!': return BLOCK_SOLID;
+		//case 'q': return BLOCK_CLOSE_QUEST_SS;
+		//case 'Q': return BLOCK_CLOSE_QUEST_FF;
+		//case 'o': return BLOCK_COIN;
+		//case 'p': return BLOCK_PODEST;
+		//case 'f': return BLOCK_FAKE;
+		//case 'c': return BLOCK_CHECK;
+		//case 'v': return BLOCK_VISITED;
+		//case 'z': return BLOCK_ZIEL;
+		//case ',': return BLOCK_TUBE;
+		//case 'u': return BLOCK_UP_ROHRE;
+		//case 'd': return BLOCK_DOWN_ROHRE;
+		//case '0': return BLOCK_REDPILZ;
+		//case '1': return BLOCK_GREENPILZ;
+		//case '2': return BLOCK_FIRE_FLOWER;
+		//case 'L': return BLOCK_BURG_LAVA;
+		//case 'B': return BLOCK_BURG_ERDE;
+		//case '=': return BLOCK_BURG_GRAS;
+		//case 'E': return BLOCK_OVER_ERDE;
+		//case 'G': return BLOCK_OVER_GRAS;
+		//case 'U': return BLOCK_OVER_UNVISITED_TILE;
+		//case 'R': return BLOCK_OVER_RED_TILE;
+		//case 'V': return BLOCK_OVER_VISITED_TILE;
+		//case '@': return BLOCK_STAR_COIN;	
+		//case 's': return BLOCK_STONE;
+		//case 'b': return BLOCK_STONE_BRICK;
+		//case 'M': return BLOCK_STONE_GRAS;
 	}
 	return BLOCK_NONE;
+}
+char World_Std_MapperR(Block b){
+	switch (b){
+		case BLOCK_NONE:			return '.';
+		case BLOCK_GRAS:			return '_';
+		case BLOCK_BRICK:			return '#';
+		case BLOCK_CLOSE_QUEST_FF:	return 'F';
+		case BLOCK_CLOSE_QUEST_SS:	return 'S';
+		case BLOCK_COIN:			return 'o';
+		case BLOCK_PODEST:			return 'p';
+		case BLOCK_SOLID:			return '!';
+		case BLOCK_TUBE:			return '|';
+		case BLOCK_FIRE_FLOWER:		return 'f';
+		case BLOCK_SUPER_STAR:		return 's';
+		case BLOCK_BUSH:			return 'b';
+		case BLOCK_CASTLE:			return 'c';
+		case BLOCK_CLOUD:			return '~';
+		case BLOCK_FENCE:			return '+';
+		case BLOCK_FLAG:			return '$';
+		case BLOCK_GRASFAKE:		return '-';
+	}
+	return '.';
 }
 
 SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
@@ -471,6 +494,7 @@ void Setup(AlxWindow* w){
 	ap = AudioPlayer_New();
 	AudioPlayer_Start(&ap);
 
+	level = 1U;
 	world = World_Make("./data/World/Level1.txt",World_Std_Mapper,(Animation[]){
 		Animation_Make_Sprite("./data/Blocks/Void.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_FG),
@@ -529,20 +553,26 @@ void Update(AlxWindow* w){
 	if(Stroke(ALX_KEY_2).PRESSED){
 		selected++;
 	}
-
-	if(Stroke(ALX_MOUSE_M).PRESSED){
-		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
-		mario.r.p = p;
+	if(Stroke(ALX_KEY_7).PRESSED){
+		if(level>0U){
+			level--;
+		}
 	}
-	if(Stroke(ALX_MOUSE_L).DOWN){
-		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
-		World_Set(&world,p.x,p.y,selected);
+	if(Stroke(ALX_KEY_8).PRESSED){
+		if(level<5U){
+			level++;
+		}
 	}
-	if(Stroke(ALX_MOUSE_R).DOWN){
-		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
-		World_Set(&world,p.x,p.y,BLOCK_NONE);
+	if(Stroke(ALX_KEY_9).PRESSED){
+		CStr path = CStr_Format("./data/World/Level%d.txt",level);
+		World_Load(&world,path,World_Std_Mapper);
+		CStr_Free(&path);
 	}
-
+	if(Stroke(ALX_KEY_0).PRESSED){
+		CStr path = CStr_Format("./data/World/Level%d.txt",level);
+		World_Save(&world,path,World_Std_MapperR);
+		CStr_Free(&path);
+	}
 
 	if(state==0){
 		mario.a.y = FIGURE_ACC_GRAVITY;
@@ -578,6 +608,20 @@ void Update(AlxWindow* w){
 		}
 	}else{
 		mario.a.y = 0.0f;
+		mario.dead = FIGURE_FALSE;
+
+		if(Stroke(ALX_MOUSE_M).PRESSED){
+			Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+			mario.r.p = p;
+		}
+		if(Stroke(ALX_MOUSE_L).DOWN){
+			Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+			World_Set(&world,p.x,p.y,selected);
+		}
+		if(Stroke(ALX_MOUSE_R).DOWN){
+			Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+			World_Set(&world,p.x,p.y,BLOCK_NONE);
+		}
 		
 		if(Stroke(ALX_KEY_A).DOWN){
 			if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
@@ -623,27 +667,29 @@ void Update(AlxWindow* w){
 	// 	String_Free(&str);
 	// }
 
-	const int preshow = 7;
-	const Vec2 tl = TransformedView_ScreenWorldPos(&tv,(Vec2){ 0.0f,0.0f });
-	const Vec2 br = TransformedView_ScreenWorldPos(&tv,(Vec2){ GetWidth(),GetHeight() });
-	const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
-	const float x = 10.0f;
+	if(state==1){
+		const int preshow = 7;
+		const Vec2 tl = TransformedView_ScreenWorldPos(&tv,(Vec2){ 0.0f,0.0f });
+		const Vec2 br = TransformedView_ScreenWorldPos(&tv,(Vec2){ GetWidth(),GetHeight() });
+		const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
+		const float x = 10.0f;
 
-	RenderRect((preshow >> 1) * (sd.x * 1.1f),0.0f,sd.x + 10.0f,sd.y + 10.0f,RED);
+		RenderRect((preshow >> 1) * (sd.x * 1.1f),0.0f,sd.x + 10.0f,sd.y + 10.0f,RED);
 
-	for(int i = 0;i<preshow;i++){
-		const Block b = selected + i - (preshow >> 1);
-		
-		if(b!=BLOCK_NONE){
-			SubSprite ss = World_Img(&world,b,0.0f,0.0f);
-			
-			if(ss.sp){
-				RenderSubSpriteAlpha(ss.sp,x + i * (ss.dx * 1.1f),5.0f,ss.ox,ss.oy,ss.dx,ss.dy);
+		for(int i = 0;i<preshow;i++){
+			const Block b = selected + i - (preshow >> 1);
+
+			if(b!=BLOCK_NONE){
+				SubSprite ss = World_Img(&world,b,0.0f,0.0f);
+
+				if(ss.sp){
+					RenderSubSpriteAlpha(ss.sp,x + i * (ss.dx * 1.1f),5.0f,ss.ox,ss.oy,ss.dx,ss.dy);
+				}
 			}
 		}
 	}
 
-	String str = String_Format("S:%d,%d",window.Width,window.Height);
+	String str = String_Format("S:%d,%d | L:%d",window.Width,window.Height,level);
 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,0.0f,WHITE);
 	String_Free(&str);
 }

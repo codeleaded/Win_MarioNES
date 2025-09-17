@@ -5,6 +5,7 @@
 #include "/home/codeleaded/System/Static/Library/Files.h"
 #include "/home/codeleaded/System/Static/Library/TransformedView.h"
 #include "/home/codeleaded/System/Static/Library/Geometry.h"
+#include "/home/codeleaded/System/Static/Container/DataStream.h"
 
 
 #define BLOCK_NONE							0
@@ -266,7 +267,7 @@ World World_New(unsigned short width,unsigned short height){
 	w.height = height;
 	return w;
 }
-void World_Load(World* w,char* Path,Block (*MapperFunc)(char c)){
+void World_Load(World* w,char* Path,Block (*MapperFunc)(char)){
 	FilesSize size;
 	char* data = Files_ReadB(Path,&size);
 
@@ -285,6 +286,23 @@ void World_Load(World* w,char* Path,Block (*MapperFunc)(char c)){
 
 		w->data[j] = MapperFunc(data[i]);
 	}
+}
+void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
+	// + 1 for newline char
+	FilesSize size = (sizeof(char) * w->width + 1) * w->height;
+	char* data = (char*)malloc(size);
+
+	for(unsigned int y = 0;y<w->height;y++){
+		for(unsigned int x = 0;x<w->width;x++){
+			int dst = y * (w->width + 1) + x;
+			int src = y * w->width + x;
+			data[dst] = MapperFunc(w->data[src]);
+		}
+		data[(y + 1) * (w->width + 1) - 1] = '\n';
+	}
+
+	Files_Write(Path,data,size);
+	free(data);
 }
 World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a){
 	World w;
