@@ -21,6 +21,7 @@
 // #define FIGURE_VEL_DEAD 		25.0f
 // #define FIGURE_VEL_MUL 		4.0f
 
+#define FIGURE_ACC_GRAVITY	30.0f
 #define FIGURE_ACC_GRD		7.0f
 #define FIGURE_ACC_AIR		5.0f
 #define FIGURE_ACC_MAX		100.0f
@@ -65,7 +66,7 @@ Figure Figure_New(Vec2 p,Vec2 d){
 	f.img = Sprite_None();
 	f.r = Rect_New(p,d);
 	f.v = (Vec2){ 0.0f,0.0f };
-	f.a = (Vec2){ 0.0f,30.0f };
+	f.a = (Vec2){ 0.0f,FIGURE_ACC_GRAVITY };
 
 	f.start = 0UL;
 

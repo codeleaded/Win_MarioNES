@@ -13,9 +13,13 @@ Figure mario;
 World world;
 TransformedView tv;
 AudioPlayer ap;
+char state = 0;
+Block selected = BLOCK_NONE;
 
 
 char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y){
+	if(state==1) return 0;
+	
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_COIN){
@@ -54,6 +58,8 @@ char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int 
 	return 0;
 }
 char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
+	if(state==1) return 0;
+	
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_PODEST) 		return s==SIDE_TOP && f->v.y>0.0f;
@@ -140,25 +146,216 @@ SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
 	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
 
-	if(World_Get(w,x,y - 1) != BLOCK_TUBE){
-		oy = 0U;
-		if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
-		else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
-		else{
-			ox = 2U;
-			dx *= 2U;
-			dy *= 2U;
-		}
-	}else if(World_Get(w,x,y - 1) == BLOCK_TUBE){
-		oy = 1U;
-		if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
-		else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
-		else{
-			ox = 2U;
-			dx *= 2U;
-			dy *= 2U;
-		}
-	}
+	unsigned char nbs = World_GetNeigbours(w,BLOCK_TUBE,x,y);
+	
+	if(World_Get(w,x - 2,y) == BLOCK_TUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 10U;
+	else if(World_Get(w,x - 2,y) == BLOCK_TUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 11U;
+	else if(World_Get(w,x + 2,y) == BLOCK_TUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 12U;
+	else if(World_Get(w,x + 2,y) == BLOCK_TUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 13U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 2U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 3U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 4U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 5U;
+	
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 6U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 7U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 8U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 9U;
+	
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+
+	// if(World_Get(w,x,y - 1) != BLOCK_TUBE){
+	// 	oy = 0U;
+	// 	if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
+	// 	else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
+	// }else if(World_Get(w,x,y - 1) == BLOCK_TUBE){
+	// 	oy = 1U;
+	// 	if(World_Get(w,x + 1,y) == BLOCK_TUBE)			ox = 4U;
+	// 	else if(World_Get(w,x - 1,y) == BLOCK_TUBE)		ox = 5U;
+	// }
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
@@ -283,7 +480,7 @@ void Setup(AlxWindow* w){
 		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Sprite("./data/Atlas/Podest.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG),
-		Animation_Make_Atlas("./data/Atlas/Tubes.png",ANIMATIONBG_FG,16,8,Tube_Get),
+		Animation_Make_Atlas("./data/Atlas/Tube.png",ANIMATIONBG_FG,16,2,Tube_Get),
 		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,4,2,1.0),
 		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,Bush_Get),
@@ -323,40 +520,90 @@ void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	TransformedView_Border(&tv,(Rect){ { 0.0f,0.0f },{ world.width,world.height } });
 
-	if(Stroke(ALX_MOUSE_L).PRESSED){
+	if(Stroke(ALX_KEY_Q).PRESSED){
+		state = !state;
+	}
+	if(Stroke(ALX_KEY_1).PRESSED){
+		if(selected>0U) selected--;
+	}
+	if(Stroke(ALX_KEY_2).PRESSED){
+		selected++;
+	}
+
+	if(Stroke(ALX_MOUSE_M).PRESSED){
 		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
 		mario.r.p = p;
 	}
+	if(Stroke(ALX_MOUSE_L).DOWN){
+		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+		World_Set(&world,p.x,p.y,selected);
+	}
+	if(Stroke(ALX_MOUSE_R).DOWN){
+		Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
+		World_Set(&world,p.x,p.y,BLOCK_NONE);
+	}
 
-	if(Stroke(ALX_KEY_A).DOWN){
-		if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
 
-		if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;
-		else 				mario.a.x = -FIGURE_ACC_AIR;
-	}else if(Stroke(ALX_KEY_D).DOWN){
-		if(mario.v.x<0.0f) 	mario.reverse = FIGURE_TRUE;
+	if(state==0){
+		mario.a.y = FIGURE_ACC_GRAVITY;
 		
-		if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;
-		else 				mario.a.x = FIGURE_ACC_AIR;
-	}else
-		mario.a.x =  0.0f;
+		if(Stroke(ALX_KEY_A).DOWN){
+			if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
 
-	if(mario.ground){
-		if(Stroke(ALX_KEY_W).PRESSED){
-			mario.v.y = -FIGURE_VEL_JP;
-			AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
+			if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;
+			else 				mario.a.x = -FIGURE_ACC_AIR;
+		}else if(Stroke(ALX_KEY_D).DOWN){
+			if(mario.v.x<0.0f) 	mario.reverse = FIGURE_TRUE;
+
+			if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;
+			else 				mario.a.x = FIGURE_ACC_AIR;
+		}else mario.a.x =  0.0f;
+		
+		if(mario.ground){
+			if(Stroke(ALX_KEY_W).PRESSED){
+				mario.v.y = -FIGURE_VEL_JP;
+				AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
+			}
 		}
-	}
-	if(Stroke(ALX_KEY_W).DOWN){
-		//if(mario.v.y<0.0f)
-		mario.jumping = FIGURE_TRUE;
-		//else 				mario.jumping = FIGURE_FALSE;
-	}
-	if(Stroke(ALX_KEY_S).PRESSED){
-		//mario.v.y = 0.0f;
-	}
-	if(Stroke(ALX_KEY_S).DOWN){
-		mario.stamp = FIGURE_TRUE;
+		if(Stroke(ALX_KEY_W).DOWN){
+			//if(mario.v.y<0.0f)
+			mario.jumping = FIGURE_TRUE;
+			//else 				mario.jumping = FIGURE_FALSE;
+		}
+		if(Stroke(ALX_KEY_S).PRESSED){
+			//mario.v.y = 0.0f;
+		}
+		if(Stroke(ALX_KEY_S).DOWN){
+			mario.stamp = FIGURE_TRUE;
+		}
+	}else{
+		mario.a.y = 0.0f;
+		
+		if(Stroke(ALX_KEY_A).DOWN){
+			if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
+
+			if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;
+			else 				mario.a.x = -FIGURE_ACC_AIR;
+		}else if(Stroke(ALX_KEY_D).DOWN){
+			if(mario.v.x<0.0f) 	mario.reverse = FIGURE_TRUE;
+
+			if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;
+			else 				mario.a.x = FIGURE_ACC_AIR;
+		}else{
+			mario.v.x =  0.0f;
+			mario.a.x =  0.0f;
+		}
+		
+		if(Stroke(ALX_KEY_W).DOWN){
+			mario.v.y = -FIGURE_VEL_JP;
+			mario.jumping = FIGURE_TRUE;
+		}else if(Stroke(ALX_KEY_S).DOWN){
+			mario.v.y = FIGURE_VEL_JP;
+			mario.jumping = FIGURE_TRUE;
+		}else{
+			mario.v.y =  0.0f;
+			mario.a.y =  0.0f;
+		}
 	}
 
 	Figure_Update(&mario,w->ElapsedTime);
@@ -375,6 +622,26 @@ void Update(AlxWindow* w){
 	// 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,i * window.AlxFont.CharSizeY,WHITE);
 	// 	String_Free(&str);
 	// }
+
+	const int preshow = 7;
+	const Vec2 tl = TransformedView_ScreenWorldPos(&tv,(Vec2){ 0.0f,0.0f });
+	const Vec2 br = TransformedView_ScreenWorldPos(&tv,(Vec2){ GetWidth(),GetHeight() });
+	const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
+	const float x = 10.0f;
+
+	RenderRect((preshow >> 1) * (sd.x * 1.1f),0.0f,sd.x + 10.0f,sd.y + 10.0f,RED);
+
+	for(int i = 0;i<preshow;i++){
+		const Block b = selected + i - (preshow >> 1);
+		
+		if(b!=BLOCK_NONE){
+			SubSprite ss = World_Img(&world,b,0.0f,0.0f);
+			
+			if(ss.sp){
+				RenderSubSpriteAlpha(ss.sp,x + i * (ss.dx * 1.1f),5.0f,ss.ox,ss.oy,ss.dx,ss.dy);
+			}
+		}
+	}
 
 	String str = String_Format("S:%d,%d",window.Width,window.Height);
 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,0.0f,WHITE);

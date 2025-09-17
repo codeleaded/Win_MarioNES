@@ -24,6 +24,7 @@
 #define BLOCK_FENCE							14
 #define BLOCK_FLAG							15
 #define BLOCK_GRASFAKE						16
+#define BLOCK_BOUNDS						255
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;
@@ -37,6 +38,25 @@ typedef unsigned char AnimationType;
 
 #define ANIMATIONBG_FG 						0
 #define ANIMATIONBG_BG 						1
+
+#define WORLD_NEIGHBOUR_NONE 				0
+#define WORLD_NEIGHBOUR_TOP_LEFT 			1
+#define WORLD_NEIGHBOUR_TOP_MID 			2
+#define WORLD_NEIGHBOUR_TOP_RIGHT 			3
+#define WORLD_NEIGHBOUR_MID_LEFT 			4
+#define WORLD_NEIGHBOUR_MID_RIGHT 			5
+#define WORLD_NEIGHBOUR_BOTTOM_LEFT 		6
+#define WORLD_NEIGHBOUR_BOTTOM_MID 			7
+#define WORLD_NEIGHBOUR_BOTTOM_RIGHT 		8
+
+unsigned char World_Neighbour_Mask(unsigned char* bits){
+	unsigned char mask = 0U;
+	for(int i = 0;bits[i] != WORLD_NEIGHBOUR_NONE && bits[i] < 9;i++){
+		mask |= 1 << (bits[i] - 1);
+	}
+	return mask;
+}
+
 
 typedef struct World World;
 
@@ -282,10 +302,23 @@ World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a){
 }
 Block World_Get(World* w,unsigned int x,unsigned int y){
 	if(x<w->width && y<w->height) return w->data[y * w->width + x];
-	return BLOCK_NONE;
+	return BLOCK_BOUNDS;
+}
+unsigned char World_GetNeigbours(World* w,Block b,unsigned int x,unsigned int y){
+	unsigned char nbs = 0U;
+	int shift = 0;
+	for(int i = 0;i<9;i++){
+		if(i == 4) continue;
+		const int px = i % 3;
+		const int py = i / 3;
+		Block got = World_Get(w,x - 1 + px,y - 1 + py);
+		nbs |= (got == b || got == BLOCK_BOUNDS) << (shift++);
+	}
+	return nbs;
 }
 void World_Set(World* w,unsigned int x,unsigned int y,Block b){
-	if(x<w->width && y<w->height) w->data[y * w->width + x] = b;
+	if(x<w->width && y<w->height)
+		w->data[y * w->width + x] = b;
 }
 char World_isBg(World* w,Block b){
 	if(b!=BLOCK_NONE){
