@@ -852,6 +852,10 @@ void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	TransformedView_Border(&tv,(Rect){ { 0.0f,0.0f },{ world.width,world.height } });
 
+	if(PS4_Controller_Key(&ps4c,PS4_CONTROLLER_HOME).PRESSED){
+		w->Running = 0;
+	}
+
 	if(Stroke(ALX_KEY_Q).PRESSED){
 		state = !state;
 	}
