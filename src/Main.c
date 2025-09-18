@@ -70,6 +70,9 @@ char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned i
 	else if(b==BLOCK_FLAG) 		return 0;
 	else if(b==BLOCK_CASTLE) 	return 0;
 	else if(b==BLOCK_GRASFAKE) 	return 0;
+	else if(b==BLOCK_TREE) 		return 0;
+	else if(b==BLOCK_SNOWTREE) 	return 0;
+	else if(b==BLOCK_BACKTREE) 	return s==SIDE_TOP && f->v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
 	return 1;
 }
 void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
@@ -98,6 +101,7 @@ Block World_Std_Mapper(char c){
 		case 'p':	return BLOCK_PODEST;
 		case '!':	return BLOCK_SOLID;
 		case '|':	return BLOCK_TUBE;
+		case '/':	return BLOCK_SILVERTUBE;
 		case 'f':	return BLOCK_FIRE_FLOWER;
 		case 's':	return BLOCK_SUPER_STAR;
 		case 'b':	return BLOCK_BUSH;
@@ -106,6 +110,9 @@ Block World_Std_Mapper(char c){
 		case '+':	return BLOCK_FENCE;
 		case '$':	return BLOCK_FLAG;
 		case '-':	return BLOCK_GRASFAKE;
+		case '(':	return BLOCK_TREE;
+		case ')':	return BLOCK_SNOWTREE;
+		case '[':	return BLOCK_BACKTREE;
 		//case '.': return BLOCK_NONE;
 		//case 'e': return BLOCK_DIRT;
 		//case 'g': return BLOCK_GRAS;
@@ -151,6 +158,7 @@ char World_Std_MapperR(Block b){
 		case BLOCK_PODEST:			return 'p';
 		case BLOCK_SOLID:			return '!';
 		case BLOCK_TUBE:			return '|';
+		case BLOCK_SILVERTUBE:		return '/';
 		case BLOCK_FIRE_FLOWER:		return 'f';
 		case BLOCK_SUPER_STAR:		return 's';
 		case BLOCK_BUSH:			return 'b';
@@ -159,11 +167,14 @@ char World_Std_MapperR(Block b){
 		case BLOCK_FENCE:			return '+';
 		case BLOCK_FLAG:			return '$';
 		case BLOCK_GRASFAKE:		return '-';
+		case BLOCK_TREE:			return '(';
+		case BLOCK_SNOWTREE:		return ')';
+		case BLOCK_BACKTREE:		return '[';
 	}
 	return '.';
 }
 
-SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -382,7 +393,226 @@ SubSprite Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_SilverTube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+
+	unsigned char nbs = World_GetNeigbours(w,BLOCK_SILVERTUBE,x,y);
+	
+	if(World_Get(w,x - 2,y) == BLOCK_SILVERTUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 10U;
+	else if(World_Get(w,x - 2,y) == BLOCK_SILVERTUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 11U;
+	else if(World_Get(w,x + 2,y) == BLOCK_SILVERTUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 12U;
+	else if(World_Get(w,x + 2,y) == BLOCK_SILVERTUBE && nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 13U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){ 
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	})) ox = 0U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 1U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 2U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 3U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 4U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 5U;
+	
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 6U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 7U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 8U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 9U;
+	
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_BOTTOM_MID,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 14U;
+
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_LEFT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+	else if(nbs == World_Neighbour_Mask((unsigned char[]){
+		WORLD_NEIGHBOUR_TOP_LEFT,
+		WORLD_NEIGHBOUR_TOP_MID,
+		WORLD_NEIGHBOUR_TOP_RIGHT,
+		WORLD_NEIGHBOUR_MID_LEFT,
+		WORLD_NEIGHBOUR_MID_RIGHT,
+		WORLD_NEIGHBOUR_BOTTOM_RIGHT,
+		WORLD_NEIGHBOUR_NONE
+	}))	ox = 15U;
+
+	// if(World_Get(w,x,y - 1) != BLOCK_SILVERTUBE){
+	// 	oy = 0U;
+	// 	if(World_Get(w,x + 1,y) == BLOCK_SILVERTUBE)			ox = 4U;
+	// 	else if(World_Get(w,x - 1,y) == BLOCK_SILVERTUBE)		ox = 5U;
+	// }else if(World_Get(w,x,y - 1) == BLOCK_SILVERTUBE){
+	// 	oy = 1U;
+	// 	if(World_Get(w,x + 1,y) == BLOCK_SILVERTUBE)			ox = 4U;
+	// 	else if(World_Get(w,x - 1,y) == BLOCK_SILVERTUBE)		ox = 5U;
+	// }
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -395,7 +625,7 @@ SubSprite Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -435,7 +665,7 @@ SubSprite Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	}
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -448,7 +678,7 @@ SubSprite Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -461,7 +691,7 @@ SubSprite Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
@@ -471,6 +701,75 @@ SubSprite Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	else if(World_Get(w,x,y + 1) == BLOCK_FLAG)										ox = 1U;
 	else if(World_Get(w,x,y - 1) == BLOCK_FLAG)										ox = 0U;
 	else																			ox = 0U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Tree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+
+	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE)
+		ox = 2U;
+	else if(World_Get(w,x,y + 1) == BLOCK_TREE){
+		if(World_Get(w,x - 1,y) == BLOCK_TREE || World_Get(w,x + 1,y) == BLOCK_TREE)
+			if(World_Get(w,x,y - 1) == BLOCK_TREE)	ox = 6U;
+			else 									ox = 2U;
+		else
+			if(World_Get(w,x,y - 1) == BLOCK_TREE)	ox = 0U;
+			else 									ox = 2U;
+	}else{
+		if(World_Get(w,x,y + 1) == BLOCK_NONE){
+			if(World_Get(w,x - 1,y) == BLOCK_TREE) 		ox = 4U;
+			else if(World_Get(w,x + 1,y) == BLOCK_TREE) ox = 5U;
+			else if(World_Get(w,x,y - 1) == BLOCK_TREE)	ox = 3U;
+			else 										ox = 1U;
+		}else{
+			ox = 0U;
+		}
+	}
+
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_SnowTree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+
+	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE)
+		ox = 2U;
+	else if(World_Get(w,x,y + 1) == BLOCK_SNOWTREE){
+		if(World_Get(w,x - 1,y) == BLOCK_SNOWTREE || World_Get(w,x + 1,y) == BLOCK_SNOWTREE)
+			if(World_Get(w,x,y - 1) == BLOCK_SNOWTREE)	ox = 6U;
+			else 										ox = 2U;
+		else
+			if(World_Get(w,x,y - 1) == BLOCK_SNOWTREE)	ox = 0U;
+			else 										ox = 2U;
+	}else{
+		if(World_Get(w,x,y + 1) == BLOCK_NONE){
+			if(World_Get(w,x - 1,y) == BLOCK_SNOWTREE) 		ox = 4U;
+			else if(World_Get(w,x + 1,y) == BLOCK_SNOWTREE) ox = 5U;
+			else if(World_Get(w,x,y - 1) == BLOCK_SNOWTREE)	ox = 3U;
+			else 											ox = 1U;
+		}else{
+			ox = 0U;
+		}
+	}
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_BackTree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+
+	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 		ox = 0U;
+	else if(World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 	ox = 2U;
+	else if(World_Get(w,x,y - 1) == BLOCK_NONE) 										ox = 1U;
+	else 																				ox = 3U;
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
@@ -504,15 +803,19 @@ void Setup(AlxWindow* w){
 		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,4,1,1.0),
 		Animation_Make_Sprite("./data/Atlas/Podest.png",ANIMATIONBG_FG),
 		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG),
-		Animation_Make_Atlas("./data/Atlas/Tube.png",ANIMATIONBG_FG,16,2,Tube_Get),
+		Animation_Make_Atlas("./data/Atlas/Tube.png",ANIMATIONBG_FG,16,1,World_Tube_Get),
+		Animation_Make_Atlas("./data/Atlas/SilverTube.png",ANIMATIONBG_FG,16,1,World_SilverTube_Get),
 		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,4,2,1.0),
 		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,4,1,1.0),
-		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,Bush_Get),
-		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_BG,6,1,Castle_Get),
-		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,4,1,Cloud_Get),
-		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_BG,4,1,Fence_Get),
-		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_BG,2,1,Flag_Get),
+		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,4,1,World_Bush_Get),
+		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_BG,6,1,World_Castle_Get),
+		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,4,1,World_Cloud_Get),
+		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_BG,4,1,World_Fence_Get),
+		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_BG,2,1,World_Flag_Get),
 		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_BG),
+		Animation_Make_Atlas("./data/Atlas/Tree.png",ANIMATIONBG_FG,7,1,World_Tree_Get),
+		Animation_Make_Atlas("./data/Atlas/SnowTree.png",ANIMATIONBG_BG,7,1,World_SnowTree_Get),
+		Animation_Make_Atlas("./data/Atlas/BackTree.png",ANIMATIONBG_FG,4,1,World_BackTree_Get),
 		Animation_Null()
 	});
 

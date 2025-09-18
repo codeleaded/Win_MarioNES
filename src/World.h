@@ -17,14 +17,18 @@
 #define BLOCK_PODEST						6
 #define BLOCK_SOLID							7
 #define BLOCK_TUBE							8
-#define BLOCK_FIRE_FLOWER					9
-#define BLOCK_SUPER_STAR					10
-#define BLOCK_BUSH							11
-#define BLOCK_CASTLE						12
-#define BLOCK_CLOUD							13
-#define BLOCK_FENCE							14
-#define BLOCK_FLAG							15
-#define BLOCK_GRASFAKE						16
+#define BLOCK_SILVERTUBE					9
+#define BLOCK_FIRE_FLOWER					10
+#define BLOCK_SUPER_STAR					11
+#define BLOCK_BUSH							12
+#define BLOCK_CASTLE						13
+#define BLOCK_CLOUD							14
+#define BLOCK_FENCE							15
+#define BLOCK_FLAG							16
+#define BLOCK_GRASFAKE						17
+#define BLOCK_TREE							18
+#define BLOCK_SNOWTREE						19
+#define BLOCK_BACKTREE						20
 #define BLOCK_BOUNDS						255
 
 typedef unsigned char Block;
