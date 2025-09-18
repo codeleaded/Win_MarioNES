@@ -92,6 +92,18 @@ void Figure_Respawn(Figure* f){
 	f->v.x = 0.0f;
 	f->v.y = 0.0f;
 }
+void Figure_Move(Figure* f,const float dir){//dir := [-1;1]
+	if(dir < -0.2f){// min for clean acc
+		if(f->v.x>0.0f) f->reverse = FIGURE_TRUE;
+		if(f->ground) 	f->a.x = -FIGURE_ACC_GRD * F32_Abs(dir);
+		else 			f->a.x = -FIGURE_ACC_AIR * F32_Abs(dir);
+	}else if(dir > 0.2f){
+		if(f->v.x<0.0f) f->reverse = FIGURE_TRUE;
+		if(f->ground) 	f->a.x = FIGURE_ACC_GRD * F32_Abs(dir);
+		else 			f->a.x = FIGURE_ACC_AIR * F32_Abs(dir);
+	}else
+		f->a.x = 0.0f;
+}
 void Figure_Update(Figure* f,const float t){
 	f->a.x = F32_Clamp(f->a.x,-FIGURE_ACC_MAX,FIGURE_ACC_MAX);
 	if(f->ground) 	f->v.x = F32_Clamp(f->v.x,-FIGURE_VEL_MAX_GRD,FIGURE_VEL_MAX_GRD);

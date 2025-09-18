@@ -786,7 +786,7 @@ int Rect_Rect_Compare(const void* e1,const void* e2) {
 void Setup(AlxWindow* w){
 	AlxFont_Resize(&window.AlxFont,16,16);
 
-	ps4c = PS4_Controller_New("/dev/input/event22");
+	ps4c = PS4_Controller_New("/dev/input/by-id/usb-Sony_Interactive_Entertainment_Wireless_Controller-if03-event-joystick");
 
 	tv = TransformedView_New((Vec2){ GetHeight(),GetHeight() });
 	TransformedView_Zoom(&tv,(Vec2){ 0.1f,0.1f });
@@ -885,17 +885,11 @@ void Update(AlxWindow* w){
 	if(state==0){
 		mario.a.y = FIGURE_ACC_GRAVITY;
 		
-		if(Stroke(ALX_KEY_A).DOWN){// || PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) < 127){
-			if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
-
-			if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;// * (128.0f - (float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX)) / 128.0f;
-			else 				mario.a.x = -FIGURE_ACC_AIR;// * (128.0f - (float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX)) / 128.0f;
-		}else if(Stroke(ALX_KEY_D).DOWN){// || PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) > 127){
-			if(mario.v.x<0.0f) 	mario.reverse = FIGURE_TRUE;
-
-			if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;// * ((float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) - 128.0f) / 128.0f;
-			else 				mario.a.x = FIGURE_ACC_AIR;// * ((float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) - 128.0f) / 128.0f;
-		}else mario.a.x =  0.0f;
+		if(Stroke(ALX_KEY_A).DOWN) 									Figure_Move(&mario,-1.0f);
+		else if(Stroke(ALX_KEY_D).DOWN) 							Figure_Move(&mario,1.0f);
+		else if(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) < 128) 	Figure_Move(&mario,F32_Map(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX),0.0f,255.0f,-1.0f,1.0f));
+		else if(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) >= 128) Figure_Move(&mario,F32_Map(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX),0.0f,255.0f,-1.0f,1.0f));
+		else 														Figure_Move(&mario,0.0f);
 		
 		if(mario.ground){
 			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
