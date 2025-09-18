@@ -768,7 +768,7 @@ SubSprite World_BackTree_Get(Animation* a,World* w,unsigned int x,unsigned int y
 
 	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 		ox = 0U;
 	else if(World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 	ox = 2U;
-	else if(World_Get(w,x,y - 1) == BLOCK_NONE) 										ox = 1U;
+	else if(World_Get(w,x,y - 1) != BLOCK_BACKTREE) 									ox = 1U;
 	else 																				ox = 3U;
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
