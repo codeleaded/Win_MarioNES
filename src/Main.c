@@ -5,6 +5,7 @@
 #include "/home/codeleaded/System/Static/Library/TransformedView.h"
 #include "/home/codeleaded/System/Static/Library/Geometry.h"
 #include "/home/codeleaded/System/Static/Library/AudioPlayer.h"
+#include "/home/codeleaded/System/Static/Library/PS4_Controller.h"
 
 #include "World.h"
 #include "Figure.h"
@@ -16,7 +17,7 @@ AudioPlayer ap;
 int state = 0;
 unsigned int level = 0;
 Block selected = BLOCK_NONE;
-
+PS4_Controller ps4c;
 
 char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y){
 	if(state==1) return 0;
@@ -785,6 +786,8 @@ int Rect_Rect_Compare(const void* e1,const void* e2) {
 void Setup(AlxWindow* w){
 	AlxFont_Resize(&window.AlxFont,16,16);
 
+	ps4c = PS4_Controller_New("/dev/input/event22");
+
 	tv = TransformedView_New((Vec2){ GetHeight(),GetHeight() });
 	TransformedView_Zoom(&tv,(Vec2){ 0.1f,0.1f });
 	//TransformedView_Offset(&tv,(Vec2){ -0.5f,0.0f });
@@ -843,6 +846,8 @@ void Setup(AlxWindow* w){
 	});
 }
 void Update(AlxWindow* w){
+	PS4_Controller_Update(&ps4c);
+	
 	TransformedView_Output(&tv,(Vec2){ GetWidth(),GetHeight() });
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	TransformedView_Border(&tv,(Rect){ { 0.0f,0.0f },{ world.width,world.height } });
@@ -880,33 +885,33 @@ void Update(AlxWindow* w){
 	if(state==0){
 		mario.a.y = FIGURE_ACC_GRAVITY;
 		
-		if(Stroke(ALX_KEY_A).DOWN){
+		if(Stroke(ALX_KEY_A).DOWN){// || PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) < 127){
 			if(mario.v.x>0.0f) 	mario.reverse = FIGURE_TRUE;
 
-			if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;
-			else 				mario.a.x = -FIGURE_ACC_AIR;
-		}else if(Stroke(ALX_KEY_D).DOWN){
+			if(mario.ground) 	mario.a.x = -FIGURE_ACC_GRD;// * (128.0f - (float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX)) / 128.0f;
+			else 				mario.a.x = -FIGURE_ACC_AIR;// * (128.0f - (float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX)) / 128.0f;
+		}else if(Stroke(ALX_KEY_D).DOWN){// || PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) > 127){
 			if(mario.v.x<0.0f) 	mario.reverse = FIGURE_TRUE;
 
-			if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;
-			else 				mario.a.x = FIGURE_ACC_AIR;
+			if(mario.ground) 	mario.a.x = FIGURE_ACC_GRD;// * ((float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) - 128.0f) / 128.0f;
+			else 				mario.a.x = FIGURE_ACC_AIR;// * ((float)PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) - 128.0f) / 128.0f;
 		}else mario.a.x =  0.0f;
 		
 		if(mario.ground){
-			if(Stroke(ALX_KEY_W).PRESSED){
+			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
 				mario.v.y = -FIGURE_VEL_JP;
 				AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
 			}
 		}
-		if(Stroke(ALX_KEY_W).DOWN){
+		if(Stroke(ALX_KEY_W).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
 			//if(mario.v.y<0.0f)
 			mario.jumping = FIGURE_TRUE;
 			//else 				mario.jumping = FIGURE_FALSE;
 		}
-		if(Stroke(ALX_KEY_S).PRESSED){
+		if(Stroke(ALX_KEY_S).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_TRI).PRESSED){
 			//mario.v.y = 0.0f;
 		}
-		if(Stroke(ALX_KEY_S).DOWN){
+		if(Stroke(ALX_KEY_S).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_TRI).DOWN){
 			mario.stamp = FIGURE_TRUE;
 		}
 	}else{
@@ -1001,6 +1006,7 @@ void Delete(AlxWindow* w){
 	
 	World_Free(&world);
 	Figure_Free(&mario);
+	PS4_Controller_Free(&ps4c);
 }
 
 int main(){
