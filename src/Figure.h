@@ -61,7 +61,6 @@ char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int 
 char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
 void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
 
-
 Figure Figure_New(Vec2 p,Vec2 d){
 	Figure f;
 	f.img = Sprite_None();

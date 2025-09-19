@@ -896,12 +896,12 @@ void Update(AlxWindow* w){
 		else 														Figure_Move(&mario,0.0f);
 		
 		if(mario.ground){
-			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
+			if(Stroke(ALX_KEY_SPACE).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
 				mario.v.y = -FIGURE_VEL_JP;
 				AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
 			}
 		}
-		if(Stroke(ALX_KEY_W).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
+		if(Stroke(ALX_KEY_SPACE).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
 			//if(mario.v.y<0.0f)
 			mario.jumping = FIGURE_TRUE;
 			//else 				mario.jumping = FIGURE_FALSE;
