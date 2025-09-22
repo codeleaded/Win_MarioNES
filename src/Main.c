@@ -980,6 +980,8 @@ void Setup(AlxWindow* w){
 		//Sprite_Load("./data/Images/MarioAtlas.png"),
 		Sprite_Load("./data/Atlas/MarioAtlas.png"),
 	});
+
+	printf("HERE\n");
 }
 void Update(AlxWindow* w){
 	PS4_Controller_Update(&ps4c);
@@ -1031,25 +1033,17 @@ void Update(AlxWindow* w){
 		CStr_Free(&path);
 	}
 
-	if(Stroke(ALX_KEY_0).PRESSED){
-		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-		World_Save(&world,path,World_Std_MapperR);
-		CStr_Free(&path);
+	if(Stroke(ALX_KEY_J).PRESSED){
+		World_Resize(&world,world.width - 1,world.height);
 	}
-	if(Stroke(ALX_KEY_0).PRESSED){
-		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-		World_Save(&world,path,World_Std_MapperR);
-		CStr_Free(&path);
+	if(Stroke(ALX_KEY_N).PRESSED){
+		World_Resize(&world,world.width + 1,world.height);
 	}
-	if(Stroke(ALX_KEY_0).PRESSED){
-		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-		World_Save(&world,path,World_Std_MapperR);
-		CStr_Free(&path);
+	if(Stroke(ALX_KEY_K).PRESSED){
+		World_Resize(&world,world.width,world.height - 1);
 	}
-	if(Stroke(ALX_KEY_0).PRESSED){
-		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-		World_Save(&world,path,World_Std_MapperR);
-		CStr_Free(&path);
+	if(Stroke(ALX_KEY_M).PRESSED){
+		World_Resize(&world,world.width,world.height + 1);
 	}
 
 	if(state==0){
@@ -1129,7 +1123,7 @@ void Update(AlxWindow* w){
 
 	World_RenderBg(&world,&tv,WINDOW_STD_ARGS);
 	Figure_Render(&mario,&tv,WINDOW_STD_ARGS);
-	World_RenderEntities(&mario,&tv,WINDOW_STD_ARGS);
+	World_RenderEntities(&world,&tv,WINDOW_STD_ARGS);
 	World_RenderFg(&world,&tv,WINDOW_STD_ARGS);
 
 	// for(int i = 0;i<world.animations.size;i++){

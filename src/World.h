@@ -5,6 +5,7 @@
 #include "/home/codeleaded/System/Static/Library/Files.h"
 #include "/home/codeleaded/System/Static/Library/TransformedView.h"
 #include "/home/codeleaded/System/Static/Library/Geometry.h"
+#include "/home/codeleaded/System/Static/Library/Integer.h"
 #include "/home/codeleaded/System/Static/Container/DataStream.h"
 
 
@@ -317,7 +318,8 @@ World World_New(unsigned short width,unsigned short height){
 	w.animations = Vector_New(sizeof(Animation));
 	w.entityatlas = Vector_New(sizeof(EntityAtlas));
 	w.entityies = PVector_New();
-	w.data = (Block*)malloc(sizeof(Block) * width * height);
+	if(width * height > 0U) w.data = (Block*)malloc(sizeof(Block) * width * height);
+	else 					w.data = NULL;
 	w.width = width;
 	w.height = height;
 	return w;
@@ -394,11 +396,7 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 	return spawn;
 }
 World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
-	World w;
-	w.animations = Vector_New(sizeof(Animation));
-	w.data = NULL;
-	w.width = 0;
-	w.height = 0;
+	World w = World_New(0U,0U);
 
 	World_Load(&w,Path,MapperFunc);
 
@@ -429,6 +427,22 @@ unsigned char World_GetNeigbours(World* w,Block b,unsigned int x,unsigned int y)
 void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 	if(x<w->width && y<w->height)
 		w->data[y * w->width + x] = b;
+}
+void World_Resize(World* w,unsigned int width,unsigned int height){
+	if(w->data){
+		const unsigned int size = sizeof(Block) * width * height;
+		Block* data = (Block*)malloc(size);
+		memset(data,0,size);
+	
+		const unsigned int cpywidth = I64_Min(w->width,width);
+		const unsigned int cpyheight = I64_Min(w->height,height);
+		for(int y = 0;y<cpyheight;y++){
+			memcpy(data + y * cpywidth,w->data + y * w->width,sizeof(Block) * cpywidth);
+		}
+
+		free(w->data);
+		w->data = data;
+	}
 }
 char World_isBg(World* w,Block b){
 	if(b!=BLOCK_NONE){
@@ -473,7 +487,7 @@ SubSprite World_Get_Img(World* w,unsigned int x,unsigned int y){
 	const Block b = World_Get(w,x,y);
 	return World_Img(w,b,x,y);
 }
-void World_Resize(World* w,unsigned int width,unsigned int height){
+void World_Reload(World* w,unsigned int width,unsigned int height){
 	for(int i = 0;i<w->animations.size;i++){
 		Animation* a = (Animation*)Vector_Get(&w->animations,i);
 		Animation_Resize(a,width,height);
@@ -524,7 +538,7 @@ void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
 	const Vec2 sd = TransformedView_WorldScreenLength(tv,(Vec2){ 1.0f,1.0f });
 
-	World_Resize(w,(unsigned int)F32_Ceil(sd.x),(unsigned int)F32_Ceil(sd.y));
+	World_Reload(w,(unsigned int)F32_Ceil(sd.x),(unsigned int)F32_Ceil(sd.y));
 	
 	for(int y = tl.y;y<br.y;y++){
 		for(int x = tl.x;x<br.x;x++){
