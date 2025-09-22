@@ -366,15 +366,14 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 	
 	for(int i = 0;i<w->entityies.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
-		EntityAtlas* ea = Vector_Get(&w->entityatlas,e->id - 1);
+		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Free(e);
 	}
-	PVector_Clear(&w->entityies);
+	PVector_Free(&w->entityies);
 
 	for(int y = 0;y<w->height;y++){
 		for(int x = 0;x<w->width;x++){
 			Block b = w->data[y * w->width + x];
-			Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
 			
 			if(spawner == b){
 				spawn.x = x;
@@ -527,9 +526,10 @@ void World_RenderEntities(World* w,TransformedView* tv,Pixel* out,unsigned int w
 		
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea){
+			const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ e->rect.p.x,e->rect.p.y });
 			SubSprite ss = ea->GetRender(e,ea);
 			if(ss.sp)
-				Sprite_RenderSubAlpha(out,width,height,ss.sp,e->rect.p.x,e->rect.p.y,ss.ox,ss.oy,ss.dx,ss.dy);
+				Sprite_RenderSubAlpha(out,width,height,ss.sp,sc.x,sc.y,ss.ox,ss.oy,ss.dx,ss.dy);
 		}
 	}
 }
@@ -572,6 +572,13 @@ void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 	}
 }
 void World_Free(World* w){
+	for(int i = 0;i<w->entityies.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
+		if(ea) ea->Free(e);
+	}
+	PVector_Free(&w->entityies);
+	
 	for(int i = 0;i<w->animations.size;i++){
 		Animation* s = (Animation*)Vector_Get(&w->animations,i);
 		Animation_Free(s);

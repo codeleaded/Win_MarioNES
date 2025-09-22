@@ -256,23 +256,23 @@ char World_Std_MapperR(Block b){
 }
 void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 	switch (st){
-		case BLOCK_SPAWN_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_COOPA:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_EXPLOSION:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_FIREBALL:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_FIREBEAM:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
-		case BLOCK_SPAWN_FISH:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_GUMBA:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_PLANT:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_PLANT_UG:		*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_SPIKE:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_SQUID:			*size = sizeof(Bowler); return Bowler_New(p);
-		case BLOCK_SPAWN_WILLI:			*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_COOPA:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_EXPLOSION:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_FIREBALL:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_FIREBEAM:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
+		case ENITY_FISH:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_GUMBA:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_PLANT:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_PLANT_UG:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_SPIKE:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_SQUID:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENITY_WILLI:		*size = sizeof(Bowler); return Bowler_New(p);
 	}
 	return NULL;
 }
@@ -904,6 +904,7 @@ SubSprite World_Bowler_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 
+
 void Bowler_Update(void* v,float t){
 	Entity* e = (Entity*)v;
 }
@@ -946,7 +947,7 @@ void Setup(AlxWindow* w){
 	ap = AudioPlayer_New();
 	AudioPlayer_Start(&ap);
 
-	level = 1U;
+	level = 0U;
 	world = World_Make("./data/World/Level0.txt",World_Std_Mapper,(Animation[]){
 		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_FG,ENITY_NONE),
 		Animation_Make_Sprite("./data/Atlas/Brick.png",ANIMATIONBG_FG,ENITY_NONE),
@@ -976,6 +977,8 @@ void Setup(AlxWindow* w){
 		EntityAtlas_New("./data/Atlas/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
 		EntityAtlas_Null()
 	});
+
+	printf("HERE: %d %d\n",world.animations.size,world.entityatlas.size);
 
 	// mario = Figure_Make((Vec2){ 1.0f,25.0f },(Vec2){ 0.5f,1.8f },(Sprite[]){
 	// 	Sprite_Load("./data/Sandra/Sandra1_r.png"),
