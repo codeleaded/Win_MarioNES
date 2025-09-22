@@ -437,9 +437,11 @@ void World_Resize(World* w,unsigned int width,unsigned int height){
 		const unsigned int cpywidth = I64_Min(w->width,width);
 		const unsigned int cpyheight = I64_Min(w->height,height);
 		for(int y = 0;y<cpyheight;y++){
-			memcpy(data + y * cpywidth,w->data + y * w->width,sizeof(Block) * cpywidth);
+			memcpy(data + y * width,w->data + y * w->width,sizeof(Block) * cpywidth);
 		}
 
+		w->width = width;
+		w->height = height;
 		free(w->data);
 		w->data = data;
 	}
@@ -492,7 +494,7 @@ void World_Reload(World* w,unsigned int width,unsigned int height){
 		Animation* a = (Animation*)Vector_Get(&w->animations,i);
 		Animation_Resize(a,width,height);
 	}
-	for(int i = 0;i<w->animations.size;i++){
+	for(int i = 0;i<w->entityatlas.size;i++){
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,i);
 		EntityAtlas_Resize(ea,width,height);
 	}

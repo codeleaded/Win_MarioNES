@@ -949,7 +949,7 @@ void Setup(AlxWindow* w){
 		Animation_Make_Atlas("./data/Atlas/Tree.png",ANIMATIONBG_FG,ENITY_NONE,7,1,World_Tree_Get),
 		Animation_Make_Atlas("./data/Atlas/SnowTree.png",ANIMATIONBG_BG,ENITY_NONE,7,1,World_SnowTree_Get),
 		Animation_Make_Atlas("./data/Atlas/BackTree.png",ANIMATIONBG_FG,ENITY_NONE,4,1,World_BackTree_Get),
-		Animation_Make_Atlas("./data/Atlas/Rocket.png",ANIMATIONBG_FG,ENITY_NONE,4,1,World_Rocket_Get),
+		Animation_Make_Atlas("./data/Atlas/Rocket.png",ANIMATIONBG_FG,ENITY_NONE,2,1,World_Rocket_Get),
 		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG,ENITY_NONE),
 		Animation_Make_Atlas("./data/Atlas/Bowler.png",ANIMATIONBG_FG,ENITY_BOWLER,5,3,World_Bowler_Get),
 		Animation_Null()
@@ -980,8 +980,6 @@ void Setup(AlxWindow* w){
 		//Sprite_Load("./data/Images/MarioAtlas.png"),
 		Sprite_Load("./data/Atlas/MarioAtlas.png"),
 	});
-
-	printf("HERE\n");
 }
 void Update(AlxWindow* w){
 	PS4_Controller_Update(&ps4c);
@@ -1028,7 +1026,7 @@ void Update(AlxWindow* w){
 		CStr path = CStr_Format("./data/World/Level%d.txt",level);
 
 		World_Load(&world,path,World_Std_Mapper);
-		World_Start(&world,BLOCK_SPAWN,World_Std_SpawnMapper);
+		mario.r.p = World_Start(&world,BLOCK_SPAWN,World_Std_SpawnMapper);
 		
 		CStr_Free(&path);
 	}
@@ -1049,19 +1047,20 @@ void Update(AlxWindow* w){
 	if(state==0){
 		mario.a.y = FIGURE_ACC_GRAVITY;
 		
+		const signed int abs = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX);
 		if(Stroke(ALX_KEY_A).DOWN) 									Figure_Move(&mario,-1.0f);
 		else if(Stroke(ALX_KEY_D).DOWN) 							Figure_Move(&mario,1.0f);
-		else if(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) < 128) 	Figure_Move(&mario,F32_Map(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX),0.0f,255.0f,-1.0f,1.0f));
-		else if(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX) >= 128) Figure_Move(&mario,F32_Map(PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX),0.0f,255.0f,-1.0f,1.0f));
+		else if(abs >= 0 && abs < 128) 								Figure_Move(&mario,F32_Map(abs,0.0f,255.0f,-1.0f,1.0f));
+		else if(abs >= 128) 										Figure_Move(&mario,F32_Map(abs,0.0f,255.0f,-1.0f,1.0f));
 		else 														Figure_Move(&mario,0.0f);
 		
 		if(mario.ground){
-			if(Stroke(ALX_KEY_SPACE).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
+			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
 				mario.v.y = -FIGURE_VEL_JP;
 				AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
 			}
 		}
-		if(Stroke(ALX_KEY_SPACE).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
+		if(Stroke(ALX_KEY_W).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
 			//if(mario.v.y<0.0f)
 			mario.jumping = FIGURE_TRUE;
 			//else 				mario.jumping = FIGURE_FALSE;
@@ -1115,6 +1114,9 @@ void Update(AlxWindow* w){
 			mario.a.y =  0.0f;
 		}
 	}
+
+	
+	World_Update(&world,w->ElapsedTime);
 
 	Figure_Update(&mario,w->ElapsedTime);
 	Figure_Collision(&mario,&world,Rect_Rect_Compare);

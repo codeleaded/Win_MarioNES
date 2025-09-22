@@ -22,4 +22,8 @@ exe:
 clean:
 	rm -rf $(BUILD_DIR)/*
 
+dg: clean
+	$(CC) $(CFLAGS) -g $(INCLUDES) ./$(SRC_DIR)/Main.c -o ./$(TARGET) $(LDFLAGS)
+	gdb ./$(TARGET)
+
 do: clean all exe
