@@ -282,8 +282,8 @@ void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 SubSprite World_Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	unsigned char nbs = World_GetNeigbours(w,BLOCK_TUBE,x,y);
 	
@@ -501,8 +501,8 @@ SubSprite World_Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_SilverTube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	unsigned char nbs = World_GetNeigbours(w,BLOCK_SILVERTUBE,x,y);
 	
@@ -720,8 +720,8 @@ SubSprite World_SilverTube_Get(Animation* a,World* w,unsigned int x,unsigned int
 SubSprite World_Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_BUSH && World_Get(w,x + 1,y) == BLOCK_BUSH)	ox = 3U;
 	else if(World_Get(w,x + 1,y) == BLOCK_BUSH)										ox = 0U;
@@ -733,8 +733,8 @@ SubSprite World_Bush_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 	
 	if(World_Get(w,x - 1,y) == BLOCK_CASTLE && World_Get(w,x + 1,y) == BLOCK_CASTLE){
 		if(World_Get(w,x,y - 1) != BLOCK_CASTLE){
@@ -773,8 +773,8 @@ SubSprite World_Castle_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_CLOUD && World_Get(w,x + 1,y) == BLOCK_CLOUD)	ox = 3U;
 	else if(World_Get(w,x + 1,y) == BLOCK_CLOUD)									ox = 0U;
@@ -786,8 +786,8 @@ SubSprite World_Cloud_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_FENCE && World_Get(w,x + 1,y) == BLOCK_FENCE)	ox = 3U;
 	else if(World_Get(w,x + 1,y) == BLOCK_FENCE)									ox = 0U;
@@ -799,8 +799,8 @@ SubSprite World_Fence_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x,y + 1) == BLOCK_FLAG && World_Get(w,x,y - 1) == BLOCK_FLAG)	ox = 0U;
 	else if(World_Get(w,x,y + 1) == BLOCK_FLAG)										ox = 1U;
@@ -812,8 +812,8 @@ SubSprite World_Flag_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_Tree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE)
 		ox = 2U;
@@ -840,8 +840,8 @@ SubSprite World_Tree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 SubSprite World_SnowTree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE)
 		ox = 2U;
@@ -868,8 +868,8 @@ SubSprite World_SnowTree_Get(Animation* a,World* w,unsigned int x,unsigned int y
 SubSprite World_BackTree_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x - 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 		ox = 0U;
 	else if(World_Get(w,x + 1,y) == BLOCK_NONE && World_Get(w,x,y + 1) == BLOCK_NONE) 	ox = 2U;
@@ -881,8 +881,8 @@ SubSprite World_BackTree_Get(Animation* a,World* w,unsigned int x,unsigned int y
 SubSprite World_Rocket_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-	unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+	unsigned int dx = a->atlas_img.w / a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	else 										ox = 1U;
@@ -891,12 +891,10 @@ SubSprite World_Rocket_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 }
 
 SubSprite World_Bowler_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -904,12 +902,10 @@ SubSprite World_Bowler_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Bowser_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -917,12 +913,10 @@ SubSprite World_Bowser_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Bro_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -930,12 +924,10 @@ SubSprite World_Bro_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Coopa_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -943,12 +935,10 @@ SubSprite World_Coopa_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_FireJumper_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -956,12 +946,10 @@ SubSprite World_FireJumper_Get(Animation* a,World* w,unsigned int x,unsigned int
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Fish_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -969,12 +957,10 @@ SubSprite World_Fish_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Gumba_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -982,12 +968,10 @@ SubSprite World_Gumba_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Lakitu_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -995,12 +979,10 @@ SubSprite World_Lakitu_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Plant_UG_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -1008,12 +990,10 @@ SubSprite World_Plant_UG_Get(Animation* a,World* w,unsigned int x,unsigned int y
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_PLant_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -1021,12 +1001,10 @@ SubSprite World_PLant_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Spike_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -1034,12 +1012,10 @@ SubSprite World_Spike_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Squid_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -1047,12 +1023,10 @@ SubSprite World_Squid_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 SubSprite World_Willi_Get(Animation* a,World* w,unsigned int x,unsigned int y){
-	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
@@ -1129,22 +1103,33 @@ void Setup(AlxWindow* w){
 		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_FG,ENTITY_NONE),
 
 		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_FG,ENTITY_BOWLER,5,3,World_Bowler_Get),
-		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_FG,ENTITY_BOWLER,5,3,World_Bowler_Get),
-		Animation_Make_Atlas("./data/Entity/Bowser.png",ANIMATIONBG_FG,ENTITY_BOWSER,5,3,World_Bowser_Get),
-		Animation_Make_Atlas("./data/Entity/Bro.png",ANIMATIONBG_FG,ENTITY_BRO,5,3,World_Bro_Get),
-		Animation_Make_Atlas("./data/Entity/Coopa.png",ANIMATIONBG_FG,ENTITY_COOPA,5,3,World_Coopa_Get),
-		Animation_Make_Atlas("./data/Entity/FireJumper.png",ANIMATIONBG_FG,ENTITY_FIREJUMPER,5,3,World_FireJumper_Get),
-		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_FG,ENTITY_FISH,5,3,World_Fish_Get),
-		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_FG,ENTITY_GUMBA,5,3,World_Gumba_Get),
-		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_FG,ENTITY_LAKITU,5,3,World_Lakitu_Get),
-		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,5,3,World_Plant_UG_Get),
-		Animation_Make_Atlas("./data/Entity/PLant.png",ANIMATIONBG_FG,ENTITY_PLANT,5,3,World_PLant_Get),
-		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_FG,ENTITY_SPIKE,5,3,World_Spike_Get),
-		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_FG,ENTITY_SQUID,5,3,World_Squid_Get),
-		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_FG,ENTITY_WILLI,5,3,World_Willi_Get),
+		Animation_Make_Atlas("./data/Entity/Bowser.png",ANIMATIONBG_FG,ENTITY_BOWSER,8,1,World_Bowser_Get),
+		Animation_Make_Atlas("./data/Entity/Bro.png",ANIMATIONBG_FG,ENTITY_BRO,6,2,World_Bro_Get),
+		Animation_Make_Atlas("./data/Entity/Coopa.png",ANIMATIONBG_FG,ENTITY_COOPA,10,3,World_Coopa_Get),
+		Animation_Make_Atlas("./data/Entity/FireJumper.png",ANIMATIONBG_FG,ENTITY_FIREJUMPER,2,1,World_FireJumper_Get),
+		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_FG,ENTITY_FISH,4,3,World_Fish_Get),
+		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_FG,ENTITY_GUMBA,3,3,World_Gumba_Get),
+		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_FG,ENTITY_LAKITU,3,3,World_Lakitu_Get),
+		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,2,1,World_Plant_UG_Get),
+		Animation_Make_Atlas("./data/Entity/Plant.png",ANIMATIONBG_FG,ENTITY_PLANT,2,1,World_PLant_Get),
+		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_FG,ENTITY_SPIKE,6,1,World_Spike_Get),
+		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_FG,ENTITY_SQUID,2,1,World_Squid_Get),
+		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_FG,ENTITY_WILLI,2,1,World_Willi_Get),
 		Animation_Null()
 	},(EntityAtlas[]){
 		EntityAtlas_New("./data/Entity/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
+		//EntityAtlas_New("./data/Entity/Bowser.png",8,1,Bowser_Update,Bowser_GetRender,Bowser_Free),
+		//EntityAtlas_New("./data/Entity/Bro.png",6,2,Bro_Update,Bro_GetRender,Bro_Free),
+		//EntityAtlas_New("./data/Entity/Coopa.png",10,3,Coopa_Update,Coopa_GetRender,Coopa_Free),
+		//EntityAtlas_New("./data/Entity/FireJumper.png",2,1,FireJumper_Update,FireJumper_GetRender,FireJumper_Free),
+		//EntityAtlas_New("./data/Entity/Fish.png",4,3,Fish_Update,Fish_GetRender,Fish_Free),
+		//EntityAtlas_New("./data/Entity/Gumba.png",3,3,Gumba_Update,Gumba_GetRender,Gumba_Free),
+		//EntityAtlas_New("./data/Entity/Lakitu.png",3,3,Lakitu_Update,Lakitu_GetRender,Lakitu_Free),
+		//EntityAtlas_New("./data/Entity/Plant_UG.png",2,1,Plant_UG_Update,Plant_UG_GetRender,Plant_UG_Free),
+		//EntityAtlas_New("./data/Entity/PLant.png",2,1,PLant_Update,PLant_GetRender,PLant_Free),
+		//EntityAtlas_New("./data/Entity/Spike.png",6,1,Spike_Update,Spike_GetRender,Spike_Free),
+		//EntityAtlas_New("./data/Entity/Squid.png",2,1,Squid_Update,Squid_GetRender,Squid_Free),
+		//EntityAtlas_New("./data/Entity/Willi.png",2,1,Willi_Update,Willi_GetRender,Willi_Free),
 		EntityAtlas_Null()
 	});
 
