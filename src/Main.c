@@ -165,6 +165,7 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 		}
 	}
 }
+
 Block World_Std_Mapper(char c){
 	switch (c){
 		case '.':	return BLOCK_NONE;
@@ -247,13 +248,31 @@ char World_Std_MapperR(Block b){
 		case BLOCK_TREE:			return '(';
 		case BLOCK_SNOWTREE:		return ')';
 		case BLOCK_BACKTREE:		return '[';
+		case BLOCK_ROCKET:			return 'R';
+		case BLOCK_SPAWN:			return '%';
+		case BLOCK_SPAWN_BOWLER:	return 'B';
 	}
 	return '.';
 }
-
 void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 	switch (st){
-		case 'B':	*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_COOPA:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_EXPLOSION:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_FIREBALL:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_FIREBEAM:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
+		case BLOCK_SPAWN_FISH:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_GUMBA:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_PLANT:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_PLANT_UG:		*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_SPIKE:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_SQUID:			*size = sizeof(Bowler); return Bowler_New(p);
+		case BLOCK_SPAWN_WILLI:			*size = sizeof(Bowler); return Bowler_New(p);
 	}
 	return NULL;
 }
@@ -928,7 +947,7 @@ void Setup(AlxWindow* w){
 	AudioPlayer_Start(&ap);
 
 	level = 1U;
-	world = World_Make("./data/World/Level1.txt",World_Std_Mapper,(Animation[]){
+	world = World_Make("./data/World/Level0.txt",World_Std_Mapper,(Animation[]){
 		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_FG,ENITY_NONE),
 		Animation_Make_Sprite("./data/Atlas/Brick.png",ANIMATIONBG_FG,ENITY_NONE),
 		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,ENITY_NONE,3,1,1.0),
@@ -1138,8 +1157,6 @@ void Update(AlxWindow* w){
 
 	if(state==1){
 		const int preshow = 7;
-		const Vec2 tl = TransformedView_ScreenWorldPos(&tv,(Vec2){ 0.0f,0.0f });
-		const Vec2 br = TransformedView_ScreenWorldPos(&tv,(Vec2){ GetWidth(),GetHeight() });
 		const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
 		const float x = 10.0f;
 
