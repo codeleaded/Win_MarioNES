@@ -454,41 +454,40 @@ void World_Resize(World* w,unsigned int width,unsigned int height){
 		w->data = data;
 	}
 }
+char World_isBlock(World* w,Block b){
+	return b!=BLOCK_NONE && b - 1<w->animations.size;
+}
 char World_isBg(World* w,Block b){
-	if(b!=BLOCK_NONE){
-		if(b<w->animations.size){
-			Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
-			return a->bg;
-		}
+	if(World_isBlock(w,b)){
+		Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
+		return a->bg;
 	}
 	return 0;
 }
 SubSprite World_Img(World* w,Block b,unsigned int x,unsigned int y){
-	if(b!=BLOCK_NONE){
-		if(b<w->animations.size){
-			Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
-			switch(a->type){
-				case ANIMATIONTYPE_NONE: 	return SubSprite_Null();
-				case ANIMATIONTYPE_SPRITE:	return SubSprite_New(&a->sprite_img,0.0f,0.0f,a->sprite_img.w,a->sprite_img.h);
-				case ANIMATIONTYPE_ATLAS:	return a->atlas_get(a,w,x,y);
-				case ANIMATIONTYPE_SPRITES:	return a->sprites_get(a,w,x,y);
-				case ANIMATIONTYPE_ANIMATIONATLAS:{
-					const double t = Time_Nano() / (double)TIME_NANOTOSEC;
-					const double p = (double)t / a->aatlas_duration;
-					const int img = (int)((p - F64_Floor(p)) * a->aatlas_cx);
-					const unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
-					const unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
-					return SubSprite_New(&a->aatlas_img,img * dx,0.0f,dx,dy);
-				}
-				case ANIMATIONTYPE_ANIMATION:{
-					const double t = Time_Nano() / (double)TIME_NANOTOSEC;
-					const double p = (double)t / a->animation_duration;
-					const int img = (int)((p - F64_Floor(p)) * a->animation_img.size);
-					Sprite* s = (Sprite*)Vector_Get(&a->animation_img,img);
-					return SubSprite_New(s,0.0f,0.0f,s->w,s->h);
-				}
-				default:					return SubSprite_Null();
+	if(World_isBlock(w,b)){
+		Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
+		switch(a->type){
+			case ANIMATIONTYPE_NONE: 	return SubSprite_Null();
+			case ANIMATIONTYPE_SPRITE:	return SubSprite_New(&a->sprite_img,0.0f,0.0f,a->sprite_img.w,a->sprite_img.h);
+			case ANIMATIONTYPE_ATLAS:	return a->atlas_get(a,w,x,y);
+			case ANIMATIONTYPE_SPRITES:	return a->sprites_get(a,w,x,y);
+			case ANIMATIONTYPE_ANIMATIONATLAS:{
+				const double t = Time_Nano() / (double)TIME_NANOTOSEC;
+				const double p = (double)t / a->aatlas_duration;
+				const int img = (int)((p - F64_Floor(p)) * a->aatlas_cx);
+				const unsigned int dx = a->aatlas_img.w / a->aatlas_cx;
+				const unsigned int dy = a->aatlas_img.h / a->aatlas_cy;
+				return SubSprite_New(&a->aatlas_img,img * dx,0.0f,dx,dy);
 			}
+			case ANIMATIONTYPE_ANIMATION:{
+				const double t = Time_Nano() / (double)TIME_NANOTOSEC;
+				const double p = (double)t / a->animation_duration;
+				const int img = (int)((p - F64_Floor(p)) * a->animation_img.size);
+				Sprite* s = (Sprite*)Vector_Get(&a->animation_img,img);
+				return SubSprite_New(s,0.0f,0.0f,s->w,s->h);
+			}
+			default:					return SubSprite_Null();
 		}
 	}
 	return SubSprite_Null();
