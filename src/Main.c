@@ -1129,6 +1129,7 @@ void Update(AlxWindow* w){
 
 	World_RenderBg(&world,&tv,WINDOW_STD_ARGS);
 	Figure_Render(&mario,&tv,WINDOW_STD_ARGS);
+	World_RenderEntities(&mario,&tv,WINDOW_STD_ARGS);
 	World_RenderFg(&world,&tv,WINDOW_STD_ARGS);
 
 	// for(int i = 0;i<world.animations.size;i++){

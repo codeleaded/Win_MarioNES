@@ -490,14 +490,14 @@ void World_Update(World* w,float t){
 		if(ea) ea->Update(e,t);
 	}
 }
-void World_Render(World* w){
+void World_RenderEntities(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
 	for(int i = 0;i<w->entityies.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
 		EntityAtlas* ea = Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea){
 			SubSprite ss = ea->GetRender(e,ea);
 			if(ss.sp)
-				RenderSubSpriteAlpha(ss.sp,e->rect.p.x,e->rect.p.y,ss.ox,ss.oy,ss.dx,ss.dy);
+				Sprite_RenderSubAlpha(out,width,height,ss.sp,e->rect.p.x,e->rect.p.y,ss.ox,ss.oy,ss.dx,ss.dy);
 		}
 	}
 }
@@ -514,7 +514,7 @@ void World_RenderFg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				SubSprite ss = World_Get_Img(w,x,y);
 				if(ss.sp)
-					RenderSubSpriteAlpha(ss.sp,sc.x,sc.y,ss.ox,ss.oy,ss.dx,ss.dy);
+					Sprite_RenderSubAlpha(out,width,height,ss.sp,sc.x,sc.y,ss.ox,ss.oy,ss.dx,ss.dy);
 			}
 		}
 	}
