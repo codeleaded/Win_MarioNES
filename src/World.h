@@ -8,31 +8,14 @@
 #include "/home/codeleaded/System/Static/Container/DataStream.h"
 
 
-#define BLOCK_NONE							0
-#define BLOCK_GRAS							1
-#define BLOCK_BRICK							2
-#define BLOCK_CLOSE_QUEST_FF				3
-#define BLOCK_CLOSE_QUEST_SS				4
-#define BLOCK_COIN							5
-#define BLOCK_PODEST						6
-#define BLOCK_SOLID							7
-#define BLOCK_TUBE							8
-#define BLOCK_SILVERTUBE					9
-#define BLOCK_FIRE_FLOWER					10
-#define BLOCK_SUPER_STAR					11
-#define BLOCK_BUSH							12
-#define BLOCK_CASTLE						13
-#define BLOCK_CLOUD							14
-#define BLOCK_FENCE							15
-#define BLOCK_FLAG							16
-#define BLOCK_GRASFAKE						17
-#define BLOCK_TREE							18
-#define BLOCK_SNOWTREE						19
-#define BLOCK_BACKTREE						20
-#define BLOCK_BOUNDS						255
+#define BLOCK_NONE							0U
+#define BLOCK_BOUNDS						255U
+
+#define ENITY_NONE							0U
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;
+typedef unsigned short SpawnType;
 
 #define ANIMATIONTYPE_NONE 					0
 #define ANIMATIONTYPE_SPRITE 				1
@@ -68,6 +51,7 @@ typedef struct World World;
 typedef struct Animation {
 	AnimationType type;
 	char bg;
+	SpawnType spawner;
 	union {
 		struct{
 			Sprite sprite_img;
@@ -97,34 +81,38 @@ typedef struct Animation {
 	};
 } Animation;
 
-Animation Animation_New(AnimationType type,char bg){
+Animation Animation_New(AnimationType type,char bg,SpawnType spawner){
 	Animation a;
 	memset(&a,0,sizeof(a));
 	a.type = type;
 	a.bg = bg;
+	a.spawner = spawner;
 	return a;
 }
-Animation Animation_Make_Sprite(char* Path,char bg){
+Animation Animation_Make_Sprite(char* Path,char bg,SpawnType spawner){
 	Animation a;
 	a.type = ANIMATIONTYPE_SPRITE;
 	a.bg = bg;
+	a.spawner = spawner;
 	a.sprite_img = Sprite_Load(Path);
 	return a;
 }
-Animation Animation_Make_Atlas(char* Path,char bg,unsigned short cx,unsigned short cy,SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int)){
+Animation Animation_Make_Atlas(char* Path,char bg,SpawnType spawner,unsigned short cx,unsigned short cy,SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int)){
 	Animation a;
 	a.type = ANIMATIONTYPE_ATLAS;
 	a.bg = bg;
+	a.spawner = spawner;
 	a.atlas_img = Sprite_Load(Path);
 	a.atlas_cx = cx;
 	a.atlas_cy = cy;
 	a.atlas_get = atlas_get;
 	return a;
 }
-Animation Animation_Make_Sprites(char** Paths,char bg,SubSprite (*sprites_get)(struct Animation*,World*,unsigned int,unsigned int)){
+Animation Animation_Make_Sprites(char** Paths,char bg,SpawnType spawner,SubSprite (*sprites_get)(struct Animation*,World*,unsigned int,unsigned int)){
 	Animation a;
 	a.type = ANIMATIONTYPE_SPRITES;
 	a.bg = bg;
+	a.spawner = spawner;
 	a.sprites_img = Vector_New(sizeof(Sprite));
 	a.sprites_get = sprites_get;
 
@@ -134,10 +122,11 @@ Animation Animation_Make_Sprites(char** Paths,char bg,SubSprite (*sprites_get)(s
 
 	return a;
 }
-Animation Animation_Make_AnimationAtlas(char* Path,char bg,unsigned short cx,unsigned short cy,FDuration aatlas_duration){
+Animation Animation_Make_AnimationAtlas(char* Path,char bg,SpawnType spawner,unsigned short cx,unsigned short cy,FDuration aatlas_duration){
 	Animation a;
 	a.type = ANIMATIONTYPE_ANIMATIONATLAS;
 	a.bg = bg;
+	a.spawner = spawner;
 	a.aatlas_img = Sprite_Load(Path);
 	a.aatlas_cx = cx;
 	a.aatlas_cy = cy;
@@ -145,10 +134,11 @@ Animation Animation_Make_AnimationAtlas(char* Path,char bg,unsigned short cx,uns
 	a.aatlas_duration = aatlas_duration;
 	return a;
 }
-Animation Animation_Make_Animation(char** Paths,char bg,FDuration animation_duration){
+Animation Animation_Make_Animation(char** Paths,char bg,SpawnType spawner,FDuration animation_duration){
 	Animation a;
 	a.type = ANIMATIONTYPE_ANIMATION;
 	a.bg = bg;
+	a.spawner = spawner;
 	a.animation_img = Vector_New(sizeof(Sprite));
 	a.animation_start = Time_Nano();
 	a.animation_duration = animation_duration;
@@ -252,12 +242,71 @@ void Animation_Free(Animation* a){
 			break;
 	}
 	a->bg = -1;
+	a->spawner = 0U;
 	a->type = ANIMATIONTYPE_NONE;
 }
 
 
+typedef struct EntityAtlas {
+	Sprite atlas;
+	unsigned int cx;
+	unsigned int cy;
+	void (*Update)(void*,float);
+	SubSprite (*GetRender)(void*,struct EntityAtlas*);
+	void (*Free)(void*);
+} EntityAtlas;
+
+EntityAtlas EntityAtlas_New(
+	char* Path,
+	unsigned int cx,
+	unsigned int cy,
+	void (*Update)(void*,float),
+	SubSprite (*GetRender)(void*,EntityAtlas*),
+	void (*Free)(void*)
+){
+	EntityAtlas ea;
+	ea.atlas = Sprite_Load(Path);
+	ea.cx = cx;
+	ea.cy = cy;
+	ea.Update = Update;
+	ea.GetRender = GetRender;
+	ea.Free = Free;
+	return ea;
+}
+EntityAtlas EntityAtlas_Null(){
+	EntityAtlas ea;
+	ea.atlas = Sprite_None();
+	ea.cx = 0U;
+	ea.cy = 0U;
+	ea.Update = NULL;
+	ea.GetRender = NULL;
+	ea.Free = NULL;
+	return ea;
+}
+void EntityAtlas_Resize(EntityAtlas* ea,int width,int height){
+	unsigned int dx = ea->cx * width;
+	unsigned int dy = ea->cy * height;
+	Sprite_Reload(&ea->atlas,dx,dy);
+}
+void EntityAtlas_Free(EntityAtlas* ea){
+	Sprite_Free(&ea->atlas);
+	ea->Update = NULL;
+	ea->GetRender = NULL;
+	ea->Free = NULL;
+}
+
+
+// abstract => inherite id and override methods
+typedef struct Entity {
+	unsigned int id;
+	unsigned int padd;
+	Rect rect;
+} Entity;
+
 typedef struct World{
 	Vector animations;//Vector<Animation>
+	Vector entityatlas;//Vector<EntityAtlas>
+	PVector entityies;//Vector<Entity>
 	Block* data;
 	unsigned short width;
 	unsigned short height;
@@ -266,6 +315,8 @@ typedef struct World{
 World World_New(unsigned short width,unsigned short height){
 	World w;
 	w.animations = Vector_New(sizeof(Animation));
+	w.entityatlas = Vector_New(sizeof(EntityAtlas));
+	w.entityies = PVector_New();
 	w.data = (Block*)malloc(sizeof(Block) * width * height);
 	w.width = width;
 	w.height = height;
@@ -308,7 +359,41 @@ void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
 	Files_Write(Path,data,size);
 	free(data);
 }
-World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a){
+Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
+	Vec2 spawn = { 0.0f,0.0f };
+	
+	for(int i = 0;i<w->entityies.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+		EntityAtlas* ea = Vector_Get(&w->entityatlas,e->id);
+		if(ea) ea->Free(e);
+	}
+	PVector_Clear(&w->entityies);
+
+	if(Spawn){
+		for(int y = 0;y<w->height;y++){
+			for(int x = 0;x<w->width;x++){
+				Block b = w->data[y * w->width + x];
+				Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
+
+				if(a && a->spawner > 0U){
+					unsigned int size = 0U;
+					void* e = Spawn((Vec2){x,y},a->spawner,&size);
+					if(e){
+						PVector_Push(&w->entityies,e,size);
+						free(e);
+						w->data[y * w->width + x] = BLOCK_NONE;
+					}
+				}else if(spawner == b){
+					spawn.x = x;
+					spawn.y = y;
+				}
+			}
+		}
+	}
+
+	return spawn;
+}
+World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
 	World w;
 	w.animations = Vector_New(sizeof(Animation));
 	w.data = NULL;
@@ -319,6 +404,9 @@ World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a){
 
 	for(int i = 0;a[i].type != ANIMATIONTYPE_NONE;i++){
 		Vector_Push(&w.animations,a + i);
+	}
+	for(int i = 0;ea[i].atlas.img;i++){
+		Vector_Push(&w.entityatlas,ea + i);
 	}
 	return w;
 }
@@ -345,7 +433,7 @@ void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 char World_isBg(World* w,Block b){
 	if(b!=BLOCK_NONE){
 		if(b<w->animations.size){
-			Animation* a = (Animation*)Vector_Get(&w->animations,b);
+			Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
 			return a->bg;
 		}
 	}
@@ -354,7 +442,7 @@ char World_isBg(World* w,Block b){
 SubSprite World_Img(World* w,Block b,unsigned int x,unsigned int y){
 	if(b!=BLOCK_NONE){
 		if(b<w->animations.size){
-			Animation* a = (Animation*)Vector_Get(&w->animations,b);
+			Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
 			switch(a->type){
 				case ANIMATIONTYPE_NONE: 	return SubSprite_Null();
 				case ANIMATIONTYPE_SPRITE:	return SubSprite_New(&a->sprite_img,0.0f,0.0f,a->sprite_img.w,a->sprite_img.h);
@@ -389,6 +477,28 @@ void World_Resize(World* w,unsigned int width,unsigned int height){
 	for(int i = 0;i<w->animations.size;i++){
 		Animation* a = (Animation*)Vector_Get(&w->animations,i);
 		Animation_Resize(a,width,height);
+	}
+	for(int i = 0;i<w->animations.size;i++){
+		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,i);
+		EntityAtlas_Resize(ea,width,height);
+	}
+}
+void World_Update(World* w,float t){
+	for(int i = 0;i<w->entityies.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+		EntityAtlas* ea = Vector_Get(&w->entityatlas,e->id - 1);
+		if(ea) ea->Update(e,t);
+	}
+}
+void World_Render(World* w){
+	for(int i = 0;i<w->entityies.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+		EntityAtlas* ea = Vector_Get(&w->entityatlas,e->id - 1);
+		if(ea){
+			SubSprite ss = ea->GetRender(e,ea);
+			if(ss.sp)
+				RenderSubSpriteAlpha(ss.sp,e->rect.p.x,e->rect.p.y,ss.ox,ss.oy,ss.dx,ss.dy);
+		}
 	}
 }
 void World_RenderFg(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
