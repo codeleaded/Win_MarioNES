@@ -12,7 +12,7 @@
 #define BLOCK_NONE							0U
 #define BLOCK_BOUNDS						255U
 
-#define ENITY_NONE							0U
+#define ENTITY_NONE							0U
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;

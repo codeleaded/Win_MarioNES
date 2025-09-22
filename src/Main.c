@@ -50,23 +50,23 @@
 #define BLOCK_SPAWN_SQUID				38U
 #define BLOCK_SPAWN_WILLI				39U
 
-#define ENITY_BOWLER					1U
-#define ENITY_BOWSER					2U
-#define ENITY_BRO						3U
-#define ENITY_COOPA						4U
-#define ENITY_EXPLOSION					5U
-#define ENITY_FIREBALL					6U
-#define ENITY_FIREBEAM					7U
-#define ENITY_FIREJUMPER				8U
-#define ENITY_FISH						9U
-#define ENITY_GUMBA						10U
-#define ENITY_HAMMER					11U
-#define ENITY_LAKITU					12U
-#define ENITY_PLANT						13U
-#define ENITY_PLANT_UG					14U
-#define ENITY_SPIKE						15U
-#define ENITY_SQUID						16U
-#define ENITY_WILLI						17U
+#define ENTITY_BOWLER					1U
+#define ENTITY_BOWSER					2U
+#define ENTITY_BRO						3U
+#define ENTITY_COOPA						4U
+#define ENTITY_EXPLOSION					5U
+#define ENTITY_FIREBALL					6U
+#define ENTITY_FIREBEAM					7U
+#define ENTITY_FIREJUMPER				8U
+#define ENTITY_FISH						9U
+#define ENTITY_GUMBA						10U
+#define ENTITY_HAMMER					11U
+#define ENTITY_LAKITU					12U
+#define ENTITY_PLANT						13U
+#define ENTITY_PLANT_UG					14U
+#define ENTITY_SPIKE						15U
+#define ENTITY_SQUID						16U
+#define ENTITY_WILLI						17U
 
 typedef struct Bowler {
 	Entity e;
@@ -74,7 +74,7 @@ typedef struct Bowler {
 
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
-	b.e.id = ENITY_BOWLER;
+	b.e.id = ENTITY_BOWLER;
 	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
 	Bowler* hb = malloc(sizeof(Bowler));
 	memcpy(hb,&b,sizeof(Bowler));
@@ -256,23 +256,23 @@ char World_Std_MapperR(Block b){
 }
 void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 	switch (st){
-		case ENITY_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_COOPA:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_EXPLOSION:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_FIREBALL:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_FIREBEAM:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
-		case ENITY_FISH:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_GUMBA:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_PLANT:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_PLANT_UG:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_SPIKE:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_SQUID:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENITY_WILLI:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_COOPA:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_EXPLOSION:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_FIREBALL:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_FIREBEAM:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
+		case ENTITY_FISH:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_GUMBA:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_PLANT:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_PLANT_UG:	*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_SPIKE:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_SQUID:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_WILLI:		*size = sizeof(Bowler); return Bowler_New(p);
 	}
 	return NULL;
 }
@@ -903,6 +903,162 @@ SubSprite World_Bowler_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
+SubSprite World_Bowser_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Bro_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Coopa_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_FireJumper_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Fish_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Gumba_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Lakitu_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Plant_UG_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_PLant_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Spike_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Squid_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite World_Willi_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,a->spawner - 1);
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
 
 
 void Bowler_Update(void* v,float t){
@@ -949,58 +1105,51 @@ void Setup(AlxWindow* w){
 
 	level = 0U;
 	world = World_Make("./data/World/Level0.txt",World_Std_Mapper,(Animation[]){
-		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_FG,ENITY_NONE),
-		Animation_Make_Sprite("./data/Atlas/Brick.png",ANIMATIONBG_FG,ENITY_NONE),
-		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,ENITY_NONE,3,1,1.0),
-		Animation_Make_AnimationAtlas("./data/Atlas/QuestionMark.png",ANIMATIONBG_FG,ENITY_NONE,3,1,1.0),
-		Animation_Make_AnimationAtlas("./data/Atlas/Coin.png",ANIMATIONBG_FG,ENITY_NONE,4,1,1.0),
-		Animation_Make_Sprite("./data/Atlas/Podest.png",ANIMATIONBG_FG,ENITY_NONE),
-		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG,ENITY_NONE),
-		Animation_Make_Atlas("./data/Atlas/Tube.png",ANIMATIONBG_FG,ENITY_NONE,16,1,World_Tube_Get),
-		Animation_Make_Atlas("./data/Atlas/SilverTube.png",ANIMATIONBG_FG,ENITY_NONE,16,1,World_SilverTube_Get),
-		Animation_Make_AnimationAtlas("./data/Atlas/FireFlower.png",ANIMATIONBG_FG,ENITY_NONE,4,2,1.0),
-		Animation_Make_AnimationAtlas("./data/Atlas/SuperStar.png",ANIMATIONBG_FG,ENITY_NONE,4,1,1.0),
-		Animation_Make_Atlas("./data/Atlas/Bush.png",ANIMATIONBG_FG,ENITY_NONE,4,1,World_Bush_Get),
-		Animation_Make_Atlas("./data/Atlas/Castle.png",ANIMATIONBG_BG,ENITY_NONE,6,1,World_Castle_Get),
-		Animation_Make_Atlas("./data/Atlas/Cloud.png",ANIMATIONBG_FG,ENITY_NONE,4,1,World_Cloud_Get),
-		Animation_Make_Atlas("./data/Atlas/Fence.png",ANIMATIONBG_BG,ENITY_NONE,4,1,World_Fence_Get),
-		Animation_Make_Atlas("./data/Atlas/Flag.png",ANIMATIONBG_BG,ENITY_NONE,2,1,World_Flag_Get),
-		Animation_Make_Sprite("./data/Atlas/Dirt.png",ANIMATIONBG_BG,ENITY_NONE),
-		Animation_Make_Atlas("./data/Atlas/Tree.png",ANIMATIONBG_FG,ENITY_NONE,7,1,World_Tree_Get),
-		Animation_Make_Atlas("./data/Atlas/SnowTree.png",ANIMATIONBG_BG,ENITY_NONE,7,1,World_SnowTree_Get),
-		Animation_Make_Atlas("./data/Atlas/BackTree.png",ANIMATIONBG_FG,ENITY_NONE,4,1,World_BackTree_Get),
-		Animation_Make_Atlas("./data/Atlas/Rocket.png",ANIMATIONBG_FG,ENITY_NONE,2,1,World_Rocket_Get),
-		Animation_Make_Sprite("./data/Atlas/Solid.png",ANIMATIONBG_FG,ENITY_NONE),
-		Animation_Make_Atlas("./data/Atlas/Bowler.png",ANIMATIONBG_FG,ENITY_BOWLER,5,3,World_Bowler_Get),
+		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_FG,ENTITY_NONE,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_FG,ENTITY_NONE,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/Coin.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,1.0),
+		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_Atlas("./data/Blocks/Tube.png",ANIMATIONBG_FG,ENTITY_NONE,16,1,World_Tube_Get),
+		Animation_Make_Atlas("./data/Blocks/SilverTube.png",ANIMATIONBG_FG,ENTITY_NONE,16,1,World_SilverTube_Get),
+		Animation_Make_AnimationAtlas("./data/Blocks/FireFlower.png",ANIMATIONBG_FG,ENTITY_NONE,4,2,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/SuperStar.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,1.0),
+		Animation_Make_Atlas("./data/Blocks/Bush.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_Bush_Get),
+		Animation_Make_Atlas("./data/Blocks/Castle.png",ANIMATIONBG_BG,ENTITY_NONE,6,1,World_Castle_Get),
+		Animation_Make_Atlas("./data/Blocks/Cloud.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_Cloud_Get),
+		Animation_Make_Atlas("./data/Blocks/Fence.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,World_Fence_Get),
+		Animation_Make_Atlas("./data/Blocks/Flag.png",ANIMATIONBG_BG,ENTITY_NONE,2,1,World_Flag_Get),
+		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_BG,ENTITY_NONE),
+		Animation_Make_Atlas("./data/Blocks/Tree.png",ANIMATIONBG_FG,ENTITY_NONE,7,1,World_Tree_Get),
+		Animation_Make_Atlas("./data/Blocks/SnowTree.png",ANIMATIONBG_BG,ENTITY_NONE,7,1,World_SnowTree_Get),
+		Animation_Make_Atlas("./data/Blocks/BackTree.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_BackTree_Get),
+		Animation_Make_Atlas("./data/Blocks/Rocket.png",ANIMATIONBG_FG,ENTITY_NONE,2,1,World_Rocket_Get),
+		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_FG,ENTITY_NONE),
+
+		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_FG,ENTITY_BOWLER,5,3,World_Bowler_Get),
+		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_FG,ENTITY_BOWLER,5,3,World_Bowler_Get),
+		Animation_Make_Atlas("./data/Entity/Bowser.png",ANIMATIONBG_FG,ENTITY_BOWSER,5,3,World_Bowser_Get),
+		Animation_Make_Atlas("./data/Entity/Bro.png",ANIMATIONBG_FG,ENTITY_BRO,5,3,World_Bro_Get),
+		Animation_Make_Atlas("./data/Entity/Coopa.png",ANIMATIONBG_FG,ENTITY_COOPA,5,3,World_Coopa_Get),
+		Animation_Make_Atlas("./data/Entity/FireJumper.png",ANIMATIONBG_FG,ENTITY_FIREJUMPER,5,3,World_FireJumper_Get),
+		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_FG,ENTITY_FISH,5,3,World_Fish_Get),
+		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_FG,ENTITY_GUMBA,5,3,World_Gumba_Get),
+		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_FG,ENTITY_LAKITU,5,3,World_Lakitu_Get),
+		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,5,3,World_Plant_UG_Get),
+		Animation_Make_Atlas("./data/Entity/PLant.png",ANIMATIONBG_FG,ENTITY_PLANT,5,3,World_PLant_Get),
+		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_FG,ENTITY_SPIKE,5,3,World_Spike_Get),
+		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_FG,ENTITY_SQUID,5,3,World_Squid_Get),
+		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_FG,ENTITY_WILLI,5,3,World_Willi_Get),
 		Animation_Null()
 	},(EntityAtlas[]){
-		EntityAtlas_New("./data/Atlas/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
+		EntityAtlas_New("./data/Entity/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
 		EntityAtlas_Null()
 	});
 
-	printf("HERE: %d %d\n",world.animations.size,world.entityatlas.size);
-
-	// mario = Figure_Make((Vec2){ 1.0f,25.0f },(Vec2){ 0.5f,1.8f },(Sprite[]){
-	// 	Sprite_Load("./data/Sandra/Sandra1_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra1_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra2_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra2_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra3_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra3_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra4_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra4_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra5_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra5_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra0_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra0_l.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra0_r.png"),
-	// 	Sprite_Load("./data/Sandra/Sandra0_l.png"),
-	// 	Sprite_None()
-	// });
-
 	mario = Figure_Make((Vec2){ 1.0f,25.0f },(Vec2){ 0.9f,0.9f },(Sprite[]){
-		//Sprite_Load("./data/Images/MarioAtlas.png"),
-		Sprite_Load("./data/Atlas/MarioAtlas.png"),
+		Sprite_Load("./data/Entity/Mario.png"),
 	});
 }
 void Update(AlxWindow* w){
