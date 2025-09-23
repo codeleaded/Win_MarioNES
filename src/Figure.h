@@ -68,11 +68,11 @@ void Figure_Update(Figure* f,World* w,const float t){
 	if(f->Update) f->Update(f->e,w,t);
 }
 void Figure_Collision(Figure* f,World* w){
+	World_Collision(w,f->e);
+	World_EntityCollision(w,f->e);
+
 	if(f->e->WorldCollision)
 		f->e->WorldCollision(f->e,w);
-
-    World_Collision(w,f->e);
-	World_EntityCollision(w,f->e);
 }
 void Figure_Render(Figure* f,World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
@@ -81,10 +81,12 @@ void Figure_Render(Figure* f,World* w,TransformedView* tv,Pixel* out,unsigned in
 
 	//if(!Rect_Overlap(&r,&f->e->r))
 	//	return;
-		
+	
 	EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,f->e->id - 1);
 	if(ea){
-		const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ f->e->r.p.x,f->e->r.p.y });
+		const float dx = ((int)(f->e->r.d.x + 0.99f) - f->e->r.d.x) * 0.5f;
+		const float dy = ((int)(f->e->r.d.y + 0.99f) - f->e->r.d.y) * 0.5f;
+		const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ f->e->r.p.x - dx,f->e->r.p.y - dy });
 		SubSprite ss = ea->GetRender(f->e,ea);
 		if(ss.sp)
 			Sprite_RenderSubAlpha(out,width,height,ss.sp,sc.x,sc.y,ss.ox,ss.oy,ss.dx,ss.dy);

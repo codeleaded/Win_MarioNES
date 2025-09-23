@@ -895,7 +895,7 @@ void Setup(AlxWindow* w){
 	AudioPlayer_Start(&ap);
 
 	level = 0U;
-	world = World_Make("./data/World/Level0.txt",World_Std_Mapper,(Animation[]){
+	world = World_Make("./data/World/Level0.txt",BLOCK_SPAWN,World_Std_Mapper,(Animation[]){
 		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_BG,ENTITY_NONE),
 		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_BG,ENTITY_NONE),
 		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_BG,ENTITY_NONE,3,1,1.0),
@@ -984,7 +984,7 @@ void Update(AlxWindow* w){
 	}
 	if(Stroke(ALX_KEY_9).PRESSED){
 		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-		World_Load(&world,path,World_Std_Mapper);
+		World_Load(&world,path,BLOCK_SPAWN,World_Std_Mapper);
 		CStr_Free(&path);
 	}
 	if(Stroke(ALX_KEY_0).PRESSED){
@@ -998,7 +998,7 @@ void Update(AlxWindow* w){
 		//World_Load(&world,path,World_Std_Mapper);
 		//CStr_Free(&path);
 		
-		World_Start(&world,BLOCK_SPAWN,World_Std_SpawnMapper);
+		World_Start(&world,World_Std_SpawnMapper);
 		mario.e->r.p = world.spawn;
 	}
 
@@ -1016,7 +1016,7 @@ void Update(AlxWindow* w){
 	}
 
 	if(world.mode!=ANIMATIONBG_DG){
-		mario.e->a.y = FIGURE_ACC_GRAVITY;
+		mario.e->a.y = MARIO_ACC_GRAVITY;
 		
 		const signed int abs = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX);
 		if(Stroke(ALX_KEY_A).DOWN) 									Figure_Move(&mario,-1.0f);
@@ -1025,26 +1025,30 @@ void Update(AlxWindow* w){
 		else if(abs >= 128) 										Figure_Move(&mario,F32_Map(abs,0.0f,255.0f,-1.0f,1.0f));
 		else 														Figure_Move(&mario,0.0f);
 		
-		if(((Mario*)mario.e)->ground){
+		if(mario.e->id==ENTITY_MARIO && ((Mario*)mario.e)->ground){
 			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
-				mario.e->v.y = -FIGURE_VEL_JP;
+				mario.e->v.y = -MARIO_VEL_JP;
 				AudioPlayer_Add(&ap,"./data/Sound/jump.wav");
 			}
 		}
 		if(Stroke(ALX_KEY_W).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){
 			//if(mario.v.y<0.0f)
-			((Mario*)mario.e)->jumping = FIGURE_TRUE;
-			//else 				mario.jumping = FIGURE_FALSE;
+			if(mario.e->id==ENTITY_MARIO)
+				((Mario*)mario.e)->jumping = ENTITY_TRUE;
+			//else 				mario.jumping = ENTITY_FALSE;
 		}
 		if(Stroke(ALX_KEY_S).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_TRI).PRESSED){
-			//mario.v.y = 0.0f;
+			//mario.e->v.y = MARIO_VEL_JP;
 		}
 		if(Stroke(ALX_KEY_S).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_TRI).DOWN){
-			((Mario*)mario.e)->stamp = FIGURE_TRUE;
-		}
+			if(mario.e->id==ENTITY_MARIO)
+				((Mario*)mario.e)->stamp = ENTITY_TRUE;
+		}else
+			if(mario.e->id==ENTITY_MARIO)
+				((Mario*)mario.e)->stamp = ENTITY_FALSE;
 	}else{
 		mario.e->a.y = 0.0f;
-		((Mario*)mario.e)->dead = FIGURE_FALSE;
+		((Mario*)mario.e)->dead = ENTITY_FALSE;
 
 		if(Stroke(ALX_MOUSE_M).PRESSED){
 			Vec2 p = TransformedView_ScreenWorldPos(&tv,(Vec2){ w->MouseX,w->MouseY });
@@ -1060,31 +1064,39 @@ void Update(AlxWindow* w){
 		}
 		
 		if(Stroke(ALX_KEY_A).DOWN){
-			if(mario.e->v.x>0.0f) 			((Mario*)mario.e)->reverse = FIGURE_TRUE;
-			if(((Mario*)mario.e)->ground) 	mario.e->a.x = -FIGURE_ACC_GRD;
-			else 							mario.e->a.x = -FIGURE_ACC_AIR;
+			if(mario.e->id==ENTITY_MARIO){
+				if(mario.e->v.x>0.0f) 		 	((Mario*)mario.e)->reverse = ENTITY_TRUE;
+				if(((Mario*)mario.e)->ground)	mario.e->a.x = -MARIO_ACC_GRD;
+			}else
+				mario.e->a.x = -MARIO_ACC_AIR;
 		}else if(Stroke(ALX_KEY_D).DOWN){
-			if(mario.e->v.x<0.0f) 			((Mario*)mario.e)->reverse = FIGURE_TRUE;
-			if(((Mario*)mario.e)->ground) 	mario.e->a.x = FIGURE_ACC_GRD;
-			else 							mario.e->a.x = FIGURE_ACC_AIR;
+			if(mario.e->id==ENTITY_MARIO){
+				if(mario.e->v.x<0.0f)			((Mario*)mario.e)->reverse = ENTITY_TRUE;
+				if(((Mario*)mario.e)->ground)	mario.e->a.x = MARIO_ACC_GRD;
+			}else
+				mario.e->a.x = MARIO_ACC_AIR;
 		}else{
 			mario.e->v.x =  0.0f;
 			mario.e->a.x =  0.0f;
 		}
 		
 		if(Stroke(ALX_KEY_W).DOWN){
-			mario.e->v.y = -FIGURE_VEL_JP;
-			((Mario*)mario.e)->jumping = FIGURE_TRUE;
+			mario.e->v.y = -MARIO_VEL_JP;
+			if(mario.e->id==ENTITY_MARIO)
+				((Mario*)mario.e)->jumping = ENTITY_TRUE;
 		}else if(Stroke(ALX_KEY_S).DOWN){
-			mario.e->v.y = FIGURE_VEL_JP;
-			((Mario*)mario.e)->jumping = FIGURE_TRUE;
+			mario.e->v.y = MARIO_VEL_JP;
+			if(mario.e->id==ENTITY_MARIO)
+				((Mario*)mario.e)->jumping = ENTITY_TRUE;
 		}else{
-			mario.e->v.y =  0.0f;
-			mario.e->a.y =  0.0f;
+			mario.e->v.y = 0.0f;
+			mario.e->a.y = 0.0f;
 		}
 	}
 
 	World_Update(&world,w->ElapsedTime);
+	World_Collisions(&world);
+
 	Figure_Update(&mario,&world,w->ElapsedTime);
 	Figure_Collision(&mario,&world);
 

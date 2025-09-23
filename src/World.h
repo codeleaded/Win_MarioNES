@@ -353,7 +353,7 @@ World World_New(unsigned short width,unsigned short height){
 	w.height = height;
 	return w;
 }
-void World_Load(World* w,char* Path,Block (*MapperFunc)(char)){
+void World_Load(World* w,char* Path,Block spawner,Block (*MapperFunc)(char)){
 	FilesSize size;
 	char* data = Files_ReadB(Path,&size);
 
@@ -371,6 +371,18 @@ void World_Load(World* w,char* Path,Block (*MapperFunc)(char)){
 		int j = y * width + x;
 
 		w->data[j] = MapperFunc(data[i]);
+	}
+
+	w->spawn = (Vec2){ 0.0f,0.0f };
+	for(int y = 0;y<w->height;y++){
+		for(int x = 0;x<w->width;x++){
+			Block b = w->data[y * w->width + x];
+			
+			if(spawner == b){
+				w->spawn.x = x;
+				w->spawn.y = y;
+			}
+		}
 	}
 }
 void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
@@ -390,26 +402,13 @@ void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
 	Files_Write(Path,data,size);
 	free(data);
 }
-void World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
-	w->spawn = (Vec2){ 0.0f,0.0f };
-	
+void World_Start(World* w,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Free(e);
 	}
 	PVector_Clear(&w->entities);
-
-	for(int y = 0;y<w->height;y++){
-		for(int x = 0;x<w->width;x++){
-			Block b = w->data[y * w->width + x];
-			
-			if(spawner == b){
-				w->spawn.x = x;
-				w->spawn.y = y;
-			}
-		}
-	}
 
 	if(Spawn){
 		for(int y = 0;y<w->height;y++){
@@ -419,7 +418,7 @@ void World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 
 				if(a && a->spawner > 0U){
 					unsigned int size = 0U;
-					void* e = Spawn((Vec2){x,y},a->spawner,&size);
+					void* e = Spawn((Vec2){ x,y },a->spawner,&size);
 					if(e){
 						PVector_Push(&w->entities,e,size);
 						free(e);
@@ -430,10 +429,10 @@ void World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 		}
 	}
 }
-World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
+World World_Make(char* Path,Block spawner,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
 	World w = World_New(0U,0U);
 
-	World_Load(&w,Path,MapperFunc);
+	World_Load(&w,Path,spawner,MapperFunc);
 
 	for(int i = 0;a[i].type != ANIMATIONTYPE_NONE;i++){
 		Vector_Push(&w.animations,a + i);
@@ -614,6 +613,16 @@ void World_EntityCollision(World* w,Entity* src){
 	}
 }
 
+void World_Collisions(World* w){
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entities,i);
+		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
+		if(ea){
+			World_Collision(w,e);
+			World_EntityCollision(w,e);
+		}
+	}
+}
 void World_RenderEntities(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });

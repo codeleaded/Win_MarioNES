@@ -69,6 +69,16 @@
 #define ENTITY_LEFT			            0
 #define ENTITY_RIGHT		            1
 
+#define MARIO_DIM_P0_X	                0.9f
+#define MARIO_DIM_P0_Y	                0.9f
+#define MARIO_DIM_P1_X	                0.9f
+#define MARIO_DIM_P1_Y	                1.8f
+#define MARIO_DIM_P2_X	                0.9f
+#define MARIO_DIM_P2_Y	                1.8f
+#define MARIO_DIM_P3_X	                0.9f
+#define MARIO_DIM_P3_Y	                0.9f
+
+#define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRD		            7.0f
 #define MARIO_ACC_AIR		            5.0f
@@ -97,13 +107,13 @@ typedef struct Mario {
 
 void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
 	if(dir < -0.2f){// min for clean acc
-		if(m->e.v.x>0.0f) m->reverse = ENTITY_TRUE;
-		if(m->ground) 	m->e.a.x = -MARIO_ACC_GRD * F32_Abs(dir);
-		else 			m->e.a.x = -MARIO_ACC_AIR * F32_Abs(dir);
+		if(m->e.v.x>0.0f)   m->reverse = ENTITY_TRUE;
+		if(m->ground) 	    m->e.a.x = -MARIO_ACC_GRD * F32_Abs(dir);
+		else 			    m->e.a.x = -MARIO_ACC_AIR * F32_Abs(dir);
 	}else if(dir > 0.2f){
-		if(m->e.v.x<0.0f) m->reverse = ENTITY_TRUE;
-		if(m->ground) 	m->e.a.x = MARIO_ACC_GRD * F32_Abs(dir);
-		else 			m->e.a.x = MARIO_ACC_AIR * F32_Abs(dir);
+		if(m->e.v.x<0.0f)   m->reverse = ENTITY_TRUE;
+		if(m->ground) 	    m->e.a.x = MARIO_ACC_GRD * F32_Abs(dir);
+		else 			    m->e.a.x = MARIO_ACC_AIR * F32_Abs(dir);
 	}else
 		m->e.a.x = 0.0f;
 }
@@ -126,6 +136,7 @@ void Mario_Update(Mario* m,World* w,float t){
 	
 	//m->e.v = Vec2_Add(m->e.v,Vec2_Mulf(m->e.a,t * (m->jumping ? 1.0f : 2.0f)));
 	m->e.r.p = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.v,t));
+    m->ground = ENTITY_FALSE;
 }
 void Mario_WorldCollision(Mario* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -141,9 +152,8 @@ void Mario_WorldCollision(Mario* m,World* w){
 		m->e.r.p = w->spawn;
 	}
 
+	//m->stamp = FIGURE_FALSE;
 	m->jumping = ENTITY_FALSE;
-    m->ground = ENTITY_FALSE;
-	m->stamp = FIGURE_FALSE;
 	m->reverse = FIGURE_FALSE;
 }
 char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
@@ -173,13 +183,15 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		//AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 2;
-		m->e.r.d.y = 1.8f;
+		m->e.r.d.x = MARIO_DIM_P2_X;
+		m->e.r.d.y = MARIO_DIM_P2_Y;
 		return 1;
 	}else if(b==BLOCK_SUPER_STAR){
 		//AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
-		//f->power = 3;
-		//f->r.d.y = 1.8f;
+		m->power = 3;
+		m->e.r.d.x = MARIO_DIM_P3_X;
+		m->e.r.d.y = MARIO_DIM_P3_Y;
 		return 1;
 	}
 	return 0;
@@ -262,11 +274,14 @@ SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
 		d = d - F32_Floor(d);
 		d *= F32_Abs(m->e.v.x) * 0.65f;
 		d = d - F32_Floor(d);
-		m->e.r.p = (Vec2){ 4.0f + (int)(3.0f * d),0.0f };
+
+		ox = 4U + (int)(3.0f * d);
+        oy = 0U;
 	}
 
-	if(m->power==1)			        oy = 2.0f + oy * 2.0f;
-	else if(m->power==2)	        oy = 6.0f + oy * 2.0f;
+	if(m->power==1)			        oy = 1.0f + oy,dy *= 2;
+	else if(m->power==2)	        oy = 3.0f + oy,dy *= 2;
+	//else if(m->power==3)	        oy = 0.0f + oy;
 
 	if(m->lookdir==ENTITY_RIGHT)    ox = 15U - ox;
 
@@ -278,7 +293,7 @@ void Mario_Free(Mario* m){
 Mario* Mario_New(Vec2 p){
 	Mario b;
 	b.e.id = ENTITY_MARIO;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
