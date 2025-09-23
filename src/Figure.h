@@ -43,9 +43,9 @@
 
 typedef struct Figure {
 	Entity* e;
-	void (*Update)(Figure*,const float);
-	void (*Move)(Figure*,const float);
-	void (*Free)(void*);
+	void (*Update)(Entity*,const float);
+	void (*Move)(Entity*,const float);
+	void (*Free)(Entity*);
 } Figure;
  
 
@@ -55,9 +55,9 @@ void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int
 
 Figure Figure_New(
 	void* e,
-	void (*Update)(Figure*,const float),
-	void (*Move)(Figure*,const float),
-	void (*Free)(void*)
+	void (*Update)(Entity*,const float),
+	void (*Move)(Entity*,const float),
+	void (*Free)(Entity*)
 ){
 	Figure f;
 	f.e = e;

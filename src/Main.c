@@ -119,8 +119,6 @@ void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 	return NULL;
 }
 
-
-
 SubSprite World_Tube_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
@@ -883,9 +881,9 @@ void Setup(AlxWindow* w){
 
 	mario = Figure_New(
 		Mario_New((Vec2){ 1.0f,25.0f }),
-		Mario_Update,
-		Mario_Move,
-		Mario_Free
+		(void(*)(Entity*,const float))Mario_Update,
+		(void(*)(Entity*,const float))Mario_Move,
+		(void(*)(Entity*))Mario_Free
 	);
 
 	tv = TransformedView_New((Vec2){ GetHeight(),GetHeight() });
@@ -937,20 +935,20 @@ void Setup(AlxWindow* w){
 		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_DG,ENTITY_WILLI,2,1,World_Willi_Get),
 		Animation_Null()
 	},(EntityAtlas[]){
-		EntityAtlas_New("./data/Entity/Mario.png",16,12,Mario_Update,Mario_GetRender,Mario_Free),
-		EntityAtlas_New("./data/Entity/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
-		EntityAtlas_New("./data/Entity/Bowser.png",8,1,Bowser_Update,Bowser_GetRender,Bowser_Free),
-		EntityAtlas_New("./data/Entity/Bro.png",6,2,Bro_Update,Bro_GetRender,Bro_Free),
-		EntityAtlas_New("./data/Entity/Coopa.png",10,3,Coopa_Update,Coopa_GetRender,Coopa_Free),
-		EntityAtlas_New("./data/Entity/FireJumper.png",2,1,FireJumper_Update,FireJumper_GetRender,FireJumper_Free),
-		EntityAtlas_New("./data/Entity/Fish.png",4,3,Fish_Update,Fish_GetRender,Fish_Free),
-		EntityAtlas_New("./data/Entity/Gumba.png",3,3,Gumba_Update,Gumba_GetRender,Gumba_Free),
-		EntityAtlas_New("./data/Entity/Lakitu.png",3,3,Lakitu_Update,Lakitu_GetRender,Lakitu_Free),
-		EntityAtlas_New("./data/Entity/Plant_UG.png",2,1,PlantUG_Update,PlantUG_GetRender,PlantUG_Free),
-		EntityAtlas_New("./data/Entity/Plant.png",2,1,Plant_Update,Plant_GetRender,Plant_Free),
-		EntityAtlas_New("./data/Entity/Spike.png",6,1,Spike_Update,Spike_GetRender,Spike_Free),
-		EntityAtlas_New("./data/Entity/Squid.png",2,1,Squid_Update,Squid_GetRender,Squid_Free),
-		EntityAtlas_New("./data/Entity/Willi.png",2,1,Willi_Update,Willi_GetRender,Willi_Free),
+		EntityAtlas_New("./data/Entity/Mario.png",16,12,	(void(*)(void*,const float))Mario_Update,		(SubSprite(*)(void*,EntityAtlas*))Mario_GetRender,		(void(*)(void*))Mario_Free),
+		EntityAtlas_New("./data/Entity/Bowler.png",5,3,		(void(*)(void*,const float))Bowler_Update,		(SubSprite(*)(void*,EntityAtlas*))Bowler_GetRender,		(void(*)(void*))Bowler_Free),
+		EntityAtlas_New("./data/Entity/Bowser.png",8,1,		(void(*)(void*,const float))Bowser_Update,		(SubSprite(*)(void*,EntityAtlas*))Bowser_GetRender,		(void(*)(void*))Bowser_Free),
+		EntityAtlas_New("./data/Entity/Bro.png",6,2,		(void(*)(void*,const float))Bro_Update,			(SubSprite(*)(void*,EntityAtlas*))Bro_GetRender,		(void(*)(void*))Bro_Free),
+		EntityAtlas_New("./data/Entity/Coopa.png",10,3,		(void(*)(void*,const float))Coopa_Update,		(SubSprite(*)(void*,EntityAtlas*))Coopa_GetRender,		(void(*)(void*))Coopa_Free),
+		EntityAtlas_New("./data/Entity/FireJumper.png",2,1,	(void(*)(void*,const float))FireJumper_Update,	(SubSprite(*)(void*,EntityAtlas*))FireJumper_GetRender,	(void(*)(void*))FireJumper_Free),
+		EntityAtlas_New("./data/Entity/Fish.png",4,3,		(void(*)(void*,const float))Fish_Update,		(SubSprite(*)(void*,EntityAtlas*))Fish_GetRender,		(void(*)(void*))Fish_Free),
+		EntityAtlas_New("./data/Entity/Gumba.png",3,3,		(void(*)(void*,const float))Gumba_Update,		(SubSprite(*)(void*,EntityAtlas*))Gumba_GetRender,		(void(*)(void*))Gumba_Free),
+		EntityAtlas_New("./data/Entity/Lakitu.png",3,3,		(void(*)(void*,const float))Lakitu_Update,		(SubSprite(*)(void*,EntityAtlas*))Lakitu_GetRender,		(void(*)(void*))Lakitu_Free),
+		EntityAtlas_New("./data/Entity/Plant_UG.png",2,1,	(void(*)(void*,const float))PlantUG_Update,		(SubSprite(*)(void*,EntityAtlas*))PlantUG_GetRender,	(void(*)(void*))PlantUG_Free),
+		EntityAtlas_New("./data/Entity/Plant.png",2,1,		(void(*)(void*,const float))Plant_Update,		(SubSprite(*)(void*,EntityAtlas*))Plant_GetRender,		(void(*)(void*))Plant_Free),
+		EntityAtlas_New("./data/Entity/Spike.png",6,1,		(void(*)(void*,const float))Spike_Update,		(SubSprite(*)(void*,EntityAtlas*))Spike_GetRender,		(void(*)(void*))Spike_Free),
+		EntityAtlas_New("./data/Entity/Squid.png",2,1,		(void(*)(void*,const float))Squid_Update,		(SubSprite(*)(void*,EntityAtlas*))Squid_GetRender,		(void(*)(void*))Squid_Free),
+		EntityAtlas_New("./data/Entity/Willi.png",2,1,		(void(*)(void*,const float))Willi_Update,		(SubSprite(*)(void*,EntityAtlas*))Willi_GetRender,		(void(*)(void*))Willi_Free),
 		EntityAtlas_Null()
 	});
 }

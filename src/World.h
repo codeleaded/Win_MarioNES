@@ -323,10 +323,10 @@ typedef struct Entity {
 	Rect r;
 	Vec2 v;
 	Vec2 a;
-	char (*IsPickUp)(Entity*,World*,unsigned int,unsigned int);
-	char (*IsCollision)(Entity*,World*,unsigned int,unsigned int,Side);
-	void (*Collision)(Entity*,World*,unsigned int,unsigned int,Side);
-	void (*EntityCollision)(Entity*,World*,Entity*,unsigned int,unsigned int,Side);
+	char (*IsPickUp)(struct Entity*,World*,unsigned int,unsigned int);
+	char (*IsCollision)(struct Entity*,World*,unsigned int,unsigned int,Side);
+	void (*Collision)(struct Entity*,World*,unsigned int,unsigned int,Side);
+	void (*EntityCollision)(struct Entity*,World*,struct Entity*,unsigned int,unsigned int,Side);
 } Entity;
 
 typedef struct World{

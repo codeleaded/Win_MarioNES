@@ -280,10 +280,10 @@ Mario* Mario_New(Vec2 p){
 	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.IsPickUp = Mario_IsPickUp;
-	b.e.IsCollision = Mario_IsCollision;
-	b.e.Collision = Mario_Collision;
-	b.e.EntityCollision = Mario_EntityCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 
 	b.spawn = p;
 	b.start = 0UL;
@@ -305,12 +305,9 @@ typedef struct Bowler {
 	Entity e;
 } Bowler;
 
-void Bowler_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Bowler_Update(Bowler* e,float t){
 }
-SubSprite Bowler_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -321,8 +318,7 @@ SubSprite Bowler_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bowler_Free(void* v){
-	Entity* e = (Entity*)v;
+void Bowler_Free(Bowler* e){
 }
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
@@ -338,12 +334,9 @@ typedef struct Bowser {
 	Entity e;
 } Bowser;
 
-void Bowser_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Bowser_Update(Bowser* e,float t){
 }
-SubSprite Bowser_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -354,8 +347,7 @@ SubSprite Bowser_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bowser_Free(void* v){
-	Entity* e = (Entity*)v;
+void Bowser_Free(Bowser* e){
 }
 Bowser* Bowser_New(Vec2 p){
 	Bowser b;
@@ -371,12 +363,9 @@ typedef struct Bro {
 	Entity e;
 } Bro;
 
-void Bro_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Bro_Update(Bro* e,float t){
 }
-SubSprite Bro_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -387,8 +376,7 @@ SubSprite Bro_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bro_Free(void* v){
-	Entity* e = (Entity*)v;
+void Bro_Free(Bro* e){
 }
 Bro* Bro_New(Vec2 p){
 	Bro b;
@@ -404,12 +392,9 @@ typedef struct Coopa {
 	Entity e;
 } Coopa;
 
-void Coopa_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Coopa_Update(Coopa* e,float t){
 }
-SubSprite Coopa_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Coopa_GetRender(Coopa* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -420,8 +405,7 @@ SubSprite Coopa_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Coopa_Free(void* v){
-	Entity* e = (Entity*)v;
+void Coopa_Free(Coopa* e){
 }
 Coopa* Coopa_New(Vec2 p){
 	Coopa b;
@@ -437,12 +421,9 @@ typedef struct FireJumper {
 	Entity e;
 } FireJumper;
 
-void FireJumper_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void FireJumper_Update(FireJumper* e,float t){
 }
-SubSprite FireJumper_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite FireJumper_GetRender(FireJumper* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -453,8 +434,7 @@ SubSprite FireJumper_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void FireJumper_Free(void* v){
-	Entity* e = (Entity*)v;
+void FireJumper_Free(FireJumper* e){
 }
 FireJumper* FireJumper_New(Vec2 p){
 	FireJumper b;
@@ -469,12 +449,10 @@ FireJumper* FireJumper_New(Vec2 p){
 typedef struct Fish {
 	Entity e;
 } Fish;
-void Fish_Update(void* v,float t){
-	Entity* e = (Entity*)v;
-}
-SubSprite Fish_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
 
+void Fish_Update(Fish* e,float t){
+}
+SubSprite Fish_GetRender(Fish* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -485,8 +463,7 @@ SubSprite Fish_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Fish_Free(void* v){
-	Entity* e = (Entity*)v;
+void Fish_Free(Fish* e){
 }
 Fish* Fish_New(Vec2 p){
 	Fish b;
@@ -502,12 +479,9 @@ typedef struct Gumba {
 	Entity e;
 } Gumba;
 
-void Gumba_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Gumba_Update(Gumba* e,float t){
 }
-SubSprite Gumba_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -518,8 +492,7 @@ SubSprite Gumba_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Gumba_Free(void* v){
-	Entity* e = (Entity*)v;
+void Gumba_Free(Gumba* e){
 }
 Gumba* Gumba_New(Vec2 p){
 	Gumba b;
@@ -535,12 +508,9 @@ typedef struct Lakitu {
 	Entity e;
 } Lakitu;
 
-void Lakitu_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Lakitu_Update(Lakitu* e,float t){
 }
-SubSprite Lakitu_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -551,8 +521,7 @@ SubSprite Lakitu_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Lakitu_Free(void* v){
-	Entity* e = (Entity*)v;
+void Lakitu_Free(Lakitu* e){
 }
 Lakitu* Lakitu_New(Vec2 p){
 	Lakitu b;
@@ -568,12 +537,9 @@ typedef struct PlantUG {
 	Entity e;
 } PlantUG;
 
-void PlantUG_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void PlantUG_Update(PlantUG* e,float t){
 }
-SubSprite PlantUG_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -584,8 +550,7 @@ SubSprite PlantUG_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void PlantUG_Free(void* v){
-	Entity* e = (Entity*)v;
+void PlantUG_Free(PlantUG* e){
 }
 PlantUG* PlantUG_New(Vec2 p){
 	PlantUG b;
@@ -601,12 +566,9 @@ typedef struct Plant {
 	Entity e;
 } Plant;
 
-void Plant_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Plant_Update(Plant* e,float t){
 }
-SubSprite Plant_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -617,8 +579,7 @@ SubSprite Plant_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Plant_Free(void* v){
-	Entity* e = (Entity*)v;
+void Plant_Free(Plant* e){
 }
 Plant* Plant_New(Vec2 p){
 	Plant b;
@@ -634,12 +595,9 @@ typedef struct Spike {
 	Entity e;
 } Spike;
 
-void Spike_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Spike_Update(Spike* e,float t){
 }
-SubSprite Spike_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
-
+SubSprite Spike_GetRender(Spike* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -650,8 +608,7 @@ SubSprite Spike_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Spike_Free(void* v){
-	Entity* e = (Entity*)v;
+void Spike_Free(Spike* e){
 }
 Spike* Spike_New(Vec2 p){
 	Spike b;
@@ -667,11 +624,9 @@ typedef struct Squid {
 	Entity e;
 } Squid;
 
-void Squid_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+void Squid_Update(Squid* e,float t){
 }
-SubSprite Squid_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
+SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
 
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
@@ -683,8 +638,7 @@ SubSprite Squid_GetRender(void* v,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Squid_Free(void* v){
-	Entity* e = (Entity*)v;
+void Squid_Free(Squid* e){
 }
 Squid* Squid_New(Vec2 p){
 	Squid b;
@@ -701,12 +655,10 @@ typedef struct Willi {
 	Vec2 v;
 } Willi;
 
-void Willi_Update(void* v,float t){
-	Willi* e = (Willi*)v;
+void Willi_Update(Willi* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->v,t));
 }
-SubSprite Willi_GetRender(void* v,EntityAtlas* ea){
-	Willi* e = (Willi*)v;
+SubSprite Willi_GetRender(Willi* e,EntityAtlas* ea){
 
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
@@ -717,8 +669,7 @@ SubSprite Willi_GetRender(void* v,EntityAtlas* ea){
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Willi_Free(void* v){
-	Entity* e = (Entity*)v;
+void Willi_Free(Willi* e){
 }
 Willi* Willi_New(Vec2 p){
 	Willi b;
