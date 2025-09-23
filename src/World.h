@@ -51,6 +51,21 @@ unsigned char World_Neighbour_Mask(unsigned char* bits){
 }
 
 
+typedef struct TargetRect {
+	Rect r;
+	Vec2* t;
+} TargetRect;
+
+int TargetRect_Compare(const void* e1,const void* e2) {
+	TargetRect* r1 = (TargetRect*)e1;
+	TargetRect* r2 = (TargetRect*)e2;
+    float d1 = Vec2_Mag(Vec2_Sub(r1->r.p,*r1->t));
+    float d2 = Vec2_Mag(Vec2_Sub(r2->r.p,*r2->t));
+    return d1 == d2 ? 0 : (d1 < d2 ? -1 : 1);
+}
+
+
+
 typedef struct World World;
 
 typedef struct Animation {
@@ -305,14 +320,21 @@ void EntityAtlas_Free(EntityAtlas* ea){
 typedef struct Entity {
 	unsigned int id;
 	unsigned int padd;
-	Rect rect;
+	Rect r;
+	Vec2 v;
+	Vec2 a;
+	char (*IsPickUp)(Entity*,World*,unsigned int,unsigned int);
+	char (*IsCollision)(Entity*,World*,unsigned int,unsigned int,Side);
+	void (*Collision)(Entity*,World*,unsigned int,unsigned int,Side);
+	void (*EntityCollision)(Entity*,World*,Entity*,unsigned int,unsigned int,Side);
 } Entity;
 
 typedef struct World{
 	Vector animations;//Vector<Animation>
 	Vector entityatlas;//Vector<EntityAtlas>
-	PVector entityies;//Vector<Entity>
+	PVector entities;//Vector<Entity>
 	AnimationBg mode;
+	Vec2 spawn;
 	Block* data;
 	unsigned short width;
 	unsigned short height;
@@ -322,7 +344,7 @@ World World_New(unsigned short width,unsigned short height){
 	World w;
 	w.animations = Vector_New(sizeof(Animation));
 	w.entityatlas = Vector_New(sizeof(EntityAtlas));
-	w.entityies = PVector_New();
+	w.entities = PVector_New();
 	w.mode = ANIMATIONBG_ALL;
 	if(width * height > 0U) w.data = (Block*)malloc(sizeof(Block) * width * height);
 	else 					w.data = NULL;
@@ -367,23 +389,23 @@ void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
 	Files_Write(Path,data,size);
 	free(data);
 }
-Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
-	Vec2 spawn = { 0.0f,0.0f };
+void World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
+	w->spawn = (Vec2){ 0.0f,0.0f };
 	
-	for(int i = 0;i<w->entityies.size;i++){
-		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Free(e);
 	}
-	PVector_Clear(&w->entityies);
+	PVector_Clear(&w->entities);
 
 	for(int y = 0;y<w->height;y++){
 		for(int x = 0;x<w->width;x++){
 			Block b = w->data[y * w->width + x];
 			
 			if(spawner == b){
-				spawn.x = x;
-				spawn.y = y;
+				w->spawn.x = x;
+				w->spawn.y = y;
 			}
 		}
 	}
@@ -398,7 +420,7 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 					unsigned int size = 0U;
 					void* e = Spawn((Vec2){x,y},a->spawner,&size);
 					if(e){
-						PVector_Push(&w->entityies,e,size);
+						PVector_Push(&w->entities,e,size);
 						free(e);
 						//w->data[y * w->width + x] = BLOCK_NONE;
 					}
@@ -406,8 +428,6 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 			}
 		}
 	}
-
-	return spawn;
 }
 World World_Make(char* Path,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
 	World w = World_New(0U,0U);
@@ -523,25 +543,89 @@ void World_Reload(World* w,unsigned int width,unsigned int height){
 	}
 }
 void World_Update(World* w,float t){
-	for(int i = 0;i<w->entityies.size;i++){
-		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Update(e,t);
 	}
 }
+
+void World_Collision(World* w,Entity* src){
+	if(w->mode!=ANIMATIONBG_DG){
+		Vector rects = Vector_New(sizeof(Rect));
+		
+		float searchX = F32_Max(2.0f,2.0f * src->r.d.x);
+		float searchY = F32_Max(2.0f,2.0f * src->r.d.y);
+
+		for(float x = -searchX;x<searchX;x+=1.0f) {
+			for(float y = -searchY;y<searchY;y+=1.0f) {
+				int sx = (int)(src->r.p.x + x);
+				int sy = (int)(src->r.p.y + y);
+
+    	        if(sy>=0 && sy<w->height && sx>=0 && sx<w->width) {
+    	            Block b = World_Get(w,sx,sy);
+    	            Rect br = { (Vec2){ sx,sy },(Vec2){ 1.0f,1.0f } };
+
+					if(Overlap_Rect_Rect(src->r,br)){
+						if(b!=BLOCK_NONE){
+							Vector_Push(&rects,&br);
+						}
+					}
+				}
+			}
+		}
+
+		qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,TargetRect_Compare);
+
+		for(int i = 0;i<rects.size;i++) {
+    	    Rect r = *(Rect*)Vector_Get(&rects,i);
+
+			Side s = Side_Rect_Rect(src->r,r);
+			if(!src->IsPickUp(src,w,r.p.x,r.p.y) && src->IsCollision(src,w,r.p.x,r.p.y,s)){
+				Resolve_Rect_Rect_Side(&src->r,r,s);
+
+				if(s==SIDE_TOP && src->v.y>0.0f) 	src->v.y = 0.0f;
+				if(s==SIDE_BOTTOM && src->v.y<0.0f) src->v.y = 0.0f;
+				if(s==SIDE_LEFT && src->v.x>0.0f) 	src->v.x = 0.0f;
+				if(s==SIDE_RIGHT && src->v.x<0.0f) 	src->v.x = 0.0f;
+
+				src->Collision(src,w,r.p.x,r.p.y,s);
+			}
+		}
+
+		Vector_Free(&rects);
+	}
+}
+void World_EntityCollision(World* w,Entity* src){
+	if(w->mode!=ANIMATIONBG_DG){
+		for(int i = 0;i<w->entities.size;i++) {
+    	    Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if(src == e) continue;
+			
+			if(Overlap_Rect_Rect(src->r,e->r)){
+				Side s = Side_Rect_Rect(src->r,e->r);
+				Resolve_Rect_Rect_Side(&src->r,e->r,s);
+				
+				if(src->EntityCollision)
+					src->EntityCollision(src,w,e,e->r.p.x,e->r.p.y,s);
+			}
+		}
+	}
+}
+
 void World_RenderEntities(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
 	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
 	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
-	const Rect rect = { tl,br };
+	const Rect r = { tl,br };
 	
-	for(int i = 0;i<w->entityies.size;i++){
-		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
-		//if(!Rect_Overlap(&rect,&e->rect))
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entities,i);
+		//if(!Rect_Overlap(&r,&e->r))
 		//	continue;
 		
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea){
-			const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ e->rect.p.x,e->rect.p.y });
+			const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ e->r.p.x,e->r.p.y });
 			SubSprite ss = ea->GetRender(e,ea);
 			if(ss.sp)
 				Sprite_RenderSubAlpha(out,width,height,ss.sp,sc.x,sc.y,ss.ox,ss.oy,ss.dx,ss.dy);
@@ -587,12 +671,12 @@ void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 	}
 }
 void World_Free(World* w){
-	for(int i = 0;i<w->entityies.size;i++){
-		Entity* e = (Entity*)PVector_Get(&w->entityies,i);
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Free(e);
 	}
-	PVector_Free(&w->entityies);
+	PVector_Free(&w->entities);
 	
 	for(int i = 0;i<w->animations.size;i++){
 		Animation* s = (Animation*)Vector_Get(&w->animations,i);
