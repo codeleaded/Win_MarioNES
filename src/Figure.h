@@ -43,19 +43,14 @@
 
 typedef struct Figure {
 	Entity* e;
-	void (*Update)(Entity*,const float);
+	void (*Update)(Entity*,World*,const float);
 	void (*Move)(Entity*,const float);
 	void (*Free)(Entity*);
 } Figure;
- 
-
-char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y);
-char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
-void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s);
 
 Figure Figure_New(
 	void* e,
-	void (*Update)(Entity*,const float),
+	void (*Update)(Entity*,World*,const float),
 	void (*Move)(Entity*,const float),
 	void (*Free)(Entity*)
 ){
@@ -69,10 +64,13 @@ Figure Figure_New(
 void Figure_Move(Figure* f,const float dir){//dir := [-1;1]
 	if(f->Move) f->Move(f->e,dir);
 }
-void Figure_Update(Figure* f,const float t){
-	if(f->Update) f->Update(f->e,t);
+void Figure_Update(Figure* f,World* w,const float t){
+	if(f->Update) f->Update(f->e,w,t);
 }
 void Figure_Collision(Figure* f,World* w){
+	if(f->e->WorldCollision)
+		f->e->WorldCollision(f->e,w);
+
     World_Collision(w,f->e);
 	World_EntityCollision(w,f->e);
 }

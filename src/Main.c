@@ -881,7 +881,7 @@ void Setup(AlxWindow* w){
 
 	mario = Figure_New(
 		Mario_New((Vec2){ 1.0f,25.0f }),
-		(void(*)(Entity*,const float))Mario_Update,
+		(void(*)(Entity*,World*,const float))Mario_Update,
 		(void(*)(Entity*,const float))Mario_Move,
 		(void(*)(Entity*))Mario_Free
 	);
@@ -1084,10 +1084,8 @@ void Update(AlxWindow* w){
 		}
 	}
 
-	
 	World_Update(&world,w->ElapsedTime);
-
-	Figure_Update(&mario,w->ElapsedTime);
+	Figure_Update(&mario,&world,w->ElapsedTime);
 	Figure_Collision(&mario,&world);
 
 	Clear(LIGHT_BLUE);
@@ -1110,7 +1108,7 @@ void Update(AlxWindow* w){
 		const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
 		const float x = 10.0f;
 
-		Renderr((preshow >> 1) * (sd.x * 1.1f),0.0f,sd.x + 10.0f,sd.y + 10.0f,RED);
+		RenderRect((preshow >> 1) * (sd.x * 1.1f),0.0f,sd.x + 10.0f,sd.y + 10.0f,RED);
 
 		for(int i = 0;i<preshow;i++){
 			const Block b = selected + i - (preshow >> 1);

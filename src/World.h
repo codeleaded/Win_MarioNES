@@ -323,6 +323,7 @@ typedef struct Entity {
 	Rect r;
 	Vec2 v;
 	Vec2 a;
+	void (*WorldCollision)(struct Entity*,World*);
 	char (*IsPickUp)(struct Entity*,World*,unsigned int,unsigned int);
 	char (*IsCollision)(struct Entity*,World*,unsigned int,unsigned int,Side);
 	void (*Collision)(struct Entity*,World*,unsigned int,unsigned int,Side);
@@ -552,7 +553,7 @@ void World_Update(World* w,float t){
 
 void World_Collision(World* w,Entity* src){
 	if(w->mode!=ANIMATIONBG_DG){
-		Vector rects = Vector_New(sizeof(Rect));
+		Vector rects = Vector_New(sizeof(TargetRect));
 		
 		float searchX = F32_Max(2.0f,2.0f * src->r.d.x);
 		float searchY = F32_Max(2.0f,2.0f * src->r.d.y);
@@ -568,7 +569,7 @@ void World_Collision(World* w,Entity* src){
 
 					if(Overlap_Rect_Rect(src->r,br)){
 						if(b!=BLOCK_NONE){
-							Vector_Push(&rects,&br);
+							Vector_Push(&rects,(TargetRect[]){ br,&src->r.p });
 						}
 					}
 				}
@@ -578,18 +579,18 @@ void World_Collision(World* w,Entity* src){
 		qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,TargetRect_Compare);
 
 		for(int i = 0;i<rects.size;i++) {
-    	    Rect r = *(Rect*)Vector_Get(&rects,i);
+    	    TargetRect* r = (TargetRect*)Vector_Get(&rects,i);
 
-			Side s = Side_Rect_Rect(src->r,r);
-			if(!src->IsPickUp(src,w,r.p.x,r.p.y) && src->IsCollision(src,w,r.p.x,r.p.y,s)){
-				Resolve_Rect_Rect_Side(&src->r,r,s);
+			Side s = Side_Rect_Rect(src->r,r->r);
+			if(!src->IsPickUp(src,w,r->r.p.x,r->r.p.y) && src->IsCollision(src,w,r->r.p.x,r->r.p.y,s)){
+				Resolve_Rect_Rect_Side(&src->r,r->r,s);
 
 				if(s==SIDE_TOP && src->v.y>0.0f) 	src->v.y = 0.0f;
 				if(s==SIDE_BOTTOM && src->v.y<0.0f) src->v.y = 0.0f;
 				if(s==SIDE_LEFT && src->v.x>0.0f) 	src->v.x = 0.0f;
 				if(s==SIDE_RIGHT && src->v.x<0.0f) 	src->v.x = 0.0f;
 
-				src->Collision(src,w,r.p.x,r.p.y,s);
+				src->Collision(src,w,r->r.p.x,r->r.p.y,s);
 			}
 		}
 

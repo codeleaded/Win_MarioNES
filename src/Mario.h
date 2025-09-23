@@ -108,12 +108,7 @@ void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
 		m->e.a.x = 0.0f;
 }
 void Mario_Update(Mario* m,World* w,float t){
-	m->jumping = ENTITY_FALSE;
-    m->ground = ENTITY_FALSE;
-	m->stamp = FIGURE_FALSE;
-	m->reverse = FIGURE_FALSE;
-
-	m->e.a.x = F32_Clamp(m->e.a.x,-MARIO_ACC_MAX,MARIO_ACC_MAX);
+    m->e.a.x = F32_Clamp(m->e.a.x,-MARIO_ACC_MAX,MARIO_ACC_MAX);
 	if(m->ground) 	m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_GRD,MARIO_VEL_MAX_GRD);
 	else			m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_AIR,MARIO_VEL_MAX_AIR);
 
@@ -131,11 +126,12 @@ void Mario_Update(Mario* m,World* w,float t){
 	
 	//m->e.v = Vec2_Add(m->e.v,Vec2_Mulf(m->e.a,t * (m->jumping ? 1.0f : 2.0f)));
 	m->e.r.p = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.v,t));
-
+}
+void Mario_WorldCollision(Mario* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
 	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
 
-    if(!m->dead && m->e.r.p.y>w->height){
+	if(!m->dead && m->e.r.p.y>w->height){
 		m->dead = ENTITY_TRUE;
 		m->e.v.y = -MARIO_VEL_DEAD;
 		m->e.r.p.y = w->height - m->e.r.d.y;
@@ -144,6 +140,11 @@ void Mario_Update(Mario* m,World* w,float t){
 		m->dead = ENTITY_FALSE;
 		m->e.r.p = w->spawn;
 	}
+
+	m->jumping = ENTITY_FALSE;
+    m->ground = ENTITY_FALSE;
+	m->stamp = FIGURE_FALSE;
+	m->reverse = FIGURE_FALSE;
 }
 char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 	Block b = World_Get(w,x,y);
@@ -280,6 +281,7 @@ Mario* Mario_New(Vec2 p){
 	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
 	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
 	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
