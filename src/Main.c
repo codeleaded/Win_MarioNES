@@ -53,31 +53,174 @@
 #define ENTITY_BOWLER					1U
 #define ENTITY_BOWSER					2U
 #define ENTITY_BRO						3U
-#define ENTITY_COOPA						4U
-#define ENTITY_EXPLOSION					5U
+#define ENTITY_COOPA					4U
+#define ENTITY_EXPLOSION				5U
 #define ENTITY_FIREBALL					6U
 #define ENTITY_FIREBEAM					7U
 #define ENTITY_FIREJUMPER				8U
 #define ENTITY_FISH						9U
-#define ENTITY_GUMBA						10U
+#define ENTITY_GUMBA					10U
 #define ENTITY_HAMMER					11U
 #define ENTITY_LAKITU					12U
-#define ENTITY_PLANT						13U
+#define ENTITY_PLANT					13U
 #define ENTITY_PLANT_UG					14U
-#define ENTITY_SPIKE						15U
-#define ENTITY_SQUID						16U
-#define ENTITY_WILLI						17U
+#define ENTITY_SPIKE					15U
+#define ENTITY_SQUID					16U
+#define ENTITY_WILLI					17U
 
 typedef struct Bowler {
 	Entity e;
 } Bowler;
-
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
 	b.e.id = ENTITY_BOWLER;
 	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
 	Bowler* hb = malloc(sizeof(Bowler));
 	memcpy(hb,&b,sizeof(Bowler));
+	return hb;
+}
+
+typedef struct Bowser {
+	Entity e;
+} Bowser;
+Bowser* Bowser_New(Vec2 p){
+	Bowser b;
+	b.e.id = ENTITY_BOWSER;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Bowser* hb = malloc(sizeof(Bowser));
+	memcpy(hb,&b,sizeof(Bowser));
+	return hb;
+}
+
+typedef struct Bro {
+	Entity e;
+} Bro;
+Bro* Bro_New(Vec2 p){
+	Bro b;
+	b.e.id = ENTITY_BRO;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Bro* hb = malloc(sizeof(Bro));
+	memcpy(hb,&b,sizeof(Bro));
+	return hb;
+}
+
+typedef struct Coopa {
+	Entity e;
+} Coopa;
+Coopa* Coopa_New(Vec2 p){
+	Coopa b;
+	b.e.id = ENTITY_COOPA;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Coopa* hb = malloc(sizeof(Coopa));
+	memcpy(hb,&b,sizeof(Coopa));
+	return hb;
+}
+
+typedef struct FireJumper {
+	Entity e;
+} FireJumper;
+FireJumper* FireJumper_New(Vec2 p){
+	FireJumper b;
+	b.e.id = ENTITY_FIREJUMPER;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	FireJumper* hb = malloc(sizeof(FireJumper));
+	memcpy(hb,&b,sizeof(FireJumper));
+	return hb;
+}
+
+typedef struct Fish {
+	Entity e;
+} Fish;
+Fish* Fish_New(Vec2 p){
+	Fish b;
+	b.e.id = ENTITY_FISH;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Fish* hb = malloc(sizeof(Fish));
+	memcpy(hb,&b,sizeof(Fish));
+	return hb;
+}
+
+typedef struct Gumba {
+	Entity e;
+} Gumba;
+Gumba* Gumba_New(Vec2 p){
+	Gumba b;
+	b.e.id = ENTITY_GUMBA;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Gumba* hb = malloc(sizeof(Gumba));
+	memcpy(hb,&b,sizeof(Gumba));
+	return hb;
+}
+
+typedef struct Lakitu {
+	Entity e;
+} Lakitu;
+Lakitu* Lakitu_New(Vec2 p){
+	Lakitu b;
+	b.e.id = ENTITY_LAKITU;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Lakitu* hb = malloc(sizeof(Lakitu));
+	memcpy(hb,&b,sizeof(Lakitu));
+	return hb;
+}
+
+typedef struct PlantUG {
+	Entity e;
+} PlantUG;
+PlantUG* PlantUG_New(Vec2 p){
+	PlantUG b;
+	b.e.id = ENTITY_PLANT_UG;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	PlantUG* hb = malloc(sizeof(PlantUG));
+	memcpy(hb,&b,sizeof(PlantUG));
+	return hb;
+}
+
+typedef struct Plant {
+	Entity e;
+} Plant;
+Plant* Plant_New(Vec2 p){
+	Plant b;
+	b.e.id = ENTITY_PLANT;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Plant* hb = malloc(sizeof(Plant));
+	memcpy(hb,&b,sizeof(Plant));
+	return hb;
+}
+
+typedef struct Spike {
+	Entity e;
+} Spike;
+Spike* Spike_New(Vec2 p){
+	Spike b;
+	b.e.id = ENTITY_SPIKE;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Spike* hb = malloc(sizeof(Spike));
+	memcpy(hb,&b,sizeof(Spike));
+	return hb;
+}
+
+typedef struct Squid {
+	Entity e;
+} Squid;
+Squid* Squid_New(Vec2 p){
+	Squid b;
+	b.e.id = ENTITY_SQUID;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Squid* hb = malloc(sizeof(Squid));
+	memcpy(hb,&b,sizeof(Squid));
+	return hb;
+}
+
+typedef struct Willi {
+	Entity e;
+} Willi;
+Willi* Willi_New(Vec2 p){
+	Willi b;
+	b.e.id = ENTITY_WILLI;
+	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	Willi* hb = malloc(sizeof(Willi));
+	memcpy(hb,&b,sizeof(Willi));
 	return hb;
 }
 
@@ -138,16 +281,36 @@ char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned i
 	
 	Block b = World_Get(w,x,y);
 
-	if(b==BLOCK_PODEST) 		return s==SIDE_TOP && f->v.y>0.0f;
-	else if(b==BLOCK_FENCE) 	return 0;
-	else if(b==BLOCK_CLOUD) 	return 0;
-	else if(b==BLOCK_BUSH) 		return 0;
-	else if(b==BLOCK_FLAG) 		return 0;
-	else if(b==BLOCK_CASTLE) 	return 0;
-	else if(b==BLOCK_GRASFAKE) 	return 0;
-	else if(b==BLOCK_TREE) 		return 0;
-	else if(b==BLOCK_SNOWTREE) 	return 0;
-	else if(b==BLOCK_BACKTREE) 	return s==SIDE_TOP && f->v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && f->v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && f->v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANT_UG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
 	return 1;
 }
 void World_Figure_Block_Collision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
@@ -191,88 +354,77 @@ Block World_Std_Mapper(char c){
 		case 'R':	return BLOCK_ROCKET;
 		case '%':	return BLOCK_SPAWN;
 		case 'B':	return BLOCK_SPAWN_BOWLER;
-		//case '.': return BLOCK_NONE;
-		//case 'e': return BLOCK_DIRT;
-		//case 'g': return BLOCK_GRAS;
-		//case '#': return BLOCK_BRICK;
-		//case '!': return BLOCK_SOLID;
-		//case 'q': return BLOCK_CLOSE_QUEST_SS;
-		//case 'Q': return BLOCK_CLOSE_QUEST_FF;
-		//case 'o': return BLOCK_COIN;
-		//case 'p': return BLOCK_PODEST;
-		//case 'f': return BLOCK_FAKE;
-		//case 'c': return BLOCK_CHECK;
-		//case 'v': return BLOCK_VISITED;
-		//case 'z': return BLOCK_ZIEL;
-		//case ',': return BLOCK_TUBE;
-		//case 'u': return BLOCK_UP_ROHRE;
-		//case 'd': return BLOCK_DOWN_ROHRE;
-		//case '0': return BLOCK_REDPILZ;
-		//case '1': return BLOCK_GREENPILZ;
-		//case '2': return BLOCK_FIRE_FLOWER;
-		//case 'L': return BLOCK_BURG_LAVA;
-		//case 'B': return BLOCK_BURG_ERDE;
-		//case '=': return BLOCK_BURG_GRAS;
-		//case 'E': return BLOCK_OVER_ERDE;
-		//case 'G': return BLOCK_OVER_GRAS;
-		//case 'U': return BLOCK_OVER_UNVISITED_TILE;
-		//case 'R': return BLOCK_OVER_RED_TILE;
-		//case 'V': return BLOCK_OVER_VISITED_TILE;
-		//case '@': return BLOCK_STAR_COIN;	
-		//case 's': return BLOCK_STONE;
-		//case 'b': return BLOCK_STONE_BRICK;
-		//case 'M': return BLOCK_STONE_GRAS;
+		case 'W':	return BLOCK_SPAWN_BOWSER;
+		case 'O':	return BLOCK_SPAWN_BRO;
+		case 'C':	return BLOCK_SPAWN_COOPA;
+		case 'J':	return BLOCK_SPAWN_FIREJUMPER;
+		case 'H':	return BLOCK_SPAWN_FISH;
+		case 'G':	return BLOCK_SPAWN_GUMBA;
+		case 'L':	return BLOCK_SPAWN_LAKITU;
+		case 'U':	return BLOCK_SPAWN_PLANT_UG;
+		case 'P':	return BLOCK_SPAWN_PLANT;
+		case '^':	return BLOCK_SPAWN_SPIKE;
+		case 'Q':	return BLOCK_SPAWN_SQUID;
+		case 'I':	return BLOCK_SPAWN_WILLI;
 	}
 	return BLOCK_NONE;
 }
 char World_Std_MapperR(Block b){
 	switch (b){
-		case BLOCK_NONE:			return '.';
-		case BLOCK_GRAS:			return '_';
-		case BLOCK_BRICK:			return '#';
-		case BLOCK_CLOSE_QUEST_FF:	return 'F';
-		case BLOCK_CLOSE_QUEST_SS:	return 'S';
-		case BLOCK_COIN:			return 'o';
-		case BLOCK_PODEST:			return 'p';
-		case BLOCK_SOLID:			return '!';
-		case BLOCK_TUBE:			return '|';
-		case BLOCK_SILVERTUBE:		return '/';
-		case BLOCK_FIRE_FLOWER:		return 'f';
-		case BLOCK_SUPER_STAR:		return 's';
-		case BLOCK_BUSH:			return 'b';
-		case BLOCK_CASTLE:			return 'c';
-		case BLOCK_CLOUD:			return '~';
-		case BLOCK_FENCE:			return '+';
-		case BLOCK_FLAG:			return '$';
-		case BLOCK_GRASFAKE:		return '-';
-		case BLOCK_TREE:			return '(';
-		case BLOCK_SNOWTREE:		return ')';
-		case BLOCK_BACKTREE:		return '[';
-		case BLOCK_ROCKET:			return 'R';
-		case BLOCK_SPAWN:			return '%';
-		case BLOCK_SPAWN_BOWLER:	return 'B';
+		case BLOCK_NONE:				return '.';
+		case BLOCK_GRAS:				return '_';
+		case BLOCK_BRICK:				return '#';
+		case BLOCK_CLOSE_QUEST_FF:		return 'F';
+		case BLOCK_CLOSE_QUEST_SS:		return 'S';
+		case BLOCK_COIN:				return 'o';
+		case BLOCK_PODEST:				return 'p';
+		case BLOCK_SOLID:				return '!';
+		case BLOCK_TUBE:				return '|';
+		case BLOCK_SILVERTUBE:			return '/';
+		case BLOCK_FIRE_FLOWER:			return 'f';
+		case BLOCK_SUPER_STAR:			return 's';
+		case BLOCK_BUSH:				return 'b';
+		case BLOCK_CASTLE:				return 'c';
+		case BLOCK_CLOUD:				return '~';
+		case BLOCK_FENCE:				return '+';
+		case BLOCK_FLAG:				return '$';
+		case BLOCK_GRASFAKE:			return '-';
+		case BLOCK_TREE:				return '(';
+		case BLOCK_SNOWTREE:			return ')';
+		case BLOCK_BACKTREE:			return '[';
+		case BLOCK_ROCKET:				return 'R';
+		case BLOCK_SPAWN:				return '%';
+		case BLOCK_SPAWN_BOWLER:		return 'B';
+		case BLOCK_SPAWN_BOWSER:		return 'W';
+		case BLOCK_SPAWN_BRO:			return 'O';
+		case BLOCK_SPAWN_COOPA:			return 'C';
+		case BLOCK_SPAWN_FIREJUMPER:	return 'J';
+		case BLOCK_SPAWN_FISH:			return 'H';
+		case BLOCK_SPAWN_GUMBA:			return 'G';
+		case BLOCK_SPAWN_LAKITU:		return 'L';
+		case BLOCK_SPAWN_PLANT_UG:		return 'U';
+		case BLOCK_SPAWN_PLANT:			return 'P';
+		case BLOCK_SPAWN_SPIKE:			return '^';
+		case BLOCK_SPAWN_SQUID:			return 'Q';
+		case BLOCK_SPAWN_WILLI:			return 'I';
 	}
 	return '.';
 }
 void* World_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 	switch (st){
-		case ENTITY_BOWLER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_BOWSER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_BRO:			*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_COOPA:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_EXPLOSION:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_FIREBALL:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_FIREBEAM:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_FIREJUMPER:	*size = sizeof(Bowler); return Bowler_New(p);	
-		case ENTITY_FISH:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_GUMBA:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_HAMMER:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_LAKITU:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_PLANT:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_PLANT_UG:	*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_SPIKE:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_SQUID:		*size = sizeof(Bowler); return Bowler_New(p);
-		case ENTITY_WILLI:		*size = sizeof(Bowler); return Bowler_New(p);
+		case ENTITY_BOWLER:		*size = sizeof(Bowler); 	return Bowler_New(p);
+		case ENTITY_BOWSER:		*size = sizeof(Bowser); 	return Bowser_New(p);
+		case ENTITY_BRO:		*size = sizeof(Bro); 		return Bro_New(p);
+		case ENTITY_COOPA:		*size = sizeof(Coopa);		return Coopa_New(p);
+		case ENTITY_FIREJUMPER:	*size = sizeof(FireJumper); return FireJumper_New(p);
+		case ENTITY_FISH:		*size = sizeof(Fish); 		return Fish_New(p);
+		case ENTITY_GUMBA:		*size = sizeof(Gumba); 		return Gumba_New(p);
+		case ENTITY_LAKITU:		*size = sizeof(Lakitu); 	return Lakitu_New(p);	
+		case ENTITY_PLANT_UG:	*size = sizeof(PlantUG); 	return PlantUG_New(p);
+		case ENTITY_PLANT:		*size = sizeof(Plant); 		return Plant_New(p);
+		case ENTITY_SPIKE:		*size = sizeof(Spike); 		return Spike_New(p);
+		case ENTITY_SQUID:		*size = sizeof(Squid);	 	return Squid_New(p);
+		case ENTITY_WILLI:		*size = sizeof(Willi); 		return Willi_New(p);
 	}
 	return NULL;
 }
@@ -978,7 +1130,7 @@ SubSprite World_Lakitu_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite World_Plant_UG_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite World_PlantUG_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
@@ -1055,6 +1207,251 @@ void Bowler_Free(void* v){
 	Entity* e = (Entity*)v;
 }
 
+void Bowser_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Bowser_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Bowser_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Bro_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Bro_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Bro_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Coopa_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Coopa_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Coopa_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void FireJumper_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite FireJumper_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void FireJumper_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Fish_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Fish_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Fish_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Gumba_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Gumba_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Gumba_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Lakitu_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Lakitu_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Lakitu_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void PlantUG_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite PlantUG_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void PlantUG_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Plant_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Plant_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Plant_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Spike_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Spike_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Spike_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Squid_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Squid_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Squid_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+void Willi_Update(void* v,float t){
+	Entity* e = (Entity*)v;
+}
+SubSprite Willi_GetRender(void* v,EntityAtlas* ea){
+	Entity* e = (Entity*)v;
+
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Willi_Free(void* v){
+	Entity* e = (Entity*)v;
+}
+
+
+
+
+
+
 
 int Rect_Rect_Compare(const void* e1,const void* e2) {
 	Rect r1 = *(Rect*)e1;
@@ -1110,7 +1507,7 @@ void Setup(AlxWindow* w){
 		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_FG,ENTITY_FISH,4,3,World_Fish_Get),
 		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_FG,ENTITY_GUMBA,3,3,World_Gumba_Get),
 		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_FG,ENTITY_LAKITU,3,3,World_Lakitu_Get),
-		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,2,1,World_Plant_UG_Get),
+		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,2,1,World_PlantUG_Get),
 		Animation_Make_Atlas("./data/Entity/Plant.png",ANIMATIONBG_FG,ENTITY_PLANT,2,1,World_PLant_Get),
 		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_FG,ENTITY_SPIKE,6,1,World_Spike_Get),
 		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_FG,ENTITY_SQUID,2,1,World_Squid_Get),
@@ -1118,18 +1515,18 @@ void Setup(AlxWindow* w){
 		Animation_Null()
 	},(EntityAtlas[]){
 		EntityAtlas_New("./data/Entity/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
-		//EntityAtlas_New("./data/Entity/Bowser.png",8,1,Bowser_Update,Bowser_GetRender,Bowser_Free),
-		//EntityAtlas_New("./data/Entity/Bro.png",6,2,Bro_Update,Bro_GetRender,Bro_Free),
-		//EntityAtlas_New("./data/Entity/Coopa.png",10,3,Coopa_Update,Coopa_GetRender,Coopa_Free),
-		//EntityAtlas_New("./data/Entity/FireJumper.png",2,1,FireJumper_Update,FireJumper_GetRender,FireJumper_Free),
-		//EntityAtlas_New("./data/Entity/Fish.png",4,3,Fish_Update,Fish_GetRender,Fish_Free),
-		//EntityAtlas_New("./data/Entity/Gumba.png",3,3,Gumba_Update,Gumba_GetRender,Gumba_Free),
-		//EntityAtlas_New("./data/Entity/Lakitu.png",3,3,Lakitu_Update,Lakitu_GetRender,Lakitu_Free),
-		//EntityAtlas_New("./data/Entity/Plant_UG.png",2,1,Plant_UG_Update,Plant_UG_GetRender,Plant_UG_Free),
-		//EntityAtlas_New("./data/Entity/PLant.png",2,1,PLant_Update,PLant_GetRender,PLant_Free),
-		//EntityAtlas_New("./data/Entity/Spike.png",6,1,Spike_Update,Spike_GetRender,Spike_Free),
-		//EntityAtlas_New("./data/Entity/Squid.png",2,1,Squid_Update,Squid_GetRender,Squid_Free),
-		//EntityAtlas_New("./data/Entity/Willi.png",2,1,Willi_Update,Willi_GetRender,Willi_Free),
+		EntityAtlas_New("./data/Entity/Bowser.png",8,1,Bowser_Update,Bowser_GetRender,Bowser_Free),
+		EntityAtlas_New("./data/Entity/Bro.png",6,2,Bro_Update,Bro_GetRender,Bro_Free),
+		EntityAtlas_New("./data/Entity/Coopa.png",10,3,Coopa_Update,Coopa_GetRender,Coopa_Free),
+		EntityAtlas_New("./data/Entity/FireJumper.png",2,1,FireJumper_Update,FireJumper_GetRender,FireJumper_Free),
+		EntityAtlas_New("./data/Entity/Fish.png",4,3,Fish_Update,Fish_GetRender,Fish_Free),
+		EntityAtlas_New("./data/Entity/Gumba.png",3,3,Gumba_Update,Gumba_GetRender,Gumba_Free),
+		EntityAtlas_New("./data/Entity/Lakitu.png",3,3,Lakitu_Update,Lakitu_GetRender,Lakitu_Free),
+		EntityAtlas_New("./data/Entity/Plant_UG.png",2,1,PlantUG_Update,PlantUG_GetRender,PlantUG_Free),
+		EntityAtlas_New("./data/Entity/Plant.png",2,1,Plant_Update,Plant_GetRender,Plant_Free),
+		EntityAtlas_New("./data/Entity/Spike.png",6,1,Spike_Update,Spike_GetRender,Spike_Free),
+		EntityAtlas_New("./data/Entity/Squid.png",2,1,Squid_Update,Squid_GetRender,Squid_Free),
+		EntityAtlas_New("./data/Entity/Willi.png",2,1,Willi_Update,Willi_GetRender,Willi_Free),
 		EntityAtlas_Null()
 	});
 
@@ -1179,12 +1576,11 @@ void Update(AlxWindow* w){
 	}
 
 	if(Stroke(ALX_KEY_Y).PRESSED){
-		CStr path = CStr_Format("./data/World/Level%d.txt",level);
-
-		World_Load(&world,path,World_Std_Mapper);
-		mario.r.p = World_Start(&world,BLOCK_SPAWN,World_Std_SpawnMapper);
+		//CStr path = CStr_Format("./data/World/Level%d.txt",level);
+		//World_Load(&world,path,World_Std_Mapper);
+		//CStr_Free(&path);
 		
-		CStr_Free(&path);
+		mario.r.p = World_Start(&world,BLOCK_SPAWN,World_Std_SpawnMapper);
 	}
 
 	if(Stroke(ALX_KEY_J).PRESSED){
@@ -1302,12 +1698,9 @@ void Update(AlxWindow* w){
 		for(int i = 0;i<preshow;i++){
 			const Block b = selected + i - (preshow >> 1);
 
-			if(b!=BLOCK_NONE){
+			if(World_isBlock(&world,b)){
 				SubSprite ss = World_Img(&world,b,0.0f,0.0f);
-
-				if(ss.sp){
-					RenderSubSpriteAlpha(ss.sp,x + i * (ss.dx * 1.1f),5.0f,ss.ox,ss.oy,ss.dx,ss.dy);
-				}
+				if(ss.sp) RenderSubSpriteAlpha(ss.sp,x + i * (ss.dx * 1.1f),5.0f,ss.ox,ss.oy,ss.dx,ss.dy);
 			}
 		}
 	}

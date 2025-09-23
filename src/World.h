@@ -369,7 +369,7 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea) ea->Free(e);
 	}
-	PVector_Free(&w->entityies);
+	PVector_Clear(&w->entityies);
 
 	for(int y = 0;y<w->height;y++){
 		for(int x = 0;x<w->width;x++){
