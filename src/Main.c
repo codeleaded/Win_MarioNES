@@ -214,11 +214,13 @@ Squid* Squid_New(Vec2 p){
 
 typedef struct Willi {
 	Entity e;
+	Vec2 v;
 } Willi;
 Willi* Willi_New(Vec2 p){
 	Willi b;
 	b.e.id = ENTITY_WILLI;
 	b.e.rect = (Rect){ p,{ 1.0f,1.0f } };
+	b.v = (Vec2){ -1.0f,0.0f };
 	Willi* hb = malloc(sizeof(Willi));
 	memcpy(hb,&b,sizeof(Willi));
 	return hb;
@@ -231,14 +233,11 @@ Figure mario;
 World world;
 TransformedView tv;
 AudioPlayer ap;
-int state = 0;
 unsigned int level = 0;
 Block selected = BLOCK_NONE;
 PS4_Controller ps4c;
 
 char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int y){
-	if(state==1) return 0;
-	
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_COIN){
@@ -277,8 +276,6 @@ char World_Figure_Block_IsPickUp(World* w,Figure* f,unsigned int x,unsigned int 
 	return 0;
 }
 char World_Figure_Block_IsCollision(World* w,Figure* f,unsigned int x,unsigned int y,Side s){
-	if(state==1) return 0;
-	
 	Block b = World_Get(w,x,y);
 
 	switch(b){
@@ -1428,19 +1425,19 @@ void Squid_Free(void* v){
 }
 
 void Willi_Update(void* v,float t){
-	Entity* e = (Entity*)v;
+	Willi* e = (Willi*)v;
+	e->e.rect.p = Vec2_Add(e->e.rect.p,Vec2_Mulf(e->v,t));
 }
 SubSprite Willi_GetRender(void* v,EntityAtlas* ea){
-	Entity* e = (Entity*)v;
+	Willi* e = (Willi*)v;
 
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
 	
+	if(e->v.x > 0.0f) ox = 1U;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 void Willi_Free(void* v){
@@ -1476,42 +1473,43 @@ void Setup(AlxWindow* w){
 
 	level = 0U;
 	world = World_Make("./data/World/Level0.txt",World_Std_Mapper,(Animation[]){
-		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_FG,ENTITY_NONE),
-		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_FG,ENTITY_NONE),
-		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_FG,ENTITY_NONE,3,1,1.0),
-		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_FG,ENTITY_NONE,3,1,1.0),
-		Animation_Make_AnimationAtlas("./data/Blocks/Coin.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,1.0),
-		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_FG,ENTITY_NONE),
-		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_FG,ENTITY_NONE),
-		Animation_Make_Atlas("./data/Blocks/Tube.png",ANIMATIONBG_FG,ENTITY_NONE,16,1,World_Tube_Get),
-		Animation_Make_Atlas("./data/Blocks/SilverTube.png",ANIMATIONBG_FG,ENTITY_NONE,16,1,World_SilverTube_Get),
-		Animation_Make_AnimationAtlas("./data/Blocks/FireFlower.png",ANIMATIONBG_FG,ENTITY_NONE,4,2,1.0),
-		Animation_Make_AnimationAtlas("./data/Blocks/SuperStar.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,1.0),
-		Animation_Make_Atlas("./data/Blocks/Bush.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_Bush_Get),
-		Animation_Make_Atlas("./data/Blocks/Castle.png",ANIMATIONBG_BG,ENTITY_NONE,6,1,World_Castle_Get),
-		Animation_Make_Atlas("./data/Blocks/Cloud.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_Cloud_Get),
-		Animation_Make_Atlas("./data/Blocks/Fence.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,World_Fence_Get),
-		Animation_Make_Atlas("./data/Blocks/Flag.png",ANIMATIONBG_BG,ENTITY_NONE,2,1,World_Flag_Get),
 		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_BG,ENTITY_NONE),
-		Animation_Make_Atlas("./data/Blocks/Tree.png",ANIMATIONBG_FG,ENTITY_NONE,7,1,World_Tree_Get),
-		Animation_Make_Atlas("./data/Blocks/SnowTree.png",ANIMATIONBG_BG,ENTITY_NONE,7,1,World_SnowTree_Get),
-		Animation_Make_Atlas("./data/Blocks/BackTree.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_BackTree_Get),
-		Animation_Make_Atlas("./data/Blocks/Rocket.png",ANIMATIONBG_FG,ENTITY_NONE,2,1,World_Rocket_Get),
-		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_Sprite("./data/Blocks/Brick.png",ANIMATIONBG_BG,ENTITY_NONE),
+		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_BG,ENTITY_NONE,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/QuestionMark.png",ANIMATIONBG_BG,ENTITY_NONE,3,1,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/Coin.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,1.0),
+		Animation_Make_Sprite("./data/Blocks/Podest.png",ANIMATIONBG_BG,ENTITY_NONE),
+		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_BG,ENTITY_NONE),
+		Animation_Make_Atlas("./data/Blocks/Tube.png",ANIMATIONBG_BG,ENTITY_NONE,16,1,World_Tube_Get),
+		Animation_Make_Atlas("./data/Blocks/SilverTube.png",ANIMATIONBG_BG,ENTITY_NONE,16,1,World_SilverTube_Get),
+		Animation_Make_AnimationAtlas("./data/Blocks/FireFlower.png",ANIMATIONBG_BG,ENTITY_NONE,4,2,1.0),
+		Animation_Make_AnimationAtlas("./data/Blocks/SuperStar.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,1.0),
+		Animation_Make_Atlas("./data/Blocks/Bush.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,World_Bush_Get),
+		Animation_Make_Atlas("./data/Blocks/Castle.png",ANIMATIONBG_FG,ENTITY_NONE,6,1,World_Castle_Get),
+		Animation_Make_Atlas("./data/Blocks/Cloud.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,World_Cloud_Get),
+		Animation_Make_Atlas("./data/Blocks/Fence.png",ANIMATIONBG_FG,ENTITY_NONE,4,1,World_Fence_Get),
+		Animation_Make_Atlas("./data/Blocks/Flag.png",ANIMATIONBG_FG,ENTITY_NONE,2,1,World_Flag_Get),
+		Animation_Make_Sprite("./data/Blocks/Dirt.png",ANIMATIONBG_FG,ENTITY_NONE),
+		Animation_Make_Atlas("./data/Blocks/Tree.png",ANIMATIONBG_BG,ENTITY_NONE,7,1,World_Tree_Get),
+		Animation_Make_Atlas("./data/Blocks/SnowTree.png",ANIMATIONBG_FG,ENTITY_NONE,7,1,World_SnowTree_Get),
+		Animation_Make_Atlas("./data/Blocks/BackTree.png",ANIMATIONBG_BG,ENTITY_NONE,4,1,World_BackTree_Get),
+		Animation_Make_Atlas("./data/Blocks/Rocket.png",ANIMATIONBG_BG,ENTITY_NONE,2,1,World_Rocket_Get),
 
-		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_FG,ENTITY_BOWLER,5,3,World_Bowler_Get),
-		Animation_Make_Atlas("./data/Entity/Bowser.png",ANIMATIONBG_FG,ENTITY_BOWSER,8,1,World_Bowser_Get),
-		Animation_Make_Atlas("./data/Entity/Bro.png",ANIMATIONBG_FG,ENTITY_BRO,6,2,World_Bro_Get),
-		Animation_Make_Atlas("./data/Entity/Coopa.png",ANIMATIONBG_FG,ENTITY_COOPA,10,3,World_Coopa_Get),
-		Animation_Make_Atlas("./data/Entity/FireJumper.png",ANIMATIONBG_FG,ENTITY_FIREJUMPER,2,1,World_FireJumper_Get),
-		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_FG,ENTITY_FISH,4,3,World_Fish_Get),
-		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_FG,ENTITY_GUMBA,3,3,World_Gumba_Get),
-		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_FG,ENTITY_LAKITU,3,3,World_Lakitu_Get),
-		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_FG,ENTITY_PLANT_UG,2,1,World_PlantUG_Get),
-		Animation_Make_Atlas("./data/Entity/Plant.png",ANIMATIONBG_FG,ENTITY_PLANT,2,1,World_PLant_Get),
-		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_FG,ENTITY_SPIKE,6,1,World_Spike_Get),
-		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_FG,ENTITY_SQUID,2,1,World_Squid_Get),
-		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_FG,ENTITY_WILLI,2,1,World_Willi_Get),
+		Animation_Make_Sprite("./data/Blocks/Solid.png",ANIMATIONBG_DG,ENTITY_NONE),
+
+		Animation_Make_Atlas("./data/Entity/Bowler.png",ANIMATIONBG_DG,ENTITY_BOWLER,5,3,World_Bowler_Get),
+		Animation_Make_Atlas("./data/Entity/Bowser.png",ANIMATIONBG_DG,ENTITY_BOWSER,8,1,World_Bowser_Get),
+		Animation_Make_Atlas("./data/Entity/Bro.png",ANIMATIONBG_DG,ENTITY_BRO,6,2,World_Bro_Get),
+		Animation_Make_Atlas("./data/Entity/Coopa.png",ANIMATIONBG_DG,ENTITY_COOPA,10,3,World_Coopa_Get),
+		Animation_Make_Atlas("./data/Entity/FireJumper.png",ANIMATIONBG_DG,ENTITY_FIREJUMPER,2,1,World_FireJumper_Get),
+		Animation_Make_Atlas("./data/Entity/Fish.png",ANIMATIONBG_DG,ENTITY_FISH,4,3,World_Fish_Get),
+		Animation_Make_Atlas("./data/Entity/Gumba.png",ANIMATIONBG_DG,ENTITY_GUMBA,3,3,World_Gumba_Get),
+		Animation_Make_Atlas("./data/Entity/Lakitu.png",ANIMATIONBG_DG,ENTITY_LAKITU,3,3,World_Lakitu_Get),
+		Animation_Make_Atlas("./data/Entity/Plant_UG.png",ANIMATIONBG_DG,ENTITY_PLANT_UG,2,1,World_PlantUG_Get),
+		Animation_Make_Atlas("./data/Entity/Plant.png",ANIMATIONBG_DG,ENTITY_PLANT,2,1,World_PLant_Get),
+		Animation_Make_Atlas("./data/Entity/Spike.png",ANIMATIONBG_DG,ENTITY_SPIKE,6,1,World_Spike_Get),
+		Animation_Make_Atlas("./data/Entity/Squid.png",ANIMATIONBG_DG,ENTITY_SQUID,2,1,World_Squid_Get),
+		Animation_Make_Atlas("./data/Entity/Willi.png",ANIMATIONBG_DG,ENTITY_WILLI,2,1,World_Willi_Get),
 		Animation_Null()
 	},(EntityAtlas[]){
 		EntityAtlas_New("./data/Entity/Bowler.png",5,3,Bowler_Update,Bowler_GetRender,Bowler_Free),
@@ -1546,7 +1544,7 @@ void Update(AlxWindow* w){
 	}
 
 	if(Stroke(ALX_KEY_Q).PRESSED){
-		state = !state;
+		world.mode = world.mode==ANIMATIONBG_DG ? ANIMATIONBG_ALL : ANIMATIONBG_DG;
 	}
 	if(Stroke(ALX_KEY_1).PRESSED){
 		if(selected>0U) selected--;
@@ -1596,7 +1594,7 @@ void Update(AlxWindow* w){
 		World_Resize(&world,world.width,world.height + 1);
 	}
 
-	if(state==0){
+	if(world.mode!=ANIMATIONBG_DG){
 		mario.a.y = FIGURE_ACC_GRAVITY;
 		
 		const signed int abs = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX);
@@ -1688,7 +1686,7 @@ void Update(AlxWindow* w){
 	// 	String_Free(&str);
 	// }
 
-	if(state==1){
+	if(world.mode==ANIMATIONBG_DG){
 		const int preshow = 7;
 		const Vec2 sd = TransformedView_WorldScreenLength(&tv,(Vec2){ 1.0f,1.0f });
 		const float x = 10.0f;

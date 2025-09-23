@@ -16,6 +16,7 @@
 
 typedef unsigned char Block;
 typedef unsigned char AnimationType;
+typedef unsigned char AnimationBg;
 typedef unsigned short SpawnType;
 
 #define ANIMATIONTYPE_NONE 					0
@@ -25,8 +26,11 @@ typedef unsigned short SpawnType;
 #define ANIMATIONTYPE_ANIMATIONATLAS   		4
 #define ANIMATIONTYPE_ANIMATION   			5
 
-#define ANIMATIONBG_FG 						0
+#define ANIMATIONBG_NONE 					0
 #define ANIMATIONBG_BG 						1
+#define ANIMATIONBG_FG 						2
+#define ANIMATIONBG_ALL 					3
+#define ANIMATIONBG_DG 						4
 
 #define WORLD_NEIGHBOUR_NONE 				0
 #define WORLD_NEIGHBOUR_TOP_LEFT 			1
@@ -308,6 +312,7 @@ typedef struct World{
 	Vector animations;//Vector<Animation>
 	Vector entityatlas;//Vector<EntityAtlas>
 	PVector entityies;//Vector<Entity>
+	AnimationBg mode;
 	Block* data;
 	unsigned short width;
 	unsigned short height;
@@ -318,6 +323,7 @@ World World_New(unsigned short width,unsigned short height){
 	w.animations = Vector_New(sizeof(Animation));
 	w.entityatlas = Vector_New(sizeof(EntityAtlas));
 	w.entityies = PVector_New();
+	w.mode = ANIMATIONBG_ALL;
 	if(width * height > 0U) w.data = (Block*)malloc(sizeof(Block) * width * height);
 	else 					w.data = NULL;
 	w.width = width;
@@ -394,7 +400,7 @@ Vec2 World_Start(World* w,Block spawner,void* (*Spawn)(Vec2,SpawnType,unsigned i
 					if(e){
 						PVector_Push(&w->entityies,e,size);
 						free(e);
-						w->data[y * w->width + x] = BLOCK_NONE;
+						//w->data[y * w->width + x] = BLOCK_NONE;
 					}
 				}
 			}
@@ -457,10 +463,20 @@ void World_Resize(World* w,unsigned int width,unsigned int height){
 char World_isBlock(World* w,Block b){
 	return b!=BLOCK_NONE && b - 1<w->animations.size;
 }
-char World_isBg(World* w,Block b){
+char World_isVisible(World* w,Block b,AnimationBg state){
 	if(World_isBlock(w,b)){
 		Animation* a = (Animation*)Vector_Get(&w->animations,b - 1);
-		return a->bg;
+		
+		return (
+			(state == ANIMATIONBG_FG && (
+				w->mode != ANIMATIONBG_DG &&
+				a->bg == ANIMATIONBG_FG
+			)) ||
+			(state == ANIMATIONBG_BG && (
+				(a->bg == ANIMATIONBG_BG) ||
+				(w->mode == ANIMATIONBG_DG)
+			))
+		);
 	}
 	return 0;
 }
@@ -541,7 +557,7 @@ void World_RenderFg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 		for(int x = tl.x;x<br.x;x++){
 			const Block b = World_Get(w,x,y);
 
-			if(b!=BLOCK_NONE && World_isBg(w,b)){
+			if(b!=BLOCK_NONE && World_isVisible(w,b,ANIMATIONBG_FG)){
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				SubSprite ss = World_Get_Img(w,x,y);
 				if(ss.sp)
@@ -561,7 +577,7 @@ void World_RenderBg(World* w,TransformedView* tv,Pixel* out,unsigned int width,u
 		for(int x = tl.x;x<br.x;x++){
 			const Block b = World_Get(w,x,y);
 			
-			if(b!=BLOCK_NONE && !World_isBg(w,b)){
+			if(b!=BLOCK_NONE && World_isVisible(w,b,ANIMATIONBG_BG)){
 				const Vec2 sc = TransformedView_WorldScreenPos(tv,(Vec2){ x,y });
 				SubSprite ss = World_Get_Img(w,x,y);
 				if(ss.sp)

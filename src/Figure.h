@@ -129,61 +129,62 @@ void Figure_Update(Figure* f,const float t){
 	f->jumping = FIGURE_FALSE;
 }
 void Figure_Collision(Figure* f,World* w,int (*Rect_Rect_Compare)(const void*,const void*)){
-	Vector rects = Vector_New(sizeof(Rect));
+    f->ground = FIGURE_FALSE;
 	
-	float searchX = F32_Max(2.0f,2.0f * f->r.d.x);
-	float searchY = F32_Max(2.0f,2.0f * f->r.d.y);
+	if(w->mode!=ANIMATIONBG_DG){
+		Vector rects = Vector_New(sizeof(Rect));
+		
+		float searchX = F32_Max(2.0f,2.0f * f->r.d.x);
+		float searchY = F32_Max(2.0f,2.0f * f->r.d.y);
 
-	for(float x = -searchX;x<searchX;x+=1.0f) {
-		for(float y = -searchY;y<searchY;y+=1.0f) {
-			int sx = (int)(f->r.p.x + x);
-			int sy = (int)(f->r.p.y + y);
-			
-            if(sy>=0 && sy<w->height && sx>=0 && sx<w->width) {
-                Block b = World_Get(w,sx,sy);
-                Rect br = { (Vec2){ sx,sy },(Vec2){ 1.0f,1.0f } };
+		for(float x = -searchX;x<searchX;x+=1.0f) {
+			for(float y = -searchY;y<searchY;y+=1.0f) {
+				int sx = (int)(f->r.p.x + x);
+				int sy = (int)(f->r.p.y + y);
 
-				if(Overlap_Rect_Rect(f->r,br)){
-					if(b!=BLOCK_NONE){
-						Vector_Push(&rects,&br);
+    	        if(sy>=0 && sy<w->height && sx>=0 && sx<w->width) {
+    	            Block b = World_Get(w,sx,sy);
+    	            Rect br = { (Vec2){ sx,sy },(Vec2){ 1.0f,1.0f } };
+
+					if(Overlap_Rect_Rect(f->r,br)){
+						if(b!=BLOCK_NONE){
+							Vector_Push(&rects,&br);
+						}
 					}
 				}
 			}
 		}
-	}
-	
-    f->ground = FIGURE_FALSE;
-	
-	qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,Rect_Rect_Compare);
-	
-	for(int i = 0;i<rects.size;i++) {
-        Rect rect = *(Rect*)Vector_Get(&rects,i);
-		
-		Side s = Side_Rect_Rect(f->r,rect);
-		if(!World_Figure_Block_IsPickUp(w,f,rect.p.x,rect.p.y) && World_Figure_Block_IsCollision(w,f,rect.p.x,rect.p.y,s)){
-			Resolve_Rect_Rect_Side(&f->r,rect,s);
 
-			if(s==SIDE_TOP) 					f->ground = FIGURE_TRUE;
-			if(s==SIDE_TOP && f->v.y>0.0f) 		f->v.y = 0.0f;
-			if(s==SIDE_BOTTOM && f->v.y<0.0f) 	f->v.y = 0.0f;
-			if(s==SIDE_LEFT && f->v.x>0.0f) 	f->v.x = 0.0f;
-			if(s==SIDE_RIGHT && f->v.x<0.0f) 	f->v.x = 0.0f;
+		qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,Rect_Rect_Compare);
 
-			World_Figure_Block_Collision(w,f,rect.p.x,rect.p.y,s);
+		for(int i = 0;i<rects.size;i++) {
+    	    Rect rect = *(Rect*)Vector_Get(&rects,i);
+
+			Side s = Side_Rect_Rect(f->r,rect);
+			if(!World_Figure_Block_IsPickUp(w,f,rect.p.x,rect.p.y) && World_Figure_Block_IsCollision(w,f,rect.p.x,rect.p.y,s)){
+				Resolve_Rect_Rect_Side(&f->r,rect,s);
+
+				if(s==SIDE_TOP) 					f->ground = FIGURE_TRUE;
+				if(s==SIDE_TOP && f->v.y>0.0f) 		f->v.y = 0.0f;
+				if(s==SIDE_BOTTOM && f->v.y<0.0f) 	f->v.y = 0.0f;
+				if(s==SIDE_LEFT && f->v.x>0.0f) 	f->v.x = 0.0f;
+				if(s==SIDE_RIGHT && f->v.x<0.0f) 	f->v.x = 0.0f;
+
+				World_Figure_Block_Collision(w,f,rect.p.x,rect.p.y,s);
+			}
 		}
-	}
 
-	Vector_Free(&rects);
+		Vector_Free(&rects);
 
-
-	if(!f->dead && f->r.p.y>w->height){
-		f->dead = FIGURE_TRUE;
-		f->v.y = -FIGURE_VEL_DEAD;
-		f->r.p.y = w->height - f->r.d.y;
-	}
-	if(f->dead && f->r.p.y>w->height){
-		f->dead = FIGURE_FALSE;
-		Figure_Respawn(f);
+		if(!f->dead && f->r.p.y>w->height){
+			f->dead = FIGURE_TRUE;
+			f->v.y = -FIGURE_VEL_DEAD;
+			f->r.p.y = w->height - f->r.d.y;
+		}
+		if(f->dead && f->r.p.y>w->height){
+			f->dead = FIGURE_FALSE;
+			Figure_Respawn(f);
+		}
 	}
 }
 Rect Figure_Get_Img(Figure* f){
