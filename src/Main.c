@@ -135,15 +135,15 @@ void Update(AlxWindow* w){
 		if(Stroke(ALX_KEY_A).DOWN){
 			if(world.mario.e->id==ENTITY_MARIO){
 				if(world.mario.e->v.x>0.0f) 		((Mario*)world.mario.e)->reverse = ENTITY_TRUE;
-				if(((Mario*)world.mario.e)->ground)	world.mario.e->a.x = -MARIO_ACC_GRD;
-			}else
-				world.mario.e->a.x = -MARIO_ACC_AIR;
+			}
+			if(((Mario*)world.mario.e)->ground)	world.mario.e->a.x = -MARIO_ACC_GRD;
+			else								world.mario.e->a.x = -MARIO_ACC_AIR;
 		}else if(Stroke(ALX_KEY_D).DOWN){
 			if(world.mario.e->id==ENTITY_MARIO){
 				if(world.mario.e->v.x<0.0f)			((Mario*)world.mario.e)->reverse = ENTITY_TRUE;
-				if(((Mario*)world.mario.e)->ground)	world.mario.e->a.x = MARIO_ACC_GRD;
-			}else
-				world.mario.e->a.x = MARIO_ACC_AIR;
+			}
+			if(((Mario*)world.mario.e)->ground)	world.mario.e->a.x = MARIO_ACC_GRD;
+			else 								world.mario.e->a.x = MARIO_ACC_AIR;
 		}else{
 			world.mario.e->v.x =  0.0f;
 			world.mario.e->a.x =  0.0f;

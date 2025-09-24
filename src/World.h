@@ -633,7 +633,7 @@ void World_Collision(World* w,Entity* src){
     	    TargetRect* r = (TargetRect*)Vector_Get(&rects,i);
 
 			Side s = Side_Rect_Rect(src->r,r->r);
-			if(!src->IsPickUp(src,w,r->r.p.x,r->r.p.y) && src->IsCollision(src,w,r->r.p.x,r->r.p.y,s)){
+			if((src->IsPickUp && !src->IsPickUp(src,w,r->r.p.x,r->r.p.y)) && (src->IsCollision && src->IsCollision(src,w,r->r.p.x,r->r.p.y,s))){
 				Resolve_Rect_Rect_Side(&src->r,r->r,s);
 
 				if(s==SIDE_TOP && src->v.y>0.0f) 	src->v.y = 0.0f;
@@ -641,7 +641,7 @@ void World_Collision(World* w,Entity* src){
 				if(s==SIDE_LEFT && src->v.x>0.0f) 	src->v.x = 0.0f;
 				if(s==SIDE_RIGHT && src->v.x<0.0f) 	src->v.x = 0.0f;
 
-				src->Collision(src,w,r->r.p.x,r->r.p.y,s);
+				if(src->Collision) src->Collision(src,w,r->r.p.x,r->r.p.y,s);
 			}
 		}
 
