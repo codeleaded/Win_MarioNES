@@ -169,6 +169,53 @@ Animation Animation_Make_Animation(char** Paths,char bg,SpawnType spawner,FDurat
 
 	return a;
 }
+
+Animation Animation_Make_SpritePath(char* path,char* file,char bg,SpawnType spawner){
+	CStr fullpath = CStr_Concat(path,file);
+	Animation a = Animation_Make_Sprite(fullpath,bg,spawner);
+	CStr_Free(&fullpath);
+	return a;
+}
+Animation Animation_Make_AtlasPath(char* path,char* file,char bg,SpawnType spawner,unsigned short cx,unsigned short cy,SubSprite (*atlas_get)(struct Animation*,World*,unsigned int,unsigned int)){
+	CStr fullpath = CStr_Concat(path,file);
+	Animation a = Animation_Make_Atlas(fullpath,bg,spawner,cx,cy,atlas_get);
+	CStr_Free(&fullpath);
+	return a;
+}
+Animation Animation_Make_SpritesPath(char* path,char** files,char bg,SpawnType spawner,SubSprite (*sprites_get)(struct Animation*,World*,unsigned int,unsigned int)){
+	Vector fullpaths = Vector_New(sizeof(CStr));
+	for(int i = 0;files[i];i++)
+		Vector_Push(&fullpaths,(CStr[]){ CStr_Concat(path,files[i]) });
+	Vector_Push(&fullpaths,(CStr){ NULL });
+	
+	Animation a = Animation_Make_Sprites((CStr*)fullpaths.Memory,bg,spawner,sprites_get);
+	
+	for(int i = 0;i<fullpaths.size - 1;i++)
+		CStr_Free((CStr*)Vector_Get(&fullpaths,i));
+	Vector_Free(&fullpaths);
+	
+	return a;
+}
+Animation Animation_Make_AnimationAtlasPath(char* path,char* file,char bg,SpawnType spawner,unsigned short cx,unsigned short cy,FDuration aatlas_duration){
+	CStr fullpath = CStr_Concat(path,file);
+	Animation a = Animation_Make_AnimationAtlas(fullpath,bg,spawner,cx,cy,aatlas_duration);
+	CStr_Free(&fullpath);
+	return a;
+}
+Animation Animation_Make_AnimationPath(char* path,char** files,char bg,SpawnType spawner,FDuration animation_duration){
+	Vector fullpaths = Vector_New(sizeof(CStr));
+	for(int i = 0;files[i];i++)
+		Vector_Push(&fullpaths,(CStr[]){ CStr_Concat(path,files[i]) });
+	Vector_Push(&fullpaths,(CStr){ NULL });
+	
+	Animation a = Animation_Make_Animation((CStr*)fullpaths.Memory,bg,spawner,animation_duration);
+	
+	for(int i = 0;i<fullpaths.size - 1;i++)
+		CStr_Free((CStr*)Vector_Get(&fullpaths,i));
+	Vector_Free(&fullpaths);
+	return a;
+}
+
 Animation Animation_Null(){
 	Animation a;
 	memset(&a,0,sizeof(a));
@@ -277,7 +324,8 @@ typedef struct EntityAtlas {
 } EntityAtlas;
 
 EntityAtlas EntityAtlas_New(
-	char* Path,
+	char* path,
+	char* file,
 	unsigned int cx,
 	unsigned int cy,
 	void (*Update)(void*,float),
@@ -285,7 +333,11 @@ EntityAtlas EntityAtlas_New(
 	void (*Free)(void*)
 ){
 	EntityAtlas ea;
-	ea.atlas = Sprite_Load(Path);
+	
+	CStr fullpath = CStr_Concat(path,file);
+	ea.atlas = Sprite_Load(fullpath);
+	CStr_Free(&fullpath);
+
 	ea.cx = cx;
 	ea.cy = cy;
 	ea.Update = Update;
