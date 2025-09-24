@@ -187,6 +187,8 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		//AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 2;
+        m->e.r.p.x -= MARIO_DIM_P2_X - m->e.r.d.x;
+		m->e.r.p.y -= MARIO_DIM_P2_Y - m->e.r.d.y;
 		m->e.r.d.x = MARIO_DIM_P2_X;
 		m->e.r.d.y = MARIO_DIM_P2_Y;
 		return 1;
@@ -194,6 +196,8 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		//AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 3;
+        m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
+		m->e.r.p.y -= MARIO_DIM_P3_Y - m->e.r.d.y;
 		m->e.r.d.x = MARIO_DIM_P3_X;
 		m->e.r.d.y = MARIO_DIM_P3_Y;
 		return 1;
