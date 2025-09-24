@@ -80,6 +80,41 @@
 #define MARIO_DIM_P3_X	                0.9f
 #define MARIO_DIM_P3_Y	                0.9f
 
+#define BOWLER_DIM_X					0.9f
+#define BOWLER_DIM_Y					0.9f
+#define BOWSER_DIM_X					0.9f
+#define BOWSER_DIM_Y					0.9f
+#define BRO_DIM_X						0.9f
+#define BRO_DIM_Y						0.9f
+#define COOPA_DIM_X						0.9f
+#define COOPA_DIM_Y						0.9f
+#define EXPLOSION_DIM_X					0.9f
+#define EXPLOSION_DIM_Y					0.9f
+#define FIREBALL_DIM_X					0.9f
+#define FIREBALL_DIM_Y					0.9f
+#define FIREBEAM_DIM_X					0.9f
+#define FIREBEAM_DIM_Y					0.9f
+#define FIREJUMPER_DIM_X				0.9f
+#define FIREJUMPER_DIM_Y				0.9f
+#define FISH_DIM_X						0.9f
+#define FISH_DIM_Y						0.9f
+#define GUMBA_DIM_X						0.9f
+#define GUMBA_DIM_Y						0.9f
+#define HAMMER_DIM_X					0.9f
+#define HAMMER_DIM_Y					0.9f
+#define LAKITU_DIM_X					0.9f
+#define LAKITU_DIM_Y					0.9f
+#define PLANT_DIM_X						0.9f
+#define PLANT_DIM_Y						0.9f
+#define PLANT_UG_DIM_X					0.9f
+#define PLANT_UG_DIM_Y					0.9f
+#define SPIKE_DIM_X						0.9f
+#define SPIKE_DIM_Y						0.9f
+#define SQUID_DIM_X						0.9f
+#define SQUID_DIM_Y						0.9f
+#define WILLI_DIM_X						0.9f
+#define WILLI_DIM_Y						0.9f
+
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRD		            7.0f
@@ -348,7 +383,14 @@ void Bowler_Free(Bowler* e){
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
 	b.e.id = ENTITY_BOWLER;
-	b.e.r = (Rect){ p,{ 0.9f,0.9f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Bowler* hb = malloc(sizeof(Bowler));
 	memcpy(hb,&b,sizeof(Bowler));
 	return hb;
@@ -377,7 +419,14 @@ void Bowser_Free(Bowser* e){
 Bowser* Bowser_New(Vec2 p){
 	Bowser b;
 	b.e.id = ENTITY_BOWSER;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Bowser* hb = malloc(sizeof(Bowser));
 	memcpy(hb,&b,sizeof(Bowser));
 	return hb;
@@ -406,7 +455,14 @@ void Bro_Free(Bro* e){
 Bro* Bro_New(Vec2 p){
 	Bro b;
 	b.e.id = ENTITY_BRO;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Bro* hb = malloc(sizeof(Bro));
 	memcpy(hb,&b,sizeof(Bro));
 	return hb;
@@ -435,7 +491,14 @@ void Coopa_Free(Coopa* e){
 Coopa* Coopa_New(Vec2 p){
 	Coopa b;
 	b.e.id = ENTITY_COOPA;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Coopa* hb = malloc(sizeof(Coopa));
 	memcpy(hb,&b,sizeof(Coopa));
 	return hb;
@@ -464,7 +527,14 @@ void FireJumper_Free(FireJumper* e){
 FireJumper* FireJumper_New(Vec2 p){
 	FireJumper b;
 	b.e.id = ENTITY_FIREJUMPER;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	FireJumper* hb = malloc(sizeof(FireJumper));
 	memcpy(hb,&b,sizeof(FireJumper));
 	return hb;
@@ -493,7 +563,14 @@ void Fish_Free(Fish* e){
 Fish* Fish_New(Vec2 p){
 	Fish b;
 	b.e.id = ENTITY_FISH;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Fish* hb = malloc(sizeof(Fish));
 	memcpy(hb,&b,sizeof(Fish));
 	return hb;
@@ -522,7 +599,14 @@ void Gumba_Free(Gumba* e){
 Gumba* Gumba_New(Vec2 p){
 	Gumba b;
 	b.e.id = ENTITY_GUMBA;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Gumba* hb = malloc(sizeof(Gumba));
 	memcpy(hb,&b,sizeof(Gumba));
 	return hb;
@@ -551,7 +635,14 @@ void Lakitu_Free(Lakitu* e){
 Lakitu* Lakitu_New(Vec2 p){
 	Lakitu b;
 	b.e.id = ENTITY_LAKITU;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Lakitu* hb = malloc(sizeof(Lakitu));
 	memcpy(hb,&b,sizeof(Lakitu));
 	return hb;
@@ -580,7 +671,14 @@ void PlantUG_Free(PlantUG* e){
 PlantUG* PlantUG_New(Vec2 p){
 	PlantUG b;
 	b.e.id = ENTITY_PLANT_UG;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	PlantUG* hb = malloc(sizeof(PlantUG));
 	memcpy(hb,&b,sizeof(PlantUG));
 	return hb;
@@ -609,7 +707,14 @@ void Plant_Free(Plant* e){
 Plant* Plant_New(Vec2 p){
 	Plant b;
 	b.e.id = ENTITY_PLANT;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Plant* hb = malloc(sizeof(Plant));
 	memcpy(hb,&b,sizeof(Plant));
 	return hb;
@@ -638,7 +743,14 @@ void Spike_Free(Spike* e){
 Spike* Spike_New(Vec2 p){
 	Spike b;
 	b.e.id = ENTITY_SPIKE;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Spike* hb = malloc(sizeof(Spike));
 	memcpy(hb,&b,sizeof(Spike));
 	return hb;
@@ -668,7 +780,14 @@ void Squid_Free(Squid* e){
 Squid* Squid_New(Vec2 p){
 	Squid b;
 	b.e.id = ENTITY_SQUID;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Squid* hb = malloc(sizeof(Squid));
 	memcpy(hb,&b,sizeof(Squid));
 	return hb;
@@ -677,11 +796,10 @@ Squid* Squid_New(Vec2 p){
 
 typedef struct Willi {
 	Entity e;
-	Vec2 v;
 } Willi;
 
 void Willi_Update(Willi* e,float t){
-	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->v,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 SubSprite Willi_GetRender(Willi* e,EntityAtlas* ea){
 
@@ -690,7 +808,7 @@ SubSprite Willi_GetRender(Willi* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 	
-	if(e->v.x > 0.0f) ox = 1U;
+	if(e->e.v.x > 0.0f) ox = 1U;
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -699,8 +817,14 @@ void Willi_Free(Willi* e){
 Willi* Willi_New(Vec2 p){
 	Willi b;
 	b.e.id = ENTITY_WILLI;
-	b.e.r = (Rect){ p,{ 1.0f,1.0f } };
-	b.v = (Vec2){ -1.0f,0.0f };
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ -1.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 	Willi* hb = malloc(sizeof(Willi));
 	memcpy(hb,&b,sizeof(Willi));
 	return hb;
