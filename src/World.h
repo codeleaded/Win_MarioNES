@@ -376,16 +376,14 @@ typedef struct Entity {
 	Vec2 v;
 	Vec2 a;
 	void (*WorldCollision)(struct Entity*,World*);
-	char (*IsPickUp)(struct Entity*,World*,unsigned int,unsigned int);
-	char (*IsCollision)(struct Entity*,World*,unsigned int,unsigned int,Side);
+	char (*IsSolid)(struct Entity*,World*,unsigned int,unsigned int,Side);
 	void (*Collision)(struct Entity*,World*,unsigned int,unsigned int,Side);
 	void (*EntityCollision)(struct Entity*,World*,struct Entity*,unsigned int,unsigned int,Side);
 } Entity;
 
 void Entity_Free(Entity* e){
 	e->WorldCollision = NULL;
-	e->IsPickUp = NULL;
-	e->IsCollision = NULL;
+	e->IsSolid = NULL;
 	e->Collision = NULL;
 	e->EntityCollision = NULL;
 }
@@ -638,45 +636,51 @@ void World_Update(World* w,TransformedView* tv,float t){
 }
 
 void World_Collision(World* w,Entity* src){
-	if(w->mode!=ANIMATIONBG_DG){
-		Vector rects = Vector_New(sizeof(TargetRect));
-		
-		float searchX = F32_Max(2.0f,2.0f * src->r.d.x);
-		float searchY = F32_Max(2.0f,2.0f * src->r.d.y);
+	if(src){
+		if(w->mode!=ANIMATIONBG_DG){
+			Vector rects = Vector_New(sizeof(TargetRect));
+			
+			float searchX = F32_Max(2.0f,2.0f * src->r.d.x);
+			float searchY = F32_Max(2.0f,2.0f * src->r.d.y);
 
-		for(float x = -searchX;x<searchX;x+=1.0f) {
-			for(float y = -searchY;y<searchY;y+=1.0f) {
-				int sx = (int)(src->r.p.x + x);
-				int sy = (int)(src->r.p.y + y);
+			for(float x = -searchX;x<searchX;x+=1.0f) {
+				for(float y = -searchY;y<searchY;y+=1.0f) {
+					int sx = (int)(src->r.p.x + x);
+					int sy = (int)(src->r.p.y + y);
 
-    	        if(sy>=0 && sy<w->height && sx>=0 && sx<w->width) {
-    	            Block b = World_Get(w,sx,sy);
-    	            Rect br = { (Vec2){ sx,sy },(Vec2){ 1.0f,1.0f } };
+    		        if(sy>=0 && sy<w->height && sx>=0 && sx<w->width) {
+    		            Block b = World_Get(w,sx,sy);
+    		            Rect br = { (Vec2){ sx,sy },(Vec2){ 1.0f,1.0f } };
 
-					if(Overlap_Rect_Rect(src->r,br)){
-						if(b!=BLOCK_NONE){
-							Vector_Push(&rects,(TargetRect[]){ br,&src->r.p });
+						if(Overlap_Rect_Rect(src->r,br)){
+							if(b!=BLOCK_NONE){
+								Vector_Push(&rects,(TargetRect[]){ br,&src->r.p });
+							}
 						}
 					}
 				}
 			}
-		}
 
-		qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,TargetRect_Compare);
+			qsort(rects.Memory,rects.size,rects.ELEMENT_SIZE,TargetRect_Compare);
 
-		for(int i = 0;i<rects.size;i++) {
-    	    TargetRect* r = (TargetRect*)Vector_Get(&rects,i);
+			for(int i = 0;i<rects.size;i++) {
+    		    TargetRect* r = (TargetRect*)Vector_Get(&rects,i);
 
-			Side s = Side_Rect_Rect(src->r,r->r);
-			if((src->IsPickUp && !src->IsPickUp(src,w,r->r.p.x,r->r.p.y)) && (src->IsCollision && src->IsCollision(src,w,r->r.p.x,r->r.p.y,s))){
-				Resolve_Rect_Rect_Side(&src->r,r->r,s);
-				if(src->Collision) src->Collision(src,w,r->r.p.x,r->r.p.y,s);
+				Side s = Side_Rect_Rect(src->r,r->r);
+				
+				char collision = 1;
+				if(src->IsSolid) collision = src->IsSolid(src,w,r->r.p.x,r->r.p.y,s);
+
+				if(collision){
+					Resolve_Rect_Rect_Side(&src->r,r->r,s);
+					if(src->Collision) src->Collision(src,w,r->r.p.x,r->r.p.y,s);
+				}
 			}
+
+			Vector_Free(&rects);
+
+			if(src->WorldCollision) src->WorldCollision(src,w);
 		}
-
-		Vector_Free(&rects);
-
-		if(src->WorldCollision) src->WorldCollision(src,w);
 	}
 }
 void World_EntityCollision(World* w,Entity* src){

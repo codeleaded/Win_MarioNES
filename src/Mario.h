@@ -190,15 +190,11 @@ void Bowler_WorldCollision(Bowler* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
+char Bowler_IsSolid(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -230,6 +226,7 @@ char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Bowler_Collision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -336,8 +333,7 @@ Bowler* Bowler_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bowler_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bowler_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowler_EntityCollision;
 	
@@ -375,15 +371,11 @@ void Bowser_WorldCollision(Bowser* m,World* w){
 		}
 	}
 }
-char Bowser_IsPickUp(Bowser* m,World* w,unsigned int x,unsigned int y){
+char Bowser_IsSolid(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Bowser_IsCollision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -415,6 +407,7 @@ char Bowser_IsCollision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Bowser_Collision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -457,8 +450,7 @@ Bowser* Bowser_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bowser_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bowser_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowser_EntityCollision;
 	
@@ -485,15 +477,11 @@ void Bro_WorldCollision(Bro* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Bro_IsPickUp(Bro* m,World* w,unsigned int x,unsigned int y){
+char Bro_IsSolid(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -525,6 +513,7 @@ char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Bro_Collision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -559,8 +548,7 @@ Bro* Bro_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bro_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bro_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bro_EntityCollision;
 	
@@ -588,15 +576,11 @@ void Coopa_WorldCollision(Coopa* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Coopa_IsPickUp(Coopa* m,World* w,unsigned int x,unsigned int y){
+char Coopa_IsSolid(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -628,7 +612,9 @@ char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
-	return 1;
+
+
+	return 0;
 }
 void Coopa_Collision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
@@ -735,8 +721,7 @@ Coopa* Coopa_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Coopa_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Coopa_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Coopa_EntityCollision;
 	
@@ -768,14 +753,7 @@ void FireJumper_WorldCollision(FireJumper* m,World* w){
 		m->e.v.y *= -1.0f;
 	}
 }
-char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
-	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
+char FireJumper_IsSolid(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	return 0;
 }
@@ -812,8 +790,7 @@ FireJumper* FireJumper_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))FireJumper_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))FireJumper_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))FireJumper_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))FireJumper_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))FireJumper_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))FireJumper_EntityCollision;
 	
@@ -843,14 +820,7 @@ void Fish_WorldCollision(Fish* m,World* w){
 		m->e.v.y *= -1.0f;
 	}
 }
-char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
-	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
+char Fish_IsSolid(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	return 0;
 }
@@ -888,8 +858,7 @@ Fish* Fish_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Fish_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Fish_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fish_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fish_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Fish_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Fish_EntityCollision;
 	
@@ -917,15 +886,11 @@ void Gumba_WorldCollision(Gumba* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Gumba_IsPickUp(Gumba* m,World* w,unsigned int x,unsigned int y){
+char Gumba_IsSolid(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -957,6 +922,7 @@ char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Gumba_Collision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -994,8 +960,7 @@ Gumba* Gumba_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Gumba_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Gumba_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Gumba_EntityCollision;
 	
@@ -1024,15 +989,11 @@ void Lakitu_WorldCollision(Lakitu* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Lakitu_IsPickUp(Lakitu* m,World* w,unsigned int x,unsigned int y){
+char Lakitu_IsSolid(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1064,6 +1025,7 @@ char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Lakitu_Collision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1098,8 +1060,7 @@ Lakitu* Lakitu_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Lakitu_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Lakitu_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Lakitu_EntityCollision;
 	
@@ -1126,15 +1087,11 @@ void PlantUG_WorldCollision(PlantUG* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char PlantUG_IsPickUp(PlantUG* m,World* w,unsigned int x,unsigned int y){
+char PlantUG_IsSolid(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1166,6 +1123,7 @@ char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side 
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void PlantUG_Collision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1202,8 +1160,7 @@ PlantUG* PlantUG_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))PlantUG_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))PlantUG_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))PlantUG_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))PlantUG_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))PlantUG_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))PlantUG_EntityCollision;
 	
@@ -1230,15 +1187,11 @@ void Plant_WorldCollision(Plant* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Plant_IsPickUp(Plant* m,World* w,unsigned int x,unsigned int y){
+char Plant_IsSolid(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1270,6 +1223,7 @@ char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Plant_Collision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1307,8 +1261,7 @@ Plant* Plant_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Plant_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Plant_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Plant_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Plant_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Plant_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Plant_EntityCollision;
 	
@@ -1335,15 +1288,11 @@ void Spike_WorldCollision(Spike* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Spike_IsPickUp(Spike* m,World* w,unsigned int x,unsigned int y){
+char Spike_IsSolid(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1375,6 +1324,7 @@ char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Spike_Collision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1412,8 +1362,7 @@ Spike* Spike_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Spike_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Spike_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Spike_EntityCollision;
 	
@@ -1440,15 +1389,11 @@ void Squid_WorldCollision(Squid* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Squid_IsPickUp(Squid* m,World* w,unsigned int x,unsigned int y){
+char Squid_IsSolid(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1480,6 +1425,7 @@ char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Squid_Collision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1514,8 +1460,7 @@ Squid* Squid_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Squid_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Squid_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Squid_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Squid_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Squid_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Squid_EntityCollision;
 	
@@ -1542,15 +1487,11 @@ void Willi_WorldCollision(Willi* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Willi_IsPickUp(Willi* m,World* w,unsigned int x,unsigned int y){
+char Willi_IsSolid(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1582,6 +1523,7 @@ char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Willi_Collision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1613,8 +1555,7 @@ Willi* Willi_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Willi_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Willi_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Willi_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Willi_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Willi_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Willi_EntityCollision;
 	
@@ -1641,15 +1582,11 @@ void Explosion_WorldCollision(Explosion* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Explosion_IsPickUp(Explosion* m,World* w,unsigned int x,unsigned int y){
+char Explosion_IsSolid(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Explosion_IsCollision(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1681,6 +1618,7 @@ char Explosion_IsCollision(Explosion* m,World* w,unsigned int x,unsigned int y,S
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Explosion_Collision(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1765,8 +1703,7 @@ Explosion* Explosion_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Explosion_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Explosion_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Explosion_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Explosion_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Explosion_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Explosion_EntityCollision;
 	
@@ -1793,15 +1730,11 @@ void Fireball_WorldCollision(Fireball* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Fireball_IsPickUp(Fireball* m,World* w,unsigned int x,unsigned int y){
+char Fireball_IsSolid(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1833,6 +1766,7 @@ char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Sid
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Fireball_Collision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1927,8 +1861,7 @@ Fireball* Fireball_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Fireball_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Fireball_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Fireball_EntityCollision;
 	
@@ -1955,15 +1888,11 @@ void Firebeam_WorldCollision(Firebeam* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Firebeam_IsPickUp(Firebeam* m,World* w,unsigned int x,unsigned int y){
+char Firebeam_IsSolid(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Firebeam_IsCollision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -1995,6 +1924,7 @@ char Firebeam_IsCollision(Firebeam* m,World* w,unsigned int x,unsigned int y,Sid
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Firebeam_Collision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -2083,8 +2013,7 @@ Firebeam* Firebeam_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Firebeam_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Firebeam_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Firebeam_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Firebeam_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Firebeam_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Firebeam_EntityCollision;
 	
@@ -2111,15 +2040,11 @@ void Hammer_WorldCollision(Hammer* m,World* w){
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
-char Hammer_IsPickUp(Hammer* m,World* w,unsigned int x,unsigned int y){
+char Hammer_IsSolid(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 1;
-	else if(b==BLOCK_FIRE_FLOWER)	return 1;
-	else if(b==BLOCK_SUPER_STAR) 	return 1;
-	return 0;
-}
-char Hammer_IsCollision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 0;
+	else if(b==BLOCK_FIRE_FLOWER)	return 0;
+	else if(b==BLOCK_SUPER_STAR) 	return 0;
 
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
@@ -2151,6 +2076,7 @@ char Hammer_IsCollision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+
 	return 1;
 }
 void Hammer_Collision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -2245,8 +2171,7 @@ Hammer* Hammer_New(Vec2 p){
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Hammer_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Hammer_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Hammer_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Hammer_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Hammer_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Hammer_EntityCollision;
 	
@@ -2338,7 +2263,7 @@ void Mario_WorldCollision(Mario* m,World* w){
 	m->jumping = ENTITY_FALSE;
 	m->reverse = FIGURE_FALSE;
 }
-char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
+char Mario_IsSolid(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 	if(m->dead) return 0;
 	
 	Block b = World_Get(w,x,y);
@@ -2346,23 +2271,23 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 	if(b==BLOCK_COIN){
 		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/coin.wav");
 		World_Set(w,x,y,BLOCK_NONE);
-		return 1;
+		return 0;
 	//}else if(b==BLOCK_STAR_COIN){
 	//	AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
 	//	World_Set(w,x,y,BLOCK_NONE);
-	//	return 1;
+	//	return 0;
 	//}else if(b==BLOCK_REDPILZ){
 	//	AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 	//	World_Set(w,x,y,BLOCK_NONE);
 	//	f->power = 1;
 	//	f->r.d.y = 1.8f;
-	//	return 1;
+	//	return 0;
 	//}else if(b==BLOCK_GREENPILZ){
 	//	AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
 	//	World_Set(w,x,y,BLOCK_NONE);
 	//	f->power = 0;
 	//	f->r.d.y = 0.9f;
-	//	return 1;
+	//	return 0;
 	}else if(b==BLOCK_FIRE_FLOWER){
 		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
@@ -2371,7 +2296,7 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		m->e.r.p.y -= MARIO_DIM_P2_Y - m->e.r.d.y;
 		m->e.r.d.x = MARIO_DIM_P2_X;
 		m->e.r.d.y = MARIO_DIM_P2_Y;
-		return 1;
+		return 0;
 	}else if(b==BLOCK_SUPER_STAR){
 		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
@@ -2385,15 +2310,9 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		m->e.r.p.y -= MARIO_DIM_P1_Y - m->e.r.d.y;
 		m->e.r.d.x = MARIO_DIM_P1_X;
 		m->e.r.d.y = MARIO_DIM_P1_Y;
-		return 1;
+		return 0;
 	}
-	return 0;
-}
-char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
-	if(m->dead) return 0;
 	
-	Block b = World_Get(w,x,y);
-
 	switch(b){
 		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
 		case BLOCK_FENCE: 			return 0;
@@ -2424,6 +2343,7 @@ char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
+	
 	return 1;
 }
 void Mario_Collision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -2627,8 +2547,7 @@ Mario* Mario_New(Vec2 p){
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
 
