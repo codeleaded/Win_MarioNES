@@ -89,34 +89,59 @@
 #define BOWSER_DIM_Y					1.9f
 #define BRO_DIM_X						0.9f
 #define BRO_DIM_Y						1.9f
+
 #define COOPA_DIM_X						0.9f
 #define COOPA_DIM_Y						0.9f
+#define COOPA_VEL_X						2.0f
+#define COOPA_VEL_Y						2.0f
+
 #define FIREJUMPER_DIM_X				0.9f
 #define FIREJUMPER_DIM_Y				0.9f
+
 #define FISH_DIM_X						0.9f
 #define FISH_DIM_Y						0.9f
+#define FISH_VEL_X						2.0f
+#define FISH_VEL_Y						2.0f
+
 #define GUMBA_DIM_X						0.9f
 #define GUMBA_DIM_Y						0.9f
+#define GUMBA_VEL_X						2.0f
+#define GUMBA_VEL_Y						2.0f
+
 #define LAKITU_DIM_X					0.9f
 #define LAKITU_DIM_Y					1.9f
+
 #define PLANT_DIM_X						0.9f
 #define PLANT_DIM_Y						1.9f
 #define PLANTUG_DIM_X					0.9f
 #define PLANTUG_DIM_Y					1.9f
+
 #define SPIKE_DIM_X						0.9f
 #define SPIKE_DIM_Y						0.9f
+#define SPIKE_VEL_X						2.0f
+#define SPIKE_VEL_Y						2.0f
+
 #define SQUID_DIM_X						0.9f
 #define SQUID_DIM_Y						1.9f
 #define WILLI_DIM_X						0.9f
 #define WILLI_DIM_Y						0.9f
 #define EXPLOSION_DIM_X					0.9f
 #define EXPLOSION_DIM_Y					0.9f
-#define FIREBALL_DIM_X					0.3f
-#define FIREBALL_DIM_Y					0.3f
-#define FIREBEAM_DIM_X					0.9f
-#define FIREBEAM_DIM_Y					0.3f
-#define HAMMER_DIM_X					0.3f
-#define HAMMER_DIM_Y					0.3f
+
+#define FIREBALL_DIM_X					0.9f
+#define FIREBALL_DIM_Y					0.9f
+#define FIREBALL_VEL_X					4.0f
+#define FIREBALL_VEL_Y					4.0f
+
+#define FIREBEAM_DIM_X					1.9f
+#define FIREBEAM_DIM_Y					0.9f
+#define FIREBEAM_VEL_X					4.0f
+#define FIREBEAM_VEL_Y					4.0f
+
+#define HAMMER_DIM_X					0.9f
+#define HAMMER_DIM_Y					0.9f
+#define HAMMER_VEL_X					4.0f
+#define HAMMER_VEL_Y					4.0f
 
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRAVITY	            30.0f
@@ -342,6 +367,8 @@ typedef struct Bowser {
 void Bowser_Free(Bowser* e){
 }
 void Bowser_Update(Bowser* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowser_WorldCollision(Bowser* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -627,7 +654,7 @@ Coopa* Coopa_New(Vec2 p){
 	Coopa b;
 	b.e.id = ENTITY_COOPA;
 	b.e.r = (Rect){ p,{ COOPA_DIM_X,COOPA_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -COOPA_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Coopa_WorldCollision;
@@ -656,7 +683,7 @@ void FireJumper_WorldCollision(FireJumper* m,World* w){
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		m->e.v.y *= -1.0f;
 }
 char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -664,38 +691,7 @@ char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
 }
 char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-
-	switch(b){
-		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
-		case BLOCK_FENCE: 			return 0;
-		case BLOCK_CLOUD: 			return 0;
-		case BLOCK_BUSH: 			return 0;
-		case BLOCK_FLAG: 			return 0;
-		case BLOCK_CASTLE: 			return 0;
-		case BLOCK_GRASFAKE: 		return 0;
-		case BLOCK_TREE: 			return 0;
-		case BLOCK_SNOWTREE: 		return 0;
-		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
-		case BLOCK_SPAWN:			return 0;
-		case BLOCK_SPAWN_BOWLER:	return 0;
-		case BLOCK_SPAWN_BOWSER:	return 0;
-		case BLOCK_SPAWN_BRO:		return 0;
-		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_FIREJUMPER:return 0;
-		case BLOCK_SPAWN_FISH:		return 0;
-		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_LAKITU:	return 0;
-		case BLOCK_SPAWN_PLANT:		return 0;
-		case BLOCK_SPAWN_PLANTUG:	return 0;
-		case BLOCK_SPAWN_SPIKE:		return 0;
-		case BLOCK_SPAWN_SQUID:		return 0;
-		case BLOCK_SPAWN_WILLI:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
-	}
-	return 1;
+	return 0;
 }
 void FireJumper_Collision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
@@ -760,46 +756,14 @@ char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
 }
 char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-
-	switch(b){
-		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
-		case BLOCK_FENCE: 			return 0;
-		case BLOCK_CLOUD: 			return 0;
-		case BLOCK_BUSH: 			return 0;
-		case BLOCK_FLAG: 			return 0;
-		case BLOCK_CASTLE: 			return 0;
-		case BLOCK_GRASFAKE: 		return 0;
-		case BLOCK_TREE: 			return 0;
-		case BLOCK_SNOWTREE: 		return 0;
-		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
-		case BLOCK_SPAWN:			return 0;
-		case BLOCK_SPAWN_BOWLER:	return 0;
-		case BLOCK_SPAWN_BOWSER:	return 0;
-		case BLOCK_SPAWN_BRO:		return 0;
-		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_FIREJUMPER:return 0;
-		case BLOCK_SPAWN_FISH:		return 0;
-		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_LAKITU:	return 0;
-		case BLOCK_SPAWN_PLANT:		return 0;
-		case BLOCK_SPAWN_PLANTUG:	return 0;
-		case BLOCK_SPAWN_SPIKE:		return 0;
-		case BLOCK_SPAWN_SQUID:		return 0;
-		case BLOCK_SPAWN_WILLI:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
-	}
-	return 1;
+	return 0;
 }
 void Fish_Collision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	
-	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
-	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
-	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
-	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+	//if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y *= -1.0f;
+	//else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y *= -1.0f;
+	//else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	//else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Fish_EntityCollision(Fish* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -819,7 +783,7 @@ Fish* Fish_New(Vec2 p){
 	Fish b;
 	b.e.id = ENTITY_FISH;
 	b.e.r = (Rect){ p,{ FISH_DIM_X,FISH_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -FISH_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Fish_WorldCollision;
@@ -1678,8 +1642,8 @@ char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Sid
 void Fireball_Collision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 
-	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
-	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f)			m->e.v.y *= -0.5f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f)	m->e.v.y *= -0.5f;
 	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
@@ -1694,7 +1658,7 @@ SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d *= F32_Abs(e->e.v.x) * 0.5f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(4.0f * d);
 
@@ -1704,7 +1668,7 @@ Fireball* Fireball_New(Vec2 p){
 	Fireball b;
 	b.e.id = ENTITY_FIREBALL;
 	b.e.r = (Rect){ p,{ FIREBALL_DIM_X,FIREBALL_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -FIREBALL_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Fireball_WorldCollision;
@@ -1795,7 +1759,7 @@ SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d *= F32_Abs(e->e.v.x) * 0.5f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(2.0f * d);
 
@@ -1807,7 +1771,7 @@ Firebeam* Firebeam_New(Vec2 p){
 	Firebeam b;
 	b.e.id = ENTITY_FIREBEAM;
 	b.e.r = (Rect){ p,{ FIREBEAM_DIM_X,FIREBEAM_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -FIREBEAM_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Firebeam_WorldCollision;
@@ -1880,8 +1844,8 @@ char Hammer_IsCollision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s)
 void Hammer_Collision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 
-	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
-	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f)			World_Remove(w,(Entity*)m);
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f)	World_Remove(w,(Entity*)m);
 	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
@@ -1896,7 +1860,7 @@ SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d *= F32_Abs(e->e.v.x) * 0.5f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(4.0f * d);
 	
@@ -1906,7 +1870,7 @@ Hammer* Hammer_New(Vec2 p){
 	Hammer b;
 	b.e.id = ENTITY_HAMMER;
 	b.e.r = (Rect){ p,{ HAMMER_DIM_X,HAMMER_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -HAMMER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Hammer_WorldCollision;
