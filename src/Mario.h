@@ -613,8 +613,7 @@ char Coopa_IsSolid(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 
-
-	return 0;
+	return 1;
 }
 void Coopa_Collision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
