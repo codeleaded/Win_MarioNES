@@ -32,38 +32,38 @@
 #define BLOCK_SPAWN_BOWSER				24U
 #define BLOCK_SPAWN_BRO					25U
 #define BLOCK_SPAWN_COOPA				26U
-#define BLOCK_SPAWN_EXPLOSION			27U
-#define BLOCK_SPAWN_FIREBALL			28U
-#define BLOCK_SPAWN_FIREBEAM			29U
-#define BLOCK_SPAWN_FIREJUMPER			30U
-#define BLOCK_SPAWN_FISH				31U
-#define BLOCK_SPAWN_GUMBA				32U
-#define BLOCK_SPAWN_HAMMER				33U
-#define BLOCK_SPAWN_LAKITU				34U
-#define BLOCK_SPAWN_PLANT				35U
-#define BLOCK_SPAWN_PLANTUG				36U
-#define BLOCK_SPAWN_SPIKE				37U
-#define BLOCK_SPAWN_SQUID				38U
-#define BLOCK_SPAWN_WILLI				39U
+#define BLOCK_SPAWN_FIREJUMPER			27U
+#define BLOCK_SPAWN_FISH				28U
+#define BLOCK_SPAWN_GUMBA				29U
+#define BLOCK_SPAWN_LAKITU				30U
+#define BLOCK_SPAWN_PLANT				31U
+#define BLOCK_SPAWN_PLANTUG				32U
+#define BLOCK_SPAWN_SPIKE				33U
+#define BLOCK_SPAWN_SQUID				34U
+#define BLOCK_SPAWN_WILLI				35U
+#define BLOCK_SPAWN_EXPLOSION			36U
+#define BLOCK_SPAWN_FIREBALL			37U
+#define BLOCK_SPAWN_FIREBEAM			38U
+#define BLOCK_SPAWN_HAMMER				39U
 
 #define ENTITY_MARIO					1U
 #define ENTITY_BOWLER					2U
 #define ENTITY_BOWSER					3U
 #define ENTITY_BRO						4U
 #define ENTITY_COOPA					5U
-#define ENTITY_EXPLOSION				6U
-#define ENTITY_FIREBALL					7U
-#define ENTITY_FIREBEAM					8U
-#define ENTITY_FIREJUMPER				9U
-#define ENTITY_FISH						10U
-#define ENTITY_GUMBA					11U
-#define ENTITY_HAMMER					12U
-#define ENTITY_LAKITU					13U
-#define ENTITY_PLANT					14U
-#define ENTITY_PLANTUG					15U
-#define ENTITY_SPIKE					16U
-#define ENTITY_SQUID					17U
-#define ENTITY_WILLI					18U
+#define ENTITY_FIREJUMPER				6U
+#define ENTITY_FISH						7U
+#define ENTITY_GUMBA					8U
+#define ENTITY_LAKITU					9U
+#define ENTITY_PLANT					10U
+#define ENTITY_PLANTUG					11U
+#define ENTITY_SPIKE					12U
+#define ENTITY_SQUID					13U
+#define ENTITY_WILLI					14U
+#define ENTITY_EXPLOSION				15U
+#define ENTITY_FIREBALL					16U
+#define ENTITY_FIREBEAM					17U
+#define ENTITY_HAMMER					18U
 
 #define ENTITY_FALSE		            0
 #define ENTITY_TRUE			            1
@@ -91,20 +91,12 @@
 #define BRO_DIM_Y						1.9f
 #define COOPA_DIM_X						0.9f
 #define COOPA_DIM_Y						0.9f
-#define EXPLOSION_DIM_X					0.9f
-#define EXPLOSION_DIM_Y					0.9f
-#define FIREBALL_DIM_X					0.3f
-#define FIREBALL_DIM_Y					0.3f
-#define FIREBEAM_DIM_X					0.9f
-#define FIREBEAM_DIM_Y					0.3f
 #define FIREJUMPER_DIM_X				0.9f
 #define FIREJUMPER_DIM_Y				0.9f
 #define FISH_DIM_X						0.9f
 #define FISH_DIM_Y						0.9f
 #define GUMBA_DIM_X						0.9f
 #define GUMBA_DIM_Y						0.9f
-#define HAMMER_DIM_X					0.3f
-#define HAMMER_DIM_Y					0.3f
 #define LAKITU_DIM_X					0.9f
 #define LAKITU_DIM_Y					1.9f
 #define PLANT_DIM_X						0.9f
@@ -117,6 +109,14 @@
 #define SQUID_DIM_Y						1.9f
 #define WILLI_DIM_X						0.9f
 #define WILLI_DIM_Y						0.9f
+#define EXPLOSION_DIM_X					0.9f
+#define EXPLOSION_DIM_Y					0.9f
+#define FIREBALL_DIM_X					0.3f
+#define FIREBALL_DIM_Y					0.3f
+#define FIREBEAM_DIM_X					0.9f
+#define FIREBEAM_DIM_Y					0.3f
+#define HAMMER_DIM_X					0.3f
+#define HAMMER_DIM_Y					0.3f
 
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRAVITY	            30.0f
@@ -183,19 +183,19 @@ char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -381,19 +381,19 @@ char Bowser_IsCollision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -487,19 +487,19 @@ char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -585,19 +585,19 @@ char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -681,19 +681,19 @@ char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -777,19 +777,19 @@ char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -874,19 +874,19 @@ char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -975,19 +975,19 @@ char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s)
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1073,19 +1073,19 @@ char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side 
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1170,19 +1170,19 @@ char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1268,19 +1268,19 @@ char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1364,19 +1364,19 @@ char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1462,19 +1462,19 @@ char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
@@ -1517,6 +1517,393 @@ Willi* Willi_New(Vec2 p){
 	memcpy(hb,&b,sizeof(Willi));
 	return hb;
 }
+
+
+typedef struct Explosion {
+	Entity e;
+} Explosion;
+
+void Explosion_Free(Explosion* e){
+}
+void Explosion_Update(Explosion* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+}
+void Explosion_WorldCollision(Explosion* m,World* w){
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+}
+char Explosion_IsPickUp(Explosion* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Explosion_IsCollision(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+	}
+	return 1;
+}
+void Explosion_Collision(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+}
+void Explosion_EntityCollision(Explosion* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
+}
+SubSprite Explosion_GetRender(Explosion* e,EntityAtlas* ea){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+Explosion* Explosion_New(Vec2 p){
+	Explosion b;
+	b.e.id = ENTITY_EXPLOSION;
+	b.e.r = (Rect){ p,{ EXPLOSION_DIM_X,EXPLOSION_DIM_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Explosion_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Explosion_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Explosion_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Explosion_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Explosion_EntityCollision;
+	
+	Explosion* hb = malloc(sizeof(Explosion));
+	memcpy(hb,&b,sizeof(Explosion));
+	return hb;
+}
+
+
+typedef struct Fireball {
+	Entity e;
+} Fireball;
+
+void Fireball_Free(Fireball* e){
+}
+void Fireball_Update(Fireball* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+}
+void Fireball_WorldCollision(Fireball* m,World* w){
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+}
+char Fireball_IsPickUp(Fireball* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+	}
+	return 1;
+}
+void Fireball_Collision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+}
+void Fireball_EntityCollision(Fireball* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
+}
+SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+Fireball* Fireball_New(Vec2 p){
+	Fireball b;
+	b.e.id = ENTITY_FIREBALL;
+	b.e.r = (Rect){ p,{ FIREBALL_DIM_X,FIREBALL_DIM_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Fireball_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Fireball_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Fireball_EntityCollision;
+	
+	Fireball* hb = malloc(sizeof(Fireball));
+	memcpy(hb,&b,sizeof(Fireball));
+	return hb;
+}
+
+
+typedef struct Firebeam {
+	Entity e;
+} Firebeam;
+
+void Firebeam_Free(Firebeam* e){
+}
+void Firebeam_Update(Firebeam* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+}
+void Firebeam_WorldCollision(Firebeam* m,World* w){
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+}
+char Firebeam_IsPickUp(Firebeam* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Firebeam_IsCollision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+	}
+	return 1;
+}
+void Firebeam_Collision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+}
+void Firebeam_EntityCollision(Firebeam* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
+}
+SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+Firebeam* Firebeam_New(Vec2 p){
+	Firebeam b;
+	b.e.id = ENTITY_FIREBEAM;
+	b.e.r = (Rect){ p,{ FIREBEAM_DIM_X,FIREBEAM_DIM_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Firebeam_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Firebeam_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Firebeam_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Firebeam_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Firebeam_EntityCollision;
+	
+	Firebeam* hb = malloc(sizeof(Firebeam));
+	memcpy(hb,&b,sizeof(Firebeam));
+	return hb;
+}
+
+
+typedef struct Hammer {
+	Entity e;
+} Hammer;
+
+void Hammer_Free(Hammer* e){
+}
+void Hammer_Update(Hammer* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+}
+void Hammer_WorldCollision(Hammer* m,World* w){
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+}
+char Hammer_IsPickUp(Hammer* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Hammer_IsCollision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+	}
+	return 1;
+}
+void Hammer_Collision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+}
+void Hammer_EntityCollision(Hammer* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
+}
+SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+Hammer* Hammer_New(Vec2 p){
+	Hammer b;
+	b.e.id = ENTITY_HAMMER;
+	b.e.r = (Rect){ p,{ HAMMER_DIM_X,HAMMER_DIM_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Hammer_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Hammer_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Hammer_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Hammer_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Hammer_EntityCollision;
+	
+	Hammer* hb = malloc(sizeof(Hammer));
+	memcpy(hb,&b,sizeof(Hammer));
+	return hb;
+}
+
+
+
 
 
 typedef struct Mario {
@@ -1667,19 +2054,19 @@ char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_BOWSER:	return 0;
 		case BLOCK_SPAWN_BRO:		return 0;
 		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
 		case BLOCK_SPAWN_FIREJUMPER:return 0;
 		case BLOCK_SPAWN_FISH:		return 0;
 		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
 		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
 	}
 	return 1;
 }
