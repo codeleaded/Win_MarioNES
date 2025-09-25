@@ -200,7 +200,91 @@ void Bowler_Collision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Bowler_EntityCollision(Bowler* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			Bowler* m2 = (Bowler*)other;
+
+			char move1 = m->inside && m->e.v.x != 0.0f;
+			char move2 = m2->inside && m2->e.v.x != 0.0f;
+
+			if(move1 && move2){
+				World_Remove(w,(Entity*)m);
+				World_Remove(w,other);
+			}else if(move1){
+				World_Remove(w,other);
+			}else if(move2){
+				World_Remove(w,(Entity*)m);
+			}else{
+				m->e.v.x = F32_Abs(m->e.v.x) * F32_Sign(m->e.r.p.x - m2->e.r.p.x);
+				m2->e.v.x = F32_Abs(m2->e.v.x) * F32_Sign(m2->e.r.p.x - m->e.r.p.x);
+			}
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_EXPLOSION:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREBALL:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREBEAM:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREJUMPER:	{
+			
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_HAMMER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,other);
+			break;
+		}
+	}
 }
 SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -363,6 +447,8 @@ typedef struct Bro {
 void Bro_Free(Bro* e){
 }
 void Bro_Update(Bro* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bro_WorldCollision(Bro* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -468,6 +554,8 @@ typedef struct Coopa {
 void Coopa_Free(Coopa* e){
 }
 void Coopa_Update(Coopa* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Coopa_WorldCollision(Coopa* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -571,6 +659,8 @@ typedef struct FireJumper {
 void FireJumper_Free(FireJumper* e){
 }
 void FireJumper_Update(FireJumper* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void FireJumper_WorldCollision(FireJumper* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -674,6 +764,8 @@ typedef struct Fish {
 void Fish_Free(Fish* e){
 }
 void Fish_Update(Fish* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Fish_WorldCollision(Fish* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -777,6 +869,8 @@ typedef struct Gumba {
 void Gumba_Free(Gumba* e){
 }
 void Gumba_Update(Gumba* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Gumba_WorldCollision(Gumba* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -880,6 +974,8 @@ typedef struct Lakitu {
 void Lakitu_Free(Lakitu* e){
 }
 void Lakitu_Update(Lakitu* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Lakitu_WorldCollision(Lakitu* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -985,6 +1081,8 @@ typedef struct PlantUG {
 void PlantUG_Free(PlantUG* e){
 }
 void PlantUG_Update(PlantUG* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void PlantUG_WorldCollision(PlantUG* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -1089,6 +1187,8 @@ typedef struct Plant {
 void Plant_Free(Plant* e){
 }
 void Plant_Update(Plant* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Plant_WorldCollision(Plant* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -1194,6 +1294,8 @@ typedef struct Spike {
 void Spike_Free(Spike* e){
 }
 void Spike_Update(Spike* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Spike_WorldCollision(Spike* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -1297,6 +1399,8 @@ typedef struct Squid {
 void Squid_Free(Squid* e){
 }
 void Squid_Update(Squid* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Squid_WorldCollision(Squid* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
@@ -1402,6 +1506,8 @@ typedef struct Willi {
 void Willi_Free(Willi* e){
 }
 void Willi_Update(Willi* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Willi_WorldCollision(Willi* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
