@@ -84,7 +84,7 @@ void Update(AlxWindow* w){
 		World_Resize(&world.world,world.world.width,world.world.height + 1);
 	}
 
-	if(Stroke(ALX_KEY_E).PRESSED){
+	if(Stroke(ALX_KEY_E).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_QUD).PRESSED){
 		if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 1){
 			const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
 			const Vec2 off = { world.mario.e->r.d.x,0.0f };
@@ -108,7 +108,7 @@ void Update(AlxWindow* w){
 				MarioWorld_Std_SpawnMapper
 			);
 			fb->e.v.x = HAMMER_VEL_X * F32_Sign(fb->e.r.p.x - mp.x);
-			fb->e.v.y = -HAMMER_VEL_Y;
+			fb->e.v.y = -HAMMER_VEL_Y + world.mario.e->v.y;
 		}
 		if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 2){
 			const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
