@@ -514,6 +514,17 @@ void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 	if(x<w->width && y<w->height)
 		w->data[y * w->width + x] = b;
 }
+void World_Remove(World* w,Entity* e){
+	for(int i = 0;i<w->entities.size;i++){
+		Entity* te = (Entity*)PVector_Get(&w->entities,i);
+		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
+		if(te == e){
+			if(ea->Free) ea->Free(e);
+			PVector_Remove(&w->entities,i);
+			return;
+		}
+	}
+}
 void World_Resize(World* w,unsigned int width,unsigned int height){
 	if(w->data){
 		const unsigned int size = sizeof(Block) * width * height;
@@ -637,12 +648,6 @@ void World_Collision(World* w,Entity* src){
 			Side s = Side_Rect_Rect(src->r,r->r);
 			if((src->IsPickUp && !src->IsPickUp(src,w,r->r.p.x,r->r.p.y)) && (src->IsCollision && src->IsCollision(src,w,r->r.p.x,r->r.p.y,s))){
 				Resolve_Rect_Rect_Side(&src->r,r->r,s);
-
-				if(s==SIDE_TOP && src->v.y>0.0f) 	src->v.y = 0.0f;
-				if(s==SIDE_BOTTOM && src->v.y<0.0f) src->v.y = 0.0f;
-				if(s==SIDE_LEFT && src->v.x>0.0f) 	src->v.x = 0.0f;
-				if(s==SIDE_RIGHT && src->v.x<0.0f) 	src->v.x = 0.0f;
-
 				if(src->Collision) src->Collision(src,w,r->r.p.x,r->r.p.y,s);
 			}
 		}

@@ -41,7 +41,7 @@
 #define BLOCK_SPAWN_HAMMER				33U
 #define BLOCK_SPAWN_LAKITU				34U
 #define BLOCK_SPAWN_PLANT				35U
-#define BLOCK_SPAWN_PLANTUG			36U
+#define BLOCK_SPAWN_PLANTUG				36U
 #define BLOCK_SPAWN_SPIKE				37U
 #define BLOCK_SPAWN_SQUID				38U
 #define BLOCK_SPAWN_WILLI				39U
@@ -82,8 +82,11 @@
 
 #define BOWLER_DIM_X					0.9f
 #define BOWLER_DIM_Y					0.9f
-#define BOWSER_DIM_X					1.5f
-#define BOWSER_DIM_Y					2.9f
+#define BOWLER_VEL_X					3.0f
+#define BOWLER_VEL_ROLLX				9.0f
+
+#define BOWSER_DIM_X					1.9f
+#define BOWSER_DIM_Y					1.9f
 #define BRO_DIM_X						0.9f
 #define BRO_DIM_Y						1.9f
 #define COOPA_DIM_X						0.9f
@@ -130,258 +133,23 @@
 #define MARIO_VEL_MUL 		            3.0f
 
 
-
-typedef struct Mario {
-	Entity e;
-	Vec2 spawn;
-	Timepoint start;
-	unsigned char lookdir;
-	unsigned char ground;
-	unsigned char jumping;
-	unsigned char stamp;
-	unsigned char reverse;
-	unsigned char power;
-	unsigned char dead;
-} Mario;
-
-void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
-	if(dir < -0.2f){// min for clean acc
-		if(m->e.v.x>0.0f)   m->reverse = ENTITY_TRUE;
-		if(m->ground) 	    m->e.a.x = -MARIO_ACC_GRD * F32_Abs(dir);
-		else 			    m->e.a.x = -MARIO_ACC_AIR * F32_Abs(dir);
-	}else if(dir > 0.2f){
-		if(m->e.v.x<0.0f)   m->reverse = ENTITY_TRUE;
-		if(m->ground) 	    m->e.a.x = MARIO_ACC_GRD * F32_Abs(dir);
-		else 			    m->e.a.x = MARIO_ACC_AIR * F32_Abs(dir);
-	}else
-		m->e.a.x = 0.0f;
-}
-void Mario_Update(Mario* m,World* w,float t){
-    m->e.a.x = F32_Clamp(m->e.a.x,-MARIO_ACC_MAX,MARIO_ACC_MAX);
-	if(m->ground) 	m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_GRD,MARIO_VEL_MAX_GRD);
-	else			m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_AIR,MARIO_VEL_MAX_AIR);
-
-	if(m->e.v.x<0.0f) m->lookdir = ENTITY_LEFT;
-	if(m->e.v.x>0.0f) m->lookdir = ENTITY_RIGHT;
-
-	if(F32_Abs(m->e.v.x)>MARIO_VEL_CLP){
-		const float add = -F32_Sign(m->e.v.x) * (m->ground ? MARIO_ACC_GGP : MARIO_ACC_AGP) * t;
-		m->e.v.x = F32_Passes(m->e.v.x,add,0.0f) ? 0.0f : m->e.v.x + add;
-	}else
-		m->e.v.x = 0.0f;
-
-	m->e.v.x = m->e.v.x + F32_Krung(m->e.a.x,MARIO_ACC_MAX) * t;
-	m->e.v.y = m->e.v.y + m->e.a.y * t * (!m->jumping ? MARIO_VEL_MUL : 1.0f);// && m->e.v.y<0.0f
-	
-	//m->e.v = Vec2_Add(m->e.v,Vec2_Mulf(m->e.a,t * (m->jumping ? 1.0f : 2.0f)));
-	m->e.r.p = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.v,t));
-    m->ground = ENTITY_FALSE;
-}
-void Mario_WorldCollision(Mario* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(!m->dead && m->e.r.p.y>w->height){
-		m->dead = ENTITY_TRUE;
-		m->e.v.y = -MARIO_VEL_DEAD;
-		m->e.r.p.y = w->height - m->e.r.d.y;
-	}
-	if(m->dead && m->e.r.p.y>w->height){
-		m->dead = ENTITY_FALSE;
-		m->e.r.p = w->spawn;
-	}
-
-	//m->stamp = FIGURE_FALSE;
-	m->jumping = ENTITY_FALSE;
-	m->reverse = FIGURE_FALSE;
-}
-char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
-	Block b = World_Get(w,x,y);
-
-	if(b==BLOCK_COIN){
-		//AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		return 1;
-	//}else if(b==BLOCK_STAR_COIN){
-	//	AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
-	//	World_Set(w,x,y,BLOCK_NONE);
-	//	return 1;
-	//}else if(b==BLOCK_REDPILZ){
-	//	AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
-	//	World_Set(w,x,y,BLOCK_NONE);
-	//	f->power = 1;
-	//	f->r.d.y = 1.8f;
-	//	return 1;
-	//}else if(b==BLOCK_GREENPILZ){
-	//	AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
-	//	World_Set(w,x,y,BLOCK_NONE);
-	//	f->power = 0;
-	//	f->r.d.y = 0.9f;
-	//	return 1;
-	}else if(b==BLOCK_FIRE_FLOWER){
-		//AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		m->power = 2;
-        m->e.r.p.x -= MARIO_DIM_P2_X - m->e.r.d.x;
-		m->e.r.p.y -= MARIO_DIM_P2_Y - m->e.r.d.y;
-		m->e.r.d.x = MARIO_DIM_P2_X;
-		m->e.r.d.y = MARIO_DIM_P2_Y;
-		return 1;
-	}else if(b==BLOCK_SUPER_STAR){
-		//AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
-		World_Set(w,x,y,BLOCK_NONE);
-		m->power = 3;
-        m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
-		m->e.r.p.y -= MARIO_DIM_P3_Y - m->e.r.d.y;
-		m->e.r.d.x = MARIO_DIM_P3_X;
-		m->e.r.d.y = MARIO_DIM_P3_Y;
-		return 1;
-	}
-	return 0;
-}
-char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
-
-	switch(b){
-		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
-		case BLOCK_FENCE: 			return 0;
-		case BLOCK_CLOUD: 			return 0;
-		case BLOCK_BUSH: 			return 0;
-		case BLOCK_FLAG: 			return 0;
-		case BLOCK_CASTLE: 			return 0;
-		case BLOCK_GRASFAKE: 		return 0;
-		case BLOCK_TREE: 			return 0;
-		case BLOCK_SNOWTREE: 		return 0;
-		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
-		case BLOCK_SPAWN:			return 0;
-		case BLOCK_SPAWN_BOWLER:	return 0;
-		case BLOCK_SPAWN_BOWSER:	return 0;
-		case BLOCK_SPAWN_BRO:		return 0;
-		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
-		case BLOCK_SPAWN_FIREJUMPER:return 0;
-		case BLOCK_SPAWN_FISH:		return 0;
-		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
-		case BLOCK_SPAWN_LAKITU:	return 0;
-		case BLOCK_SPAWN_PLANT:		return 0;
-		case BLOCK_SPAWN_PLANTUG:	return 0;
-		case BLOCK_SPAWN_SPIKE:		return 0;
-		case BLOCK_SPAWN_SQUID:		return 0;
-		case BLOCK_SPAWN_WILLI:		return 0;
-	}
-	return 1;
-}
-void Mario_Collision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
-	Block b = World_Get(w,x,y);
-	
-    if(s==SIDE_TOP)
-        m->ground = FIGURE_TRUE;
-
-	if(s==SIDE_BOTTOM || (s==SIDE_TOP && m->stamp && m->e.v.x==0.0f)){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
-}
-void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
-}
-SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
-	unsigned int ox = 0U;
-	unsigned int oy = 0U;
-	unsigned int dx = ea->atlas.w / ea->cx;
-	unsigned int dy = ea->atlas.h / ea->cy;
-	
-	if(m->dead)				        ox = 2U,oy = 1U;
-	else if(!m->ground){
-		if(!m->stamp)		        ox = 2U,oy = 0U;
-		else 				        ox = 1U,oy = 1U;
-	}else if(m->stamp){
-		if(m->e.v.x==0.0f)	        ox = 1U,oy = 1U;
-		else 				        ox = 0U,oy = 1U;
-	}
-	else if(m->reverse)		        ox = 3U,oy = 0U;
-	else if(m->e.v.x==0.0f)	        ox = 7U,oy = 0U;
-	else{
-		FDuration d = Time_Elapsed(m->start,Time_Nano());
-		//d *= (F32_Abs(f->v.x) / F32_Max(MARIO_VEL_MAX_GRD,MARIO_VEL_MAX_AIR));
-		d = d - F32_Floor(d);
-		d *= F32_Abs(m->e.v.x) * 0.65f;
-		d = d - F32_Floor(d);
-
-		ox = 4U + (int)(3.0f * d);
-        oy = 0U;
-	}
-
-	if(m->power==1)			        oy = 1.0f + oy,dy *= 2;
-	else if(m->power==2)	        oy = 3.0f + oy,dy *= 2;
-	//else if(m->power==3)	        oy = 0.0f + oy;
-
-	if(m->lookdir==ENTITY_RIGHT)    ox = 15U - ox;
-
-	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
-}
-void Mario_Free(Mario* m){
-	
-}
-Mario* Mario_New(Vec2 p){
-	Mario b;
-	b.e.id = ENTITY_MARIO;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
-	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
-
-	b.spawn = p;
-	b.start = 0UL;
-	b.lookdir = ENTITY_RIGHT;
-	b.ground = ENTITY_FALSE;
-	b.jumping = ENTITY_FALSE;
-	b.stamp = ENTITY_FALSE;
-	b.reverse = ENTITY_FALSE;
-	b.power = 0;
-	b.dead = ENTITY_FALSE;
-
-	Mario* hb = malloc(sizeof(Mario));
-	memcpy(hb,&b,sizeof(Mario));
-	return hb;
-}
-
-
 typedef struct Bowler {
 	Entity e;
+	char inside;
 } Bowler;
 
 void Bowler_Free(Bowler* e){
 }
 void Bowler_Update(Bowler* e,float t){
+	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
+	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowler_WorldCollision(Bowler* m,World* w){
 	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
 	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
 
 	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Bowler_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
+		World_Remove(w,(Entity*)m);
 	}
 }
 char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
@@ -426,17 +194,10 @@ char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s)
 void Bowler_Collision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Bowler_EntityCollision(Bowler* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -449,6 +210,15 @@ SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
+
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
+	if(e->e.v.x > 0.0f) ox = 4 - ox;
+	if(e->inside) ox = 2;
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -456,7 +226,7 @@ Bowler* Bowler_New(Vec2 p){
 	Bowler b;
 	b.e.id = ENTITY_BOWLER;
 	b.e.r = (Rect){ p,{ BOWLER_DIM_X,BOWLER_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -BOWLER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bowler_WorldCollision;
@@ -465,6 +235,8 @@ Bowler* Bowler_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowler_EntityCollision;
 	
+	b.inside = 0;
+
 	Bowler* hb = malloc(sizeof(Bowler));
 	memcpy(hb,&b,sizeof(Bowler));
 	return hb;
@@ -559,6 +331,9 @@ SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
+
+	dx *= 2;
+	dy *= 2;
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -646,17 +421,10 @@ char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 void Bro_Collision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Bro_EntityCollision(Bro* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -670,6 +438,8 @@ SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	dy *= 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Bro* Bro_New(Vec2 p){
@@ -756,17 +526,10 @@ char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 void Coopa_Collision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Coopa_EntityCollision(Coopa* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -866,17 +629,10 @@ char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y
 void FireJumper_Collision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void FireJumper_EntityCollision(FireJumper* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -976,17 +732,10 @@ char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 void Fish_Collision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Fish_EntityCollision(Fish* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1086,17 +835,10 @@ char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
 void Gumba_Collision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Gumba_EntityCollision(Gumba* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1196,17 +938,10 @@ char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s)
 void Lakitu_Collision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Lakitu_EntityCollision(Lakitu* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1220,6 +955,8 @@ SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	dy *= 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Lakitu* Lakitu_New(Vec2 p){
@@ -1306,17 +1043,9 @@ char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side 
 void PlantUG_Collision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void PlantUG_EntityCollision(PlantUG* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1330,6 +1059,8 @@ SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	dy *= 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 PlantUG* PlantUG_New(Vec2 p){
@@ -1416,17 +1147,10 @@ char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
 void Plant_Collision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Plant_EntityCollision(Plant* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1440,6 +1164,8 @@ SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	dy *= 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Plant* Plant_New(Vec2 p){
@@ -1526,17 +1252,10 @@ char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 void Spike_Collision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Spike_EntityCollision(Spike* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1636,17 +1355,10 @@ char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
 void Squid_Collision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Squid_EntityCollision(Squid* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1660,6 +1372,8 @@ SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	dy *= 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Squid* Squid_New(Vec2 p){
@@ -1745,18 +1459,11 @@ char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
 }
 void Willi_Collision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
-	}
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Willi_EntityCollision(Willi* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -1787,6 +1494,373 @@ Willi* Willi_New(Vec2 p){
 	
 	Willi* hb = malloc(sizeof(Willi));
 	memcpy(hb,&b,sizeof(Willi));
+	return hb;
+}
+
+
+typedef struct Mario {
+	Entity e;
+	Vec2 spawn;
+	Timepoint start;
+	unsigned char lookdir;
+	unsigned char ground;
+	unsigned char jumping;
+	unsigned char stamp;
+	unsigned char reverse;
+	unsigned char power;
+	unsigned char dead;
+} Mario;
+
+void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
+	if(m->dead){
+		m->e.v.x = 0.0f;
+		m->e.a.x = 0.0f;
+		return;
+	}
+	
+	if(dir < -0.2f){// min for clean acc
+		if(m->e.v.x>0.0f)   m->reverse = ENTITY_TRUE;
+		if(m->ground) 	    m->e.a.x = -MARIO_ACC_GRD * F32_Abs(dir);
+		else 			    m->e.a.x = -MARIO_ACC_AIR * F32_Abs(dir);
+	}else if(dir > 0.2f){
+		if(m->e.v.x<0.0f)   m->reverse = ENTITY_TRUE;
+		if(m->ground) 	    m->e.a.x = MARIO_ACC_GRD * F32_Abs(dir);
+		else 			    m->e.a.x = MARIO_ACC_AIR * F32_Abs(dir);
+	}else
+		m->e.a.x = 0.0f;
+}
+void Mario_Die(Mario* m){
+	m->dead = ENTITY_TRUE;
+	m->e.v.y = -MARIO_VEL_DEAD;
+}
+void Mario_Respawn(Mario* m,Vec2 spawn){
+	m->e.r.p = spawn;
+	m->dead = ENTITY_FALSE;
+
+	m->e.v.x = 0.0f;
+	m->e.v.y = 0.0f;
+	m->e.a.x = 0.0f;
+}
+void Mario_Update(Mario* m,World* w,float t){
+    m->e.a.x = F32_Clamp(m->e.a.x,-MARIO_ACC_MAX,MARIO_ACC_MAX);
+	if(m->ground) 	m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_GRD,MARIO_VEL_MAX_GRD);
+	else			m->e.v.x = F32_Clamp(m->e.v.x,-MARIO_VEL_MAX_AIR,MARIO_VEL_MAX_AIR);
+
+	if(m->e.v.x<0.0f) m->lookdir = ENTITY_LEFT;
+	if(m->e.v.x>0.0f) m->lookdir = ENTITY_RIGHT;
+
+	if(F32_Abs(m->e.v.x)>MARIO_VEL_CLP){
+		const float add = -F32_Sign(m->e.v.x) * (m->ground ? MARIO_ACC_GGP : MARIO_ACC_AGP) * t;
+		m->e.v.x = F32_Passes(m->e.v.x,add,0.0f) ? 0.0f : m->e.v.x + add;
+	}else
+		m->e.v.x = 0.0f;
+
+	m->e.v.x = m->e.v.x + F32_Krung(m->e.a.x,MARIO_ACC_MAX) * t;
+	m->e.v.y = m->e.v.y + m->e.a.y * t * (!m->jumping ? MARIO_VEL_MUL : 1.0f);// && m->e.v.y<0.0f
+	
+	//m->e.v = Vec2_Add(m->e.v,Vec2_Mulf(m->e.a,t * (m->jumping ? 1.0f : 2.0f)));
+	m->e.r.p = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.v,t));
+    m->ground = ENTITY_FALSE;
+}
+void Mario_WorldCollision(Mario* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(!m->dead && m->e.r.p.y>w->height){
+		m->e.r.p.y = w->height - m->e.r.d.y;
+		Mario_Die(m);
+	}
+	if(m->dead && m->e.r.p.y>w->height){
+		Mario_Respawn(m,w->spawn);
+	}
+
+	//m->stamp = FIGURE_FALSE;
+	m->jumping = ENTITY_FALSE;
+	m->reverse = FIGURE_FALSE;
+}
+char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
+	if(m->dead) return 0;
+	
+	Block b = World_Get(w,x,y);
+
+	if(b==BLOCK_COIN){
+		//AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
+		World_Set(w,x,y,BLOCK_NONE);
+		return 1;
+	//}else if(b==BLOCK_STAR_COIN){
+	//	AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	return 1;
+	//}else if(b==BLOCK_REDPILZ){
+	//	AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	f->power = 1;
+	//	f->r.d.y = 1.8f;
+	//	return 1;
+	//}else if(b==BLOCK_GREENPILZ){
+	//	AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+	//	World_Set(w,x,y,BLOCK_NONE);
+	//	f->power = 0;
+	//	f->r.d.y = 0.9f;
+	//	return 1;
+	}else if(b==BLOCK_FIRE_FLOWER){
+		//AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
+		World_Set(w,x,y,BLOCK_NONE);
+		m->power = 2;
+        m->e.r.p.x -= MARIO_DIM_P2_X - m->e.r.d.x;
+		m->e.r.p.y -= MARIO_DIM_P2_Y - m->e.r.d.y;
+		m->e.r.d.x = MARIO_DIM_P2_X;
+		m->e.r.d.y = MARIO_DIM_P2_Y;
+		return 1;
+	}else if(b==BLOCK_SUPER_STAR){
+		//AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+		World_Set(w,x,y,BLOCK_NONE);
+		m->power = 3;
+        m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
+		m->e.r.p.y -= MARIO_DIM_P3_Y - m->e.r.d.y;
+		m->e.r.d.x = MARIO_DIM_P3_X;
+		m->e.r.d.y = MARIO_DIM_P3_Y;
+		return 1;
+	}
+	return 0;
+}
+char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
+	if(m->dead) return 0;
+	
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Mario_Collision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
+	if(m->dead) return;
+	
+	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x = 0.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x = 0.0f;
+
+	Block b = World_Get(w,x,y);
+	
+    if(s==SIDE_TOP)
+        m->ground = FIGURE_TRUE;
+
+	if(s==SIDE_BOTTOM || (s==SIDE_TOP && m->stamp && m->e.v.x==0.0f)){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	if(m->dead) return;
+	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			if(s == SIDE_TOP){
+				Bowler* b = (Bowler*)other;
+				if(!b->inside){
+					b->inside = 1;
+					b->e.v.x = 0.0f;
+				}else{
+					if(b->e.v.x != 0.0f) 
+						b->e.v.x = 0.0f;
+					else{
+						const float dir = F32_Sign(b->e.r.p.x - m->e.r.p.x);
+						b->e.v.x = dir * BOWLER_VEL_ROLLX;
+					}
+				}
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_BRO:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_EXPLOSION:	{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_FIREBALL:	{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_FIREBEAM:	{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_FIREJUMPER:	{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_FISH:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_HAMMER:		{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			Mario_Die(m);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			if(s == SIDE_TOP){
+				World_Remove(w,other);
+				m->e.v.y = -MARIO_VEL_JP;
+			}else
+				Mario_Die(m);
+			break;
+		}
+	}
+}
+SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = ea->atlas.w / ea->cx;
+	unsigned int dy = ea->atlas.h / ea->cy;
+	
+	if(m->dead)				        ox = 2U,oy = 1U;
+	else if(!m->ground){
+		if(!m->stamp)		        ox = 2U,oy = 0U;
+		else 				        ox = 1U,oy = 1U;
+	}else if(m->stamp){
+		if(m->e.v.x==0.0f)	        ox = 1U,oy = 1U;
+		else 				        ox = 0U,oy = 1U;
+	}
+	else if(m->reverse)		        ox = 3U,oy = 0U;
+	else if(m->e.v.x==0.0f)	        ox = 7U,oy = 0U;
+	else{
+		FDuration d = Time_Elapsed(m->start,Time_Nano());
+		//d *= (F32_Abs(f->v.x) / F32_Max(MARIO_VEL_MAX_GRD,MARIO_VEL_MAX_AIR));
+		d = d - F32_Floor(d);
+		d *= F32_Abs(m->e.v.x) * 0.65f;
+		d = d - F32_Floor(d);
+
+		ox = 4U + (int)(3.0f * d);
+        oy = 0U;
+	}
+
+	if(m->power==1)			        oy = 1.0f + oy,dy *= 2;
+	else if(m->power==2)	        oy = 3.0f + oy,dy *= 2;
+	//else if(m->power==3)	        oy = 0.0f + oy;
+
+	if(m->lookdir==ENTITY_RIGHT)    ox = 15U - ox;
+
+	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
+}
+void Mario_Free(Mario* m){
+	
+}
+Mario* Mario_New(Vec2 p){
+	Mario b;
+	b.e.id = ENTITY_MARIO;
+	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+
+	b.spawn = p;
+	b.start = 0UL;
+	b.lookdir = ENTITY_RIGHT;
+	b.ground = ENTITY_FALSE;
+	b.jumping = ENTITY_FALSE;
+	b.stamp = ENTITY_FALSE;
+	b.reverse = ENTITY_FALSE;
+	b.power = 0;
+	b.dead = ENTITY_FALSE;
+
+	Mario* hb = malloc(sizeof(Mario));
+	memcpy(hb,&b,sizeof(Mario));
 	return hb;
 }
 
@@ -2716,17 +2790,17 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
         (EntityAtlas[]){
 		    EntityAtlas_New(path_entities,"Mario.png",16,12,	(void(*)(void*,const float))Mario_Update,		(SubSprite(*)(void*,EntityAtlas*))Mario_GetRender,		(void(*)(void*))Mario_Free),
 		    EntityAtlas_New(path_entities,"Bowler.png",5,3,		(void(*)(void*,const float))Bowler_Update,		(SubSprite(*)(void*,EntityAtlas*))Bowler_GetRender,		(void(*)(void*))Bowler_Free),
-		    EntityAtlas_New(path_entities,"Bowser.png",8,1,		(void(*)(void*,const float))Bowser_Update,		(SubSprite(*)(void*,EntityAtlas*))Bowser_GetRender,		(void(*)(void*))Bowser_Free),
-		    EntityAtlas_New(path_entities,"Bro.png",6,2,		(void(*)(void*,const float))Bro_Update,			(SubSprite(*)(void*,EntityAtlas*))Bro_GetRender,		(void(*)(void*))Bro_Free),
+		    EntityAtlas_New(path_entities,"Bowser.png",16,2,	(void(*)(void*,const float))Bowser_Update,		(SubSprite(*)(void*,EntityAtlas*))Bowser_GetRender,		(void(*)(void*))Bowser_Free),
+		    EntityAtlas_New(path_entities,"Bro.png",6,4,		(void(*)(void*,const float))Bro_Update,			(SubSprite(*)(void*,EntityAtlas*))Bro_GetRender,		(void(*)(void*))Bro_Free),
 		    EntityAtlas_New(path_entities,"Coopa.png",10,3,		(void(*)(void*,const float))Coopa_Update,		(SubSprite(*)(void*,EntityAtlas*))Coopa_GetRender,		(void(*)(void*))Coopa_Free),
 		    EntityAtlas_New(path_entities,"FireJumper.png",2,1,	(void(*)(void*,const float))FireJumper_Update,	(SubSprite(*)(void*,EntityAtlas*))FireJumper_GetRender,	(void(*)(void*))FireJumper_Free),
 		    EntityAtlas_New(path_entities,"Fish.png",4,3,		(void(*)(void*,const float))Fish_Update,		(SubSprite(*)(void*,EntityAtlas*))Fish_GetRender,		(void(*)(void*))Fish_Free),
 		    EntityAtlas_New(path_entities,"Gumba.png",3,3,		(void(*)(void*,const float))Gumba_Update,		(SubSprite(*)(void*,EntityAtlas*))Gumba_GetRender,		(void(*)(void*))Gumba_Free),
-		    EntityAtlas_New(path_entities,"Lakitu.png",3,3,		(void(*)(void*,const float))Lakitu_Update,		(SubSprite(*)(void*,EntityAtlas*))Lakitu_GetRender,		(void(*)(void*))Lakitu_Free),
-		    EntityAtlas_New(path_entities,"PlantUG.png",2,1,	(void(*)(void*,const float))PlantUG_Update,		(SubSprite(*)(void*,EntityAtlas*))PlantUG_GetRender,	(void(*)(void*))PlantUG_Free),
-		    EntityAtlas_New(path_entities,"Plant.png",2,1,		(void(*)(void*,const float))Plant_Update,		(SubSprite(*)(void*,EntityAtlas*))Plant_GetRender,		(void(*)(void*))Plant_Free),
+		    EntityAtlas_New(path_entities,"Lakitu.png",3,2,		(void(*)(void*,const float))Lakitu_Update,		(SubSprite(*)(void*,EntityAtlas*))Lakitu_GetRender,		(void(*)(void*))Lakitu_Free),
+		    EntityAtlas_New(path_entities,"PlantUG.png",2,2,	(void(*)(void*,const float))PlantUG_Update,		(SubSprite(*)(void*,EntityAtlas*))PlantUG_GetRender,	(void(*)(void*))PlantUG_Free),
+		    EntityAtlas_New(path_entities,"Plant.png",2,2,		(void(*)(void*,const float))Plant_Update,		(SubSprite(*)(void*,EntityAtlas*))Plant_GetRender,		(void(*)(void*))Plant_Free),
 		    EntityAtlas_New(path_entities,"Spike.png",6,1,		(void(*)(void*,const float))Spike_Update,		(SubSprite(*)(void*,EntityAtlas*))Spike_GetRender,		(void(*)(void*))Spike_Free),
-		    EntityAtlas_New(path_entities,"Squid.png",2,1,		(void(*)(void*,const float))Squid_Update,		(SubSprite(*)(void*,EntityAtlas*))Squid_GetRender,		(void(*)(void*))Squid_Free),
+		    EntityAtlas_New(path_entities,"Squid.png",2,2,		(void(*)(void*,const float))Squid_Update,		(SubSprite(*)(void*,EntityAtlas*))Squid_GetRender,		(void(*)(void*))Squid_Free),
 		    EntityAtlas_New(path_entities,"Willi.png",2,1,		(void(*)(void*,const float))Willi_Update,		(SubSprite(*)(void*,EntityAtlas*))Willi_GetRender,		(void(*)(void*))Willi_Free),
 		    EntityAtlas_Null()
 	    }
