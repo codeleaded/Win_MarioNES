@@ -36,8 +36,8 @@
 #define BLOCK_SPAWN_FISH				28U
 #define BLOCK_SPAWN_GUMBA				29U
 #define BLOCK_SPAWN_LAKITU				30U
-#define BLOCK_SPAWN_PLANT				31U
-#define BLOCK_SPAWN_PLANTUG				32U
+#define BLOCK_SPAWN_PLANTUG				31U
+#define BLOCK_SPAWN_PLANT				32U
 #define BLOCK_SPAWN_SPIKE				33U
 #define BLOCK_SPAWN_SQUID				34U
 #define BLOCK_SPAWN_WILLI				35U
@@ -55,8 +55,8 @@
 #define ENTITY_FISH						7U
 #define ENTITY_GUMBA					8U
 #define ENTITY_LAKITU					9U
-#define ENTITY_PLANT					10U
-#define ENTITY_PLANTUG					11U
+#define ENTITY_PLANTUG					10U
+#define ENTITY_PLANT					11U
 #define ENTITY_SPIKE					12U
 #define ENTITY_SQUID					13U
 #define ENTITY_WILLI					14U
@@ -123,15 +123,19 @@
 
 #define SQUID_DIM_X						0.9f
 #define SQUID_DIM_Y						1.9f
+
 #define WILLI_DIM_X						0.9f
 #define WILLI_DIM_Y						0.9f
+#define WILLI_VEL_X						4.0f
+#define WILLI_VEL_Y						4.0f
+
 #define EXPLOSION_DIM_X					0.9f
 #define EXPLOSION_DIM_Y					0.9f
 
 #define FIREBALL_DIM_X					0.9f
 #define FIREBALL_DIM_Y					0.9f
-#define FIREBALL_VEL_X					4.0f
-#define FIREBALL_VEL_Y					4.0f
+#define FIREBALL_VEL_X					12.0f
+#define FIREBALL_VEL_Y					8.0f
 
 #define FIREBEAM_DIM_X					1.9f
 #define FIREBEAM_DIM_Y					0.9f
@@ -140,8 +144,8 @@
 
 #define HAMMER_DIM_X					0.9f
 #define HAMMER_DIM_Y					0.9f
-#define HAMMER_VEL_X					4.0f
-#define HAMMER_VEL_Y					4.0f
+#define HAMMER_VEL_X					11.0f
+#define HAMMER_VEL_Y					8.0f
 
 #define MARIO_ACC_GRAVITY	            30.0f
 #define MARIO_ACC_GRAVITY	            30.0f
@@ -265,18 +269,6 @@ void Bowler_EntityCollision(Bowler* m,World* w,Entity* other,unsigned int x,unsi
 			World_Remove(w,other);
 			break;
 		}
-		case ENTITY_EXPLOSION:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
-		case ENTITY_FIREBALL:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
-		case ENTITY_FIREBEAM:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
 		case ENTITY_FIREJUMPER:	{
 			
 			break;
@@ -287,10 +279,6 @@ void Bowler_EntityCollision(Bowler* m,World* w,Entity* other,unsigned int x,unsi
 		}
 		case ENTITY_GUMBA:		{
 			World_Remove(w,other);
-			break;
-		}
-		case ENTITY_HAMMER:		{
-			World_Remove(w,(Entity*)m);
 			break;
 		}
 		case ENTITY_LAKITU:		{
@@ -667,18 +655,6 @@ void Coopa_EntityCollision(Coopa* m,World* w,Entity* other,unsigned int x,unsign
 			}
 			break;
 		}
-		case ENTITY_EXPLOSION:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
-		case ENTITY_FIREBALL:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
-		case ENTITY_FIREBEAM:	{
-			World_Remove(w,(Entity*)m);
-			break;
-		}
 		case ENTITY_FIREJUMPER:	{
 			
 			break;
@@ -689,10 +665,6 @@ void Coopa_EntityCollision(Coopa* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_GUMBA:		{
 			World_Remove(w,other);
-			break;
-		}
-		case ENTITY_HAMMER:		{
-			World_Remove(w,(Entity*)m);
 			break;
 		}
 		case ENTITY_LAKITU:		{
@@ -774,7 +746,10 @@ void FireJumper_WorldCollision(FireJumper* m,World* w){
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	else if(m->e.r.p.y>w->height) 		m->e.v.y *= -1.0f;
+	else if(m->e.r.p.y>w->height){
+		m->e.r.p.y = w->height;
+		m->e.v.y *= -1.0f;
+	}
 }
 char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -842,7 +817,10 @@ void Fish_WorldCollision(Fish* m,World* w){
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	else if(m->e.r.p.y>w->height) 		m->e.v.y *= -1.0f;
+	else if(m->e.r.p.y>w->height){
+		m->e.r.p.y = w->height;
+		m->e.v.y *= -1.0f;
+	}
 }
 char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1386,7 +1364,7 @@ Spike* Spike_New(Vec2 p){
 	Spike b;
 	b.e.id = ENTITY_SPIKE;
 	b.e.r = (Rect){ { p.x,p.y - (SPIKE_DIM_Y - 1.0f)},{ SPIKE_DIM_X,SPIKE_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -SPIKE_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Spike_WorldCollision;
@@ -1579,8 +1557,8 @@ Willi* Willi_New(Vec2 p){
 	Willi b;
 	b.e.id = ENTITY_WILLI;
 	b.e.r = (Rect){ { p.x,p.y - (WILLI_DIM_Y - 1.0f)},{ WILLI_DIM_X,WILLI_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
-	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.v = (Vec2){ -WILLI_VEL_X,0.0f };
+	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Willi_WorldCollision;
 	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Willi_IsPickUp;
@@ -1658,7 +1636,56 @@ void Explosion_Collision(Explosion* m,World* w,unsigned int x,unsigned int y,Sid
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Explosion_EntityCollision(Explosion* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,other);
+			break;
+		}
+	}
 }
 SubSprite Explosion_GetRender(Explosion* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -1751,13 +1778,72 @@ char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Sid
 void Fireball_Collision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 
-	if(s==SIDE_TOP && m->e.v.y>0.0f)			m->e.v.y *= -0.5f;
-	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f)	m->e.v.y *= -0.5f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f)			m->e.v.y = -FIREBALL_VEL_Y;
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f)	m->e.v.y = FIREBALL_VEL_Y;
 	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Fireball_EntityCollision(Fireball* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+	}
 }
 SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -1856,7 +1942,56 @@ void Firebeam_Collision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side 
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Firebeam_EntityCollision(Firebeam* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,other);
+			break;
+		}
+	}
 }
 SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -1959,7 +2094,66 @@ void Hammer_Collision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Hammer_EntityCollision(Hammer* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+	}
 }
 SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -1992,8 +2186,6 @@ Hammer* Hammer_New(Vec2 p){
 	memcpy(hb,&b,sizeof(Hammer));
 	return hb;
 }
-
-
 
 
 
@@ -2115,11 +2307,16 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 	}else if(b==BLOCK_SUPER_STAR){
 		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
-		m->power = 3;
-        m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
-		m->e.r.p.y -= MARIO_DIM_P3_Y - m->e.r.d.y;
-		m->e.r.d.x = MARIO_DIM_P3_X;
-		m->e.r.d.y = MARIO_DIM_P3_Y;
+		//m->power = 3;
+        //m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
+		//m->e.r.p.y -= MARIO_DIM_P3_Y - m->e.r.d.y;
+		//m->e.r.d.x = MARIO_DIM_P3_X;
+		//m->e.r.d.y = MARIO_DIM_P3_Y;
+		m->power = 1;
+        m->e.r.p.x -= MARIO_DIM_P1_X - m->e.r.d.x;
+		m->e.r.p.y -= MARIO_DIM_P1_Y - m->e.r.d.y;
+		m->e.r.d.x = MARIO_DIM_P1_X;
+		m->e.r.d.y = MARIO_DIM_P1_Y;
 		return 1;
 	}
 	return 0;

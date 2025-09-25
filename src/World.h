@@ -514,6 +514,17 @@ void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 	if(x<w->width && y<w->height)
 		w->data[y * w->width + x] = b;
 }
+void* World_Spawn(World* w,SpawnType st,Vec2 p,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
+	unsigned int size = 0U;
+	void* e = Spawn(p,st,&size);
+	if(e){
+		PVector_Push(&w->entities,e,size);
+		free(e);
+		void* ret = PVector_Get(&w->entities,w->entities.size - 1);	
+		return ret;
+	}
+	return NULL;
+}
 void World_Remove(World* w,Entity* e){
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* te = (Entity*)PVector_Get(&w->entities,i);
@@ -605,12 +616,14 @@ void World_Reload(World* w,unsigned int width,unsigned int height){
 		EntityAtlas_Resize(ea,width,height);
 	}
 }
-void World_Update(World* w,float t){
+void World_Update(World* w,TransformedView* tv,float t){
 	if(w->mode!=ANIMATIONBG_DG){
 		for(int i = 0;i<w->entities.size;i++){
 			Entity* e = (Entity*)PVector_Get(&w->entities,i);
 			EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
-			if(ea) ea->Update(e,t);
+			
+			if(ea && TransformedView_inViewRect(tv,e->r))
+				ea->Update(e,t);
 		}
 	}
 }
@@ -673,25 +686,22 @@ void World_EntityCollision(World* w,Entity* src){
 	}
 }
 
-void World_Collisions(World* w){
+void World_Collisions(World* w,TransformedView* tv){
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
-		if(ea){
+		if(ea && TransformedView_inViewRect(tv,e->r)){
 			World_EntityCollision(w,e);
 			World_Collision(w,e);
 		}
 	}
 }
 void World_RenderEntities(World* w,TransformedView* tv,Pixel* out,unsigned int width,unsigned int height){
-	const Vec2 tl = TransformedView_ScreenWorldPos(tv,(Vec2){ 0.0f,0.0f });
-	const Vec2 br = TransformedView_ScreenWorldPos(tv,(Vec2){ width,height });
-	const Rect r = { tl,br };
-	
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
-		//if(!Rect_Overlap(&r,&e->r))
-		//	continue;
+		
+		if(!TransformedView_inViewRect(tv,e->r))
+			continue;
 		
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea){
