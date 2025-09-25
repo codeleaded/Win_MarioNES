@@ -133,6 +133,16 @@
 #define MARIO_VEL_MUL 		            3.0f
 
 
+typedef struct MarioWorld {
+    World world;
+    Figure mario;
+    TransformedView tv;
+    AudioPlayer ap;
+    unsigned int level;
+    Block selected;
+} MarioWorld;
+
+
 typedef struct Bowler {
 	Entity e;
 	char inside;
@@ -145,12 +155,10 @@ void Bowler_Update(Bowler* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowler_WorldCollision(Bowler* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		World_Remove(w,(Entity*)m);
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -451,19 +459,10 @@ void Bro_Update(Bro* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bro_WorldCollision(Bro* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Bro_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bro_IsPickUp(Bro* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -558,19 +557,10 @@ void Coopa_Update(Coopa* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Coopa_WorldCollision(Coopa* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Coopa_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Coopa_IsPickUp(Coopa* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -663,19 +653,10 @@ void FireJumper_Update(FireJumper* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void FireJumper_WorldCollision(FireJumper* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				FireJumper_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -768,19 +749,10 @@ void Fish_Update(Fish* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Fish_WorldCollision(Fish* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Fish_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -873,19 +845,10 @@ void Gumba_Update(Gumba* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Gumba_WorldCollision(Gumba* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Gumba_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Gumba_IsPickUp(Gumba* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -978,19 +941,10 @@ void Lakitu_Update(Lakitu* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Lakitu_WorldCollision(Lakitu* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Lakitu_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Lakitu_IsPickUp(Lakitu* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1085,19 +1039,10 @@ void PlantUG_Update(PlantUG* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void PlantUG_WorldCollision(PlantUG* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				PlantUG_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char PlantUG_IsPickUp(PlantUG* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1191,19 +1136,10 @@ void Plant_Update(Plant* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Plant_WorldCollision(Plant* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Plant_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Plant_IsPickUp(Plant* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1298,19 +1234,10 @@ void Spike_Update(Spike* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Spike_WorldCollision(Spike* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Spike_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Spike_IsPickUp(Spike* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1403,19 +1330,10 @@ void Squid_Update(Squid* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Squid_WorldCollision(Squid* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Squid_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Squid_IsPickUp(Squid* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1510,19 +1428,10 @@ void Willi_Update(Willi* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Willi_WorldCollision(Willi* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Willi_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
-	}
+	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Willi_IsPickUp(Willi* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1635,7 +1544,8 @@ void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
 	}else
 		m->e.a.x = 0.0f;
 }
-void Mario_Die(Mario* m){
+void Mario_Die(Mario* m,World* w){
+	AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/dead4.wav");
 	m->dead = ENTITY_TRUE;
 	m->e.v.y = -MARIO_VEL_DEAD;
 }
@@ -1674,7 +1584,7 @@ void Mario_WorldCollision(Mario* m,World* w){
 
 	if(!m->dead && m->e.r.p.y>w->height){
 		m->e.r.p.y = w->height - m->e.r.d.y;
-		Mario_Die(m);
+		Mario_Die(m,w);
 	}
 	if(m->dead && m->e.r.p.y>w->height){
 		Mario_Respawn(m,w->spawn);
@@ -1690,7 +1600,7 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_COIN){
-		//AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/coin.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		return 1;
 	//}else if(b==BLOCK_STAR_COIN){
@@ -1710,7 +1620,7 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 	//	f->r.d.y = 0.9f;
 	//	return 1;
 	}else if(b==BLOCK_FIRE_FLOWER){
-		//AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/upgrade.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 2;
         m->e.r.p.x -= MARIO_DIM_P2_X - m->e.r.d.x;
@@ -1719,7 +1629,7 @@ char Mario_IsPickUp(Mario* m,World* w,unsigned int x,unsigned int y){
 		m->e.r.d.y = MARIO_DIM_P2_Y;
 		return 1;
 	}else if(b==BLOCK_SUPER_STAR){
-		//AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 3;
         m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
@@ -1810,97 +1720,104 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 						b->e.v.x = dir * BOWLER_VEL_ROLLX;
 					}
 				}
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_BOWSER:		{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_BRO:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_COOPA:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_EXPLOSION:	{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_FIREBALL:	{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_FIREBEAM:	{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_FIREJUMPER:	{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_FISH:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_GUMBA:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_HAMMER:		{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_LAKITU:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_PLANT:		{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_PLANTUG:	{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_SPIKE:		{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_SQUID:		{
-			Mario_Die(m);
+			Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_WILLI:		{
 			if(s == SIDE_TOP){
 				World_Remove(w,other);
+				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
 			}else
-				Mario_Die(m);
+				Mario_Die(m,w);
 			break;
 		}
 	}
@@ -2826,15 +2743,6 @@ SubSprite MarioWorld_Willi_Get(Animation* a,World* w,unsigned int x,unsigned int
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-
-typedef struct MarioWorld {
-    World world;
-    Figure mario;
-    TransformedView tv;
-    AudioPlayer ap;
-    unsigned int level;
-    Block selected;
-} MarioWorld;
 
 MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
     MarioWorld mw;

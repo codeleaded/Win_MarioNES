@@ -665,7 +665,6 @@ void World_EntityCollision(World* w,Entity* src){
 			
 			if(Overlap_Rect_Rect(src->r,e->r)){
 				Side s = Side_Rect_Rect(src->r,e->r);
-				Resolve_Rect_Rect_Side(&src->r,e->r,s);
 				
 				if(src->EntityCollision)
 					src->EntityCollision(src,w,e,e->r.p.x,e->r.p.y,s);
