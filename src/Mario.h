@@ -2544,7 +2544,8 @@ void Mario_Collision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 		if(b==BLOCK_BRICK){
 			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Breakblock.wav");
 			World_Set(w,x,y,BLOCK_NONE);
-		}else{
+		}
+		if(s==SIDE_BOTTOM){
 			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Bump.wav");
 		}
 		
