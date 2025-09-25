@@ -491,8 +491,9 @@ void World_Start(World* w,void* (*Spawner)(Vec2,SpawnType,unsigned int*)){
 		}
 	}
 }
-World World_Make(char* Path,Block spawner,Block (*MapperFunc)(char c),Animation* a,EntityAtlas* ea){
+World World_Make(char* Path,Block spawner,Block (*MapperFunc)(char c),void* (*Spawner)(Vec2,SpawnType,unsigned int*),Animation* a,EntityAtlas* ea){
 	World w = World_New(0U,0U);
+	w.Spawner = Spawner;
 
 	World_Load(&w,Path,spawner,MapperFunc);
 

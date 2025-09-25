@@ -87,8 +87,15 @@
 
 #define BOWSER_DIM_X					1.9f
 #define BOWSER_DIM_Y					1.9f
+#define BOWSER_VEL_X					0.4f
+#define BOWSER_VEL_Y					20.0f
+#define BOWSER_THROW_DELAY				0.5f
+
 #define BRO_DIM_X						0.9f
 #define BRO_DIM_Y						1.9f
+#define BRO_VEL_X						0.5f
+#define BRO_VEL_Y						15.0f
+#define BRO_THROW_DELAY					0.5f
 
 #define COOPA_DIM_X						0.9f
 #define COOPA_DIM_Y						0.9f
@@ -138,6 +145,7 @@
 #define FIREBALL_DIM_Y					0.9f
 #define FIREBALL_VEL_X					12.0f
 #define FIREBALL_VEL_Y					8.0f
+#define FIREBALL_BOUNCE					8U
 
 #define FIREBEAM_DIM_X					1.9f
 #define FIREBEAM_DIM_Y					0.9f
@@ -347,31 +355,77 @@ Bowler* Bowler_New(Vec2 p){
 }
 
 
+typedef struct Firebeam {
+	Entity e;
+} Firebeam;
+
 typedef struct Bowser {
 	Entity e;
+	float startx;
+	char dir;
+	char ground;
+	Timepoint start;
 } Bowser;
 
 void Bowser_Free(Bowser* e){
 	Entity_Free(&e->e);
 }
 void Bowser_Update(Bowser* e,float t){
+	e->ground = 0;
+
+	const float dir = e->startx - e->e.r.p.x;
+	if(F32_Abs(dir) > 2.0f){
+		e->e.v.x = dir * BOWSER_VEL_X;
+		e->e.r.p.x = e->startx - F32_Sign(dir) * 2.0f;
+	}
+
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowser_WorldCollision(Bowser* m,World* w){
-	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
-	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
-
-	if(m->e.r.p.y>w->height){
-		for(int i = 0;i<w->entities.size;i++){
-			Entity* e = (Entity*)PVector_Get(&w->entities,i);
-			if((Entity*)m == e){
-				Bowser_Free(m);
-				PVector_Remove(&w->entities,i);
-				return;
-			}
-		}
+	m->dir = (((MarioWorld*)w)->mario.e->r.p.x - m->e.r.p.x) < 0.0f ? 0 : 1; 
+	
+	const float dir = m->startx - m->e.r.p.x;
+	if(F32_Abs(dir) > 1.0f){
+		m->start = 0UL;
+	}else{
+		if(m->start == 0UL)
+			m->start = Time_Nano();
 	}
+
+	if(m->ground && m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > BOWSER_THROW_DELAY){
+		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
+		const Vec2 off = { (m->e.r.d.x + FIREBEAM_DIM_X) * 0.51f,0.0f };
+
+		m->e.v.y = -BOWSER_VEL_Y;
+		
+		Firebeam* s = (Firebeam*)World_Spawn(
+			w,
+			ENTITY_FIREBEAM,
+			Vec2_Add(
+				Vec2_Sub(
+					mp,
+					Vec2_Mulf(
+						(Vec2){ FIREBEAM_DIM_X,HAMMER_DIM_Y },
+						0.5f
+					)
+				),
+				Vec2_Mulf(
+					off,
+					m->dir == 0 ? -1.0f : 1.0f
+				)
+			)
+		);
+		s->e.v.x = FIREBEAM_VEL_X * F32_Sign(s->e.r.p.x - mp.x);
+		s->e.v.y = -FIREBEAM_VEL_Y + m->e.v.y;
+
+		m->start = 0UL;
+	}
+
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bowser_IsSolid(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
@@ -436,8 +490,18 @@ SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.0f;
+	d = d - F32_Floor(d);
+	unsigned int a = (int)(2.0f * d);
+
+	if(e->start > 0UL && Time_Elapsed(e->start,Time_Nano()) > BOWSER_THROW_DELAY * 0.5f)
+		ox = 2U + a;
+	else
+		ox = a;
+
+	if(e->dir) ox = 7U - ox;
 
 	dx *= 2;
 	dy *= 2;
@@ -448,7 +512,7 @@ Bowser* Bowser_New(Vec2 p){
 	Bowser b;
 	b.e.id = ENTITY_BOWSER;
 	b.e.r = (Rect){ { p.x,p.y - (BOWSER_DIM_Y - 1.0f)},{ BOWSER_DIM_X,BOWSER_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -BOWSER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bowser_WorldCollision;
@@ -456,24 +520,84 @@ Bowser* Bowser_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowser_EntityCollision;
 	
+	b.startx = p.x;
+	b.dir = 0;
+	b.ground = 0;
+	b.start = 0UL;
+
 	Bowser* hb = malloc(sizeof(Bowser));
 	memcpy(hb,&b,sizeof(Bowser));
 	return hb;
 }
 
 
+typedef struct Hammer {
+	Entity e;
+} Hammer;
+
 typedef struct Bro {
 	Entity e;
+	float startx;
+	char dir;
+	char ground;
+	Timepoint start;
 } Bro;
 
 void Bro_Free(Bro* e){
 	Entity_Free(&e->e);
 }
 void Bro_Update(Bro* e,float t){
+	e->ground = 0;
+
+	const float dir = e->startx - e->e.r.p.x;
+	if(F32_Abs(dir) > 2.0f){
+		e->e.v.x = dir * BRO_VEL_X;
+		e->e.r.p.x = e->startx - F32_Sign(dir) * 2.0f;
+	}
+
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bro_WorldCollision(Bro* m,World* w){
+	m->dir = (((MarioWorld*)w)->mario.e->r.p.x - m->e.r.p.x) < 0.0f ? 0 : 1; 
+	
+	const float dir = m->startx - m->e.r.p.x;
+	if(F32_Abs(dir) > 1.0f){
+		m->start = 0UL;
+	}else{
+		if(m->start == 0UL)
+			m->start = Time_Nano();
+	}
+
+	if(m->ground && m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > BRO_THROW_DELAY){
+		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
+		const Vec2 off = { (m->e.r.d.x + HAMMER_DIM_X) * 0.51f,0.0f };
+
+		m->e.v.y = -BRO_VEL_Y;
+		
+		Hammer* s = (Hammer*)World_Spawn(
+			w,
+			ENTITY_HAMMER,
+			Vec2_Add(
+				Vec2_Sub(
+					mp,
+					Vec2_Mulf(
+						(Vec2){ HAMMER_DIM_X,HAMMER_DIM_Y },
+						0.5f
+					)
+				),
+				Vec2_Mulf(
+					off,
+					m->dir == 0 ? -1.0f : 1.0f
+				)
+			)
+		);
+		s->e.v.x = HAMMER_VEL_X * F32_Sign(s->e.r.p.x - mp.x);
+		s->e.v.y = -HAMMER_VEL_Y + m->e.v.y;
+
+		m->start = 0UL;
+	}
+
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
@@ -521,7 +645,10 @@ char Bro_IsSolid(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 void Bro_Collision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f){
+		m->e.v.y = 0.0f;
+		m->ground = 1;
+	}
 	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
 	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
@@ -534,10 +661,15 @@ SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
 	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.0f;
+	d = d - F32_Floor(d);
+	ox = (int)(3.0f * d);
+
+	if(e->dir) ox = 5U - ox;
+
 	dy *= 2;
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
@@ -546,13 +678,18 @@ Bro* Bro_New(Vec2 p){
 	Bro b;
 	b.e.id = ENTITY_BRO;
 	b.e.r = (Rect){ { p.x,p.y - (BRO_DIM_Y - 1.0f)},{ BRO_DIM_X,BRO_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -BRO_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Bro_WorldCollision;
 	b.e.IsSolid = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_IsSolid;
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bro_EntityCollision;
+
+	b.startx = p.x;
+	b.dir = 0;
+	b.ground = 0;
+	b.start = 0UL;
 	
 	Bro* hb = malloc(sizeof(Bro));
 	memcpy(hb,&b,sizeof(Bro));
@@ -1007,7 +1144,7 @@ void Lakitu_WorldCollision(Lakitu* m,World* w){
 
 	if(m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > LAKITU_THROW_DELAY){
 		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
-		const Vec2 off = { m->e.r.d.x,0.0f };
+		const Vec2 off = { (m->e.r.d.x + SPIKE_DIM_X),0.0f };
 		
 		Spike* s = (Spike*)World_Spawn(
 			w,
@@ -1034,42 +1171,7 @@ void Lakitu_WorldCollision(Lakitu* m,World* w){
 }
 char Lakitu_IsSolid(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	if(b==BLOCK_COIN)				return 0;
-	else if(b==BLOCK_FIRE_FLOWER)	return 0;
-	else if(b==BLOCK_SUPER_STAR) 	return 0;
-
-	switch(b){
-		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
-		case BLOCK_FENCE: 			return 0;
-		case BLOCK_CLOUD: 			return 0;
-		case BLOCK_BUSH: 			return 0;
-		case BLOCK_FLAG: 			return 0;
-		case BLOCK_CASTLE: 			return 0;
-		case BLOCK_GRASFAKE: 		return 0;
-		case BLOCK_TREE: 			return 0;
-		case BLOCK_SNOWTREE: 		return 0;
-		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
-		case BLOCK_SPAWN:			return 0;
-		case BLOCK_SPAWN_BOWLER:	return 0;
-		case BLOCK_SPAWN_BOWSER:	return 0;
-		case BLOCK_SPAWN_BRO:		return 0;
-		case BLOCK_SPAWN_COOPA:		return 0;
-		case BLOCK_SPAWN_FIREJUMPER:return 0;
-		case BLOCK_SPAWN_FISH:		return 0;
-		case BLOCK_SPAWN_GUMBA:		return 0;
-		case BLOCK_SPAWN_LAKITU:	return 0;
-		case BLOCK_SPAWN_PLANT:		return 0;
-		case BLOCK_SPAWN_PLANTUG:	return 0;
-		case BLOCK_SPAWN_SPIKE:		return 0;
-		case BLOCK_SPAWN_SQUID:		return 0;
-		case BLOCK_SPAWN_WILLI:		return 0;
-		case BLOCK_SPAWN_EXPLOSION:	return 0;
-		case BLOCK_SPAWN_FIREBALL:	return 0;
-		case BLOCK_SPAWN_FIREBEAM:	return 0;
-		case BLOCK_SPAWN_HAMMER:	return 0;
-	}
-
-	return 1;
+	return 0;
 }
 void Lakitu_Collision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
@@ -1089,7 +1191,8 @@ SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	unsigned int dy = ea->atlas.h / ea->cy;
 
 	if(e->e.v.x > 0.0f) ox = 2U;
-	if(e->start > 0UL)	ox = 1U;
+	if(e->start > 0UL && Time_Elapsed(e->start,Time_Nano()) > 0.5f * LAKITU_THROW_DELAY)
+		ox = 1U;
 
 	dy *= 2;
 
@@ -1765,6 +1868,7 @@ Explosion* Explosion_New(Vec2 p){
 
 typedef struct Fireball {
 	Entity e;
+	unsigned char bounce;
 } Fireball;
 
 void Fireball_Free(Fireball* e){
@@ -1822,10 +1926,23 @@ char Fireball_IsSolid(Fireball* m,World* w,unsigned int x,unsigned int y,Side s)
 void Fireball_Collision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 
-	if(s==SIDE_TOP && m->e.v.y>0.0f)			m->e.v.y = -FIREBALL_VEL_Y;
-	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f)	m->e.v.y = FIREBALL_VEL_Y;
-	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
-	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f){
+		m->e.v.y = -FIREBALL_VEL_Y;
+		m->bounce--;
+		if(m->bounce == 0U) World_Remove(w,(Entity*)m);
+	}else if(s==SIDE_BOTTOM && m->e.v.y<0.0f){
+		m->e.v.y = FIREBALL_VEL_Y;
+		m->bounce--;
+		if(m->bounce == 0U) World_Remove(w,(Entity*)m);
+	}else if(s==SIDE_LEFT && m->e.v.x>0.0f){
+		m->e.v.x *= -1.0f;
+		m->bounce--;
+		if(m->bounce == 0U) World_Remove(w,(Entity*)m);
+	}else if(s==SIDE_RIGHT && m->e.v.x<0.0f){
+		m->e.v.x *= -1.0f;
+		m->bounce--;
+		if(m->bounce == 0U) World_Remove(w,(Entity*)m);
+	}
 }
 void Fireball_EntityCollision(Fireball* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	switch (other->id){
@@ -1915,15 +2032,13 @@ Fireball* Fireball_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Fireball_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Fireball_EntityCollision;
 	
+	b.bounce = FIREBALL_BOUNCE;
+
 	Fireball* hb = malloc(sizeof(Fireball));
 	memcpy(hb,&b,sizeof(Fireball));
 	return hb;
 }
 
-
-typedef struct Firebeam {
-	Entity e;
-} Firebeam;
 
 void Firebeam_Free(Firebeam* e){
 	Entity_Free(&e->e);
@@ -2072,10 +2187,6 @@ Firebeam* Firebeam_New(Vec2 p){
 	return hb;
 }
 
-
-typedef struct Hammer {
-	Entity e;
-} Hammer;
 
 void Hammer_Free(Hammer* e){
 	Entity_Free(&e->e);
@@ -3549,7 +3660,7 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities,c
 
 	mw.selected = BLOCK_NONE;
 	mw.level = 0U;
-	mw.world = World_Make(path_lvl,BLOCK_SPAWN,MarioWorld_Std_Mapper,
+	mw.world = World_Make(path_lvl,BLOCK_SPAWN,MarioWorld_Std_Mapper,MarioWorld_Std_SpawnMapper,
         (Animation[]){
 		    Animation_Make_SpritePath(path_blocks,"Dirt.png",ANIMATIONBG_BG,ENTITY_NONE),
 		    Animation_Make_SpritePath(path_blocks,"Brick.png",ANIMATIONBG_BG,ENTITY_NONE),
