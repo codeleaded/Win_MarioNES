@@ -110,6 +110,8 @@
 
 #define LAKITU_DIM_X					0.9f
 #define LAKITU_DIM_Y					1.9f
+#define LAKITU_VEL_X					0.5f
+#define LAKITU_THROW_DELAY				1.0f
 
 #define PLANT_DIM_X						0.9f
 #define PLANT_DIM_Y						1.9f
@@ -971,8 +973,14 @@ Gumba* Gumba_New(Vec2 p){
 }
 
 
+typedef struct Spike {
+	Entity e;
+	char ground;
+} Spike;
+
 typedef struct Lakitu {
 	Entity e;
+	Timepoint start;
 } Lakitu;
 
 void Lakitu_Free(Lakitu* e){
@@ -987,6 +995,42 @@ void Lakitu_WorldCollision(Lakitu* m,World* w){
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+
+	const float dir = ((MarioWorld*)w)->mario.e->r.p.x - m->e.r.p.x;
+	if(F32_Abs(dir) > 1.0f){
+		m->e.v.x = LAKITU_VEL_X * dir;
+		m->start = 0UL;
+	}else{
+		if(m->start == 0UL)
+			m->start = Time_Nano();
+	}
+
+	if(m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > LAKITU_THROW_DELAY){
+		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
+		const Vec2 off = { m->e.r.d.x,0.0f };
+		
+		Spike* s = (Spike*)World_Spawn(
+			w,
+			ENTITY_SPIKE,
+			Vec2_Add(
+				Vec2_Sub(
+					mp,
+					Vec2_Mulf(
+						(Vec2){ SPIKE_DIM_X,SPIKE_DIM_Y },
+						0.5f
+					)
+				),
+				Vec2_Mulf(
+					off,
+					F32_Sign(m->e.v.x)
+				)
+			)
+		);
+		s->e.v.x = SPIKE_VEL_X * F32_Sign(s->e.r.p.x - mp.x);
+		s->e.v.y = -SPIKE_VEL_Y + m->e.v.y;
+
+		m->start = 0UL;
+	}
 }
 char Lakitu_IsSolid(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
@@ -1044,9 +1088,9 @@ SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	if(e->e.v.x > 0.0f) ox = 2U;
+	if(e->start > 0UL)	ox = 1U;
+
 	dy *= 2;
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
@@ -1063,6 +1107,8 @@ Lakitu* Lakitu_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Lakitu_EntityCollision;
 	
+	b.start = 0UL;
+
 	Lakitu* hb = malloc(sizeof(Lakitu));
 	memcpy(hb,&b,sizeof(Lakitu));
 	return hb;
@@ -1270,9 +1316,6 @@ Plant* Plant_New(Vec2 p){
 }
 
 
-typedef struct Spike {
-	Entity e;
-} Spike;
 
 void Spike_Free(Spike* e){
 	Entity_Free(&e->e);
@@ -1280,6 +1323,7 @@ void Spike_Free(Spike* e){
 void Spike_Update(Spike* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+	e->ground = 0;
 }
 void Spike_WorldCollision(Spike* m,World* w){
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
@@ -1329,7 +1373,10 @@ char Spike_IsSolid(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 void Spike_Collision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 	
-	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
+	if(s==SIDE_TOP && m->e.v.y>0.0f){
+		m->e.v.y = 0.0f;
+		m->ground = 1;
+	}
 	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
 	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
@@ -1347,9 +1394,11 @@ SubSprite Spike_GetRender(Spike* e,EntityAtlas* ea){
 	d = d - F32_Floor(d);
 	d *= F32_Abs(e->e.v.x) * 0.5f;
 	d = d - F32_Floor(d);
-	ox = 0U + (int)(2.0f * d);
+	unsigned int a = (int)(2.0f * d);
 
+	ox = a;
 	if(e->e.v.x > 0.0f) ox = 3 - ox;
+	if(!e->ground)		ox = 5 - a;
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -1365,6 +1414,8 @@ Spike* Spike_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Spike_EntityCollision;
 	
+	b.ground = 0;
+
 	Spike* hb = malloc(sizeof(Spike));
 	memcpy(hb,&b,sizeof(Spike));
 	return hb;
@@ -3490,7 +3541,7 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities,c
 	);
 
 	mw.tv = TransformedView_New((Vec2){ GetHeight(),GetHeight() });
-	TransformedView_Zoom(&mw.tv,(Vec2){ 0.1f,0.1f });
+	TransformedView_Zoom(&mw.tv,(Vec2){ 0.05f,0.05f });
 	//TransformedView_Offset(&tv,(Vec2){ -0.5f,0.0f });
 	TransformedView_Focus(&mw.tv,&mw.mario.e->r.p);
 

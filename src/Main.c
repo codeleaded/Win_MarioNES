@@ -84,61 +84,59 @@ void Update(AlxWindow* w){
 		World_Resize(&world.world,world.world.width,world.world.height + 1);
 	}
 
-	if(Stroke(ALX_KEY_E).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_QUD).PRESSED){
-		if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 1){
-			const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
-			const Vec2 off = { world.mario.e->r.d.x,0.0f };
-
-			Hammer* fb = (Hammer*)World_Spawn(
-				&world.world,
-				ENTITY_HAMMER,
-				Vec2_Add(
-					Vec2_Sub(
-						mp,
-						Vec2_Mulf(
-							(Vec2){ HAMMER_DIM_X,HAMMER_DIM_Y },
-							0.5f
-						)
-					),
-					Vec2_Mulf(
-						off,
-						(((Mario*)world.mario.e)->lookdir ? 1 : -1)
-					)
-				),
-				MarioWorld_Std_SpawnMapper
-			);
-			fb->e.v.x = HAMMER_VEL_X * F32_Sign(fb->e.r.p.x - mp.x);
-			fb->e.v.y = -HAMMER_VEL_Y + world.mario.e->v.y;
-		}
-		if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 2){
-			const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
-			const Vec2 off = { world.mario.e->r.d.x,0.0f };
-
-			Fireball* fb = (Fireball*)World_Spawn(
-				&world.world,
-				ENTITY_FIREBALL,
-				Vec2_Add(
-					Vec2_Sub(
-						mp,
-						Vec2_Mulf(
-							(Vec2){ FIREBALL_DIM_X,FIREBALL_DIM_Y },
-							0.5f
-						)
-					),
-					Vec2_Mulf(
-						off,
-						(((Mario*)world.mario.e)->lookdir ? 1 : -1)
-					)
-				),
-				MarioWorld_Std_SpawnMapper
-			);
-			fb->e.v.x = FIREBALL_VEL_X * F32_Sign(fb->e.r.p.x - mp.x);
-		}
-	}
-
 	if(world.world.mode!=ANIMATIONBG_DG){
 		world.mario.e->a.y = MARIO_ACC_GRAVITY;
 		
+		if(Stroke(ALX_KEY_E).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_QUD).PRESSED){
+			if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 1){
+				const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
+				const Vec2 off = { world.mario.e->r.d.x,0.0f };
+
+				Hammer* fb = (Hammer*)World_Spawn(
+					&world.world,
+					ENTITY_HAMMER,
+					Vec2_Add(
+						Vec2_Sub(
+							mp,
+							Vec2_Mulf(
+								(Vec2){ HAMMER_DIM_X,HAMMER_DIM_Y },
+								0.5f
+							)
+						),
+						Vec2_Mulf(
+							off,
+							(((Mario*)world.mario.e)->lookdir ? 1 : -1)
+						)
+					)
+				);
+				fb->e.v.x = HAMMER_VEL_X * F32_Sign(fb->e.r.p.x - mp.x);
+				fb->e.v.y = -HAMMER_VEL_Y + world.mario.e->v.y;
+			}
+			if(world.mario.e->id == ENTITY_MARIO && ((Mario*)world.mario.e)->power == 2){
+				const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
+				const Vec2 off = { world.mario.e->r.d.x,0.0f };
+
+				Fireball* fb = (Fireball*)World_Spawn(
+					&world.world,
+					ENTITY_FIREBALL,
+					Vec2_Add(
+						Vec2_Sub(
+							mp,
+							Vec2_Mulf(
+								(Vec2){ FIREBALL_DIM_X,FIREBALL_DIM_Y },
+								0.5f
+							)
+						),
+						Vec2_Mulf(
+							off,
+							(((Mario*)world.mario.e)->lookdir ? 1 : -1)
+						)
+					)
+				);
+				fb->e.v.x = FIREBALL_VEL_X * F32_Sign(fb->e.r.p.x - mp.x);
+			}
+		}
+
 		const signed int abs = PS4_Controller_Abs(&ps4c,PS4_CONTROLLER_LX);
 		if(Stroke(ALX_KEY_A).DOWN) 									Figure_Move(&world.mario,-1.0f);
 		else if(Stroke(ALX_KEY_D).DOWN) 							Figure_Move(&world.mario,1.0f);

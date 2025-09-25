@@ -393,6 +393,7 @@ typedef struct World{
 	Vector animations;//Vector<Animation>
 	Vector entityatlas;//Vector<EntityAtlas>
 	PVector entities;//Vector<Entity>
+	void* (*Spawner)(Vec2,SpawnType,unsigned int*);
 	AnimationBg mode;
 	Vec2 spawn;
 	Block* data;
@@ -461,7 +462,9 @@ void World_Save(World* w,char* Path,char (*MapperFunc)(Block)){
 	Files_Write(Path,data,size);
 	free(data);
 }
-void World_Start(World* w,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
+void World_Start(World* w,void* (*Spawner)(Vec2,SpawnType,unsigned int*)){
+	w->Spawner = Spawner;
+	
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
@@ -469,7 +472,7 @@ void World_Start(World* w,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
 	}
 	PVector_Clear(&w->entities);
 
-	if(Spawn){
+	if(w->Spawner){
 		for(int y = 0;y<w->height;y++){
 			for(int x = 0;x<w->width;x++){
 				Block b = w->data[y * w->width + x];
@@ -477,7 +480,7 @@ void World_Start(World* w,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
 
 				if(a && a->spawner > 0U){
 					unsigned int size = 0U;
-					void* e = Spawn((Vec2){ x,y },a->spawner,&size);
+					void* e = w->Spawner((Vec2){ x,y },a->spawner,&size);
 					if(e){
 						PVector_Push(&w->entities,e,size);
 						free(e);
@@ -521,9 +524,9 @@ void World_Set(World* w,unsigned int x,unsigned int y,Block b){
 	if(x<w->width && y<w->height)
 		w->data[y * w->width + x] = b;
 }
-void* World_Spawn(World* w,SpawnType st,Vec2 p,void* (*Spawn)(Vec2,SpawnType,unsigned int*)){
+void* World_Spawn(World* w,SpawnType st,Vec2 p){
 	unsigned int size = 0U;
-	void* e = Spawn(p,st,&size);
+	void* e = w->Spawner(p,st,&size);
 	if(e){
 		PVector_Push(&w->entities,e,size);
 		free(e);
