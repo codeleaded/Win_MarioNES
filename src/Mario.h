@@ -178,6 +178,7 @@ typedef struct Bowler {
 } Bowler;
 
 void Bowler_Free(Bowler* e){
+	Entity_Free(&e->e);
 }
 void Bowler_Update(Bowler* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -353,6 +354,7 @@ typedef struct Bowser {
 } Bowser;
 
 void Bowser_Free(Bowser* e){
+	Entity_Free(&e->e);
 }
 void Bowser_Update(Bowser* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -471,6 +473,7 @@ typedef struct Bro {
 } Bro;
 
 void Bro_Free(Bro* e){
+	Entity_Free(&e->e);
 }
 void Bro_Update(Bro* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -573,6 +576,7 @@ typedef struct Coopa {
 } Coopa;
 
 void Coopa_Free(Coopa* e){
+	Entity_Free(&e->e);
 }
 void Coopa_Update(Coopa* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -749,6 +753,7 @@ typedef struct FireJumper {
 } FireJumper;
 
 void FireJumper_Free(FireJumper* e){
+	Entity_Free(&e->e);
 }
 void FireJumper_Update(FireJumper* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -823,6 +828,7 @@ typedef struct Fish {
 } Fish;
 
 void Fish_Free(Fish* e){
+	Entity_Free(&e->e);
 }
 void Fish_Update(Fish* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -899,6 +905,7 @@ typedef struct Gumba {
 } Gumba;
 
 void Gumba_Free(Gumba* e){
+	Entity_Free(&e->e);
 }
 void Gumba_Update(Gumba* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1005,6 +1012,7 @@ typedef struct Lakitu {
 } Lakitu;
 
 void Lakitu_Free(Lakitu* e){
+	Entity_Free(&e->e);
 }
 void Lakitu_Update(Lakitu* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1106,6 +1114,7 @@ typedef struct PlantUG {
 } PlantUG;
 
 void PlantUG_Free(PlantUG* e){
+	Entity_Free(&e->e);
 }
 void PlantUG_Update(PlantUG* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1209,6 +1218,7 @@ typedef struct Plant {
 } Plant;
 
 void Plant_Free(Plant* e){
+	Entity_Free(&e->e);
 }
 void Plant_Update(Plant* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1313,6 +1323,7 @@ typedef struct Spike {
 } Spike;
 
 void Spike_Free(Spike* e){
+	Entity_Free(&e->e);
 }
 void Spike_Update(Spike* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1417,6 +1428,7 @@ typedef struct Squid {
 } Squid;
 
 void Squid_Free(Squid* e){
+	Entity_Free(&e->e);
 }
 void Squid_Update(Squid* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1518,6 +1530,7 @@ typedef struct Willi {
 } Willi;
 
 void Willi_Free(Willi* e){
+	Entity_Free(&e->e);
 }
 void Willi_Update(Willi* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1616,6 +1629,7 @@ typedef struct Explosion {
 } Explosion;
 
 void Explosion_Free(Explosion* e){
+	Entity_Free(&e->e);
 }
 void Explosion_Update(Explosion* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1767,6 +1781,7 @@ typedef struct Fireball {
 } Fireball;
 
 void Fireball_Free(Fireball* e){
+	Entity_Free(&e->e);
 }
 void Fireball_Update(Fireball* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -1928,6 +1943,7 @@ typedef struct Firebeam {
 } Firebeam;
 
 void Firebeam_Free(Firebeam* e){
+	Entity_Free(&e->e);
 }
 void Firebeam_Update(Firebeam* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -2083,6 +2099,7 @@ typedef struct Hammer {
 } Hammer;
 
 void Hammer_Free(Hammer* e){
+	Entity_Free(&e->e);
 }
 void Hammer_Update(Hammer* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
@@ -2601,7 +2618,7 @@ SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 void Mario_Free(Mario* m){
-	
+	Entity_Free(&m->e);
 }
 Mario* Mario_New(Vec2 p){
 	Mario b;

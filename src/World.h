@@ -382,6 +382,15 @@ typedef struct Entity {
 	void (*EntityCollision)(struct Entity*,World*,struct Entity*,unsigned int,unsigned int,Side);
 } Entity;
 
+void Entity_Free(Entity* e){
+	e->WorldCollision = NULL;
+	e->IsPickUp = NULL;
+	e->IsCollision = NULL;
+	e->Collision = NULL;
+	e->EntityCollision = NULL;
+}
+
+
 typedef struct World{
 	Vector animations;//Vector<Animation>
 	Vector entityatlas;//Vector<EntityAtlas>
@@ -690,9 +699,12 @@ void World_Collisions(World* w,TransformedView* tv){
 	for(int i = 0;i<w->entities.size;i++){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
+		
 		if(ea && TransformedView_inViewRect(tv,e->r)){
 			World_EntityCollision(w,e);
-			World_Collision(w,e);
+			
+			if(e == (Entity*)PVector_Get(&w->entities,i))
+				World_Collision(w,e);
 		}
 	}
 }
