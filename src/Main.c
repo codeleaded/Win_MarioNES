@@ -165,8 +165,10 @@ void Update(AlxWindow* w){
 			if(world.mario.e->id==ENTITY_MARIO)
 				Mario_Stamp((Mario*)world.mario.e);
 		}else
-			if(world.mario.e->id==ENTITY_MARIO)
+			if(world.mario.e->id==ENTITY_MARIO){
 				((Mario*)world.mario.e)->stamp = ENTITY_FALSE;
+				((Mario*)world.mario.e)->slide = ENTITY_FALSE;
+			}
 	}else{
 		world.mario.e->a.y = 0.0f;
 		((Mario*)world.mario.e)->dead = ENTITY_FALSE;

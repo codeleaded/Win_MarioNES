@@ -2727,9 +2727,6 @@ SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
 
 	if(m->lookdir==ENTITY_RIGHT)    ox = 15U - ox;
 
-	m->stamp = ENTITY_FALSE;
-	m->slide = ENTITY_FALSE;
-
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 void Mario_Free(Mario* m){
