@@ -93,7 +93,7 @@
 #define COOPA_DIM_X						0.9f
 #define COOPA_DIM_Y						0.9f
 #define COOPA_VEL_X						2.0f
-#define COOPA_VEL_Y						2.0f
+#define COOPA_VEL_ROLLX					9.0f
 
 #define FIREJUMPER_DIM_X				0.9f
 #define FIREJUMPER_DIM_Y				0.9f
@@ -325,9 +325,6 @@ SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
 	d *= F32_Abs(e->e.v.x) * 1.5f;
@@ -342,7 +339,7 @@ SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
 	b.e.id = ENTITY_BOWLER;
-	b.e.r = (Rect){ p,{ BOWLER_DIM_X,BOWLER_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (BOWLER_DIM_Y - 1.0f)},{ BOWLER_DIM_X,BOWLER_DIM_Y } };
 	b.e.v = (Vec2){ -BOWLER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -459,7 +456,7 @@ SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 Bowser* Bowser_New(Vec2 p){
 	Bowser b;
 	b.e.id = ENTITY_BOWSER;
-	b.e.r = (Rect){ p,{ BOWSER_DIM_X,BOWSER_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (BOWSER_DIM_Y - 1.0f)},{ BOWSER_DIM_X,BOWSER_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -557,7 +554,7 @@ SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 Bro* Bro_New(Vec2 p){
 	Bro b;
 	b.e.id = ENTITY_BRO;
-	b.e.r = (Rect){ p,{ BRO_DIM_X,BRO_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (BRO_DIM_Y - 1.0f)},{ BRO_DIM_X,BRO_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -575,6 +572,7 @@ Bro* Bro_New(Vec2 p){
 
 typedef struct Coopa {
 	Entity e;
+	char inside;
 } Coopa;
 
 void Coopa_Free(Coopa* e){
@@ -637,7 +635,91 @@ void Coopa_Collision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
 	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
 }
 void Coopa_EntityCollision(Coopa* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
-	
+	switch (other->id){
+		case ENTITY_BOWLER:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_BOWSER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_BRO:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_COOPA:		{
+			Coopa* m2 = (Coopa*)other;
+
+			char move1 = m->inside && m->e.v.x != 0.0f;
+			char move2 = m2->inside && m2->e.v.x != 0.0f;
+
+			if(move1 && move2){
+				World_Remove(w,(Entity*)m);
+				World_Remove(w,other);
+			}else if(move1){
+				World_Remove(w,other);
+			}else if(move2){
+				World_Remove(w,(Entity*)m);
+			}else{
+				m->e.v.x = F32_Abs(m->e.v.x) * F32_Sign(m->e.r.p.x - m2->e.r.p.x);
+				m2->e.v.x = F32_Abs(m2->e.v.x) * F32_Sign(m2->e.r.p.x - m->e.r.p.x);
+			}
+			break;
+		}
+		case ENTITY_EXPLOSION:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREBALL:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREBEAM:	{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_FIREJUMPER:	{
+			
+			break;
+		}
+		case ENTITY_FISH:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_GUMBA:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_HAMMER:		{
+			World_Remove(w,(Entity*)m);
+			break;
+		}
+		case ENTITY_LAKITU:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANT:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_PLANTUG:	{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SPIKE:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_SQUID:		{
+			World_Remove(w,other);
+			break;
+		}
+		case ENTITY_WILLI:		{
+			World_Remove(w,other);
+			break;
+		}
+	}
 }
 SubSprite Coopa_GetRender(Coopa* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -645,15 +727,22 @@ SubSprite Coopa_GetRender(Coopa* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d = d - F32_Floor(d);
+	unsigned int a = (int)(2.0f * d);
+	ox = 2U + a;
+
+	if(e->e.v.x > 0.0f) ox = 7U - ox;
+	if(e->inside) 		ox = 8U + a;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Coopa* Coopa_New(Vec2 p){
 	Coopa b;
 	b.e.id = ENTITY_COOPA;
-	b.e.r = (Rect){ p,{ COOPA_DIM_X,COOPA_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (COOPA_DIM_Y - 1.0f)},{ COOPA_DIM_X,COOPA_DIM_Y } };
 	b.e.v = (Vec2){ -COOPA_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -663,6 +752,8 @@ Coopa* Coopa_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Coopa_EntityCollision;
 	
+	b.inside = 0;
+
 	Coopa* hb = malloc(sizeof(Coopa));
 	memcpy(hb,&b,sizeof(Coopa));
 	return hb;
@@ -713,12 +804,15 @@ SubSprite FireJumper_GetRender(FireJumper* e,EntityAtlas* ea){
 	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
 	//else 										ox = 1U;
 	
+	if(e->e.v.y > 0.0f) ox = 0U;
+	if(e->e.v.y < 0.0f) ox = 1U;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 FireJumper* FireJumper_New(Vec2 p){
 	FireJumper b;
 	b.e.id = ENTITY_FIREJUMPER;
-	b.e.r = (Rect){ p,{ FIREJUMPER_DIM_X,FIREJUMPER_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (FIREJUMPER_DIM_Y - 1.0f)},{ FIREJUMPER_DIM_X,FIREJUMPER_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -748,7 +842,7 @@ void Fish_WorldCollision(Fish* m,World* w){
 	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
 	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		m->e.v.y *= -1.0f;
 }
 char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -773,16 +867,21 @@ SubSprite Fish_GetRender(Fish* e,EntityAtlas* ea){
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
 	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
+	if(e->e.v.x > 0.0f) ox = 3U - ox;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Fish* Fish_New(Vec2 p){
 	Fish b;
 	b.e.id = ENTITY_FISH;
-	b.e.r = (Rect){ p,{ FISH_DIM_X,FISH_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (FISH_DIM_Y - 1.0f)},{ FISH_DIM_X,FISH_DIM_Y } };
 	b.e.v = (Vec2){ -FISH_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -873,7 +972,7 @@ SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d *= F32_Abs(e->e.v.x) * 0.5f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(2.0f * d);
 
@@ -884,7 +983,7 @@ SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 Gumba* Gumba_New(Vec2 p){
 	Gumba b;
 	b.e.id = ENTITY_GUMBA;
-	b.e.r = (Rect){ p,{ GUMBA_DIM_X,GUMBA_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (GUMBA_DIM_Y - 1.0f)},{ GUMBA_DIM_X,GUMBA_DIM_Y } };
 	b.e.v = (Vec2){ -BOWLER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -984,9 +1083,9 @@ SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 Lakitu* Lakitu_New(Vec2 p){
 	Lakitu b;
 	b.e.id = ENTITY_LAKITU;
-	b.e.r = (Rect){ p,{ LAKITU_DIM_X,LAKITU_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (LAKITU_DIM_Y - 1.0f)},{ LAKITU_DIM_X,LAKITU_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
-	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Lakitu_WorldCollision;
 	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Lakitu_IsPickUp;
@@ -1070,9 +1169,12 @@ SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
+	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= 0.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
 	
 	dy *= 2;
 
@@ -1081,7 +1183,7 @@ SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 PlantUG* PlantUG_New(Vec2 p){
 	PlantUG b;
 	b.e.id = ENTITY_PLANTUG;
-	b.e.r = (Rect){ p,{ PLANTUG_DIM_X,PLANTUG_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (PLANTUG_DIM_Y - 1.0f)},{ PLANTUG_DIM_X,PLANTUG_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1169,9 +1271,12 @@ SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= 0.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
 	dy *= 2;
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
@@ -1179,7 +1284,7 @@ SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 Plant* Plant_New(Vec2 p){
 	Plant b;
 	b.e.id = ENTITY_PLANT;
-	b.e.r = (Rect){ p,{ PLANT_DIM_X,PLANT_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (PLANT_DIM_Y - 1.0f)},{ PLANT_DIM_X,PLANT_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1267,15 +1372,20 @@ SubSprite Spike_GetRender(Spike* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
+	if(e->e.v.x > 0.0f) ox = 3 - ox;
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Spike* Spike_New(Vec2 p){
 	Spike b;
 	b.e.id = ENTITY_SPIKE;
-	b.e.r = (Rect){ p,{ SPIKE_DIM_X,SPIKE_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (SPIKE_DIM_Y - 1.0f)},{ SPIKE_DIM_X,SPIKE_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1373,7 +1483,7 @@ SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
 Squid* Squid_New(Vec2 p){
 	Squid b;
 	b.e.id = ENTITY_SQUID;
-	b.e.r = (Rect){ p,{ SQUID_DIM_X,SQUID_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (SQUID_DIM_Y - 1.0f)},{ SQUID_DIM_X,SQUID_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1460,16 +1570,15 @@ SubSprite Willi_GetRender(Willi* e,EntityAtlas* ea){
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
 	
+	if(e->e.v.x > 0.0f) ox = 1 - ox;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Willi* Willi_New(Vec2 p){
 	Willi b;
 	b.e.id = ENTITY_WILLI;
-	b.e.r = (Rect){ p,{ WILLI_DIM_X,WILLI_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (WILLI_DIM_Y - 1.0f)},{ WILLI_DIM_X,WILLI_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1568,7 +1677,7 @@ SubSprite Explosion_GetRender(Explosion* e,EntityAtlas* ea){
 Explosion* Explosion_New(Vec2 p){
 	Explosion b;
 	b.e.id = ENTITY_EXPLOSION;
-	b.e.r = (Rect){ p,{ EXPLOSION_DIM_X,EXPLOSION_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (EXPLOSION_DIM_Y - 1.0f)},{ EXPLOSION_DIM_X,EXPLOSION_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
@@ -1667,7 +1776,7 @@ SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
 Fireball* Fireball_New(Vec2 p){
 	Fireball b;
 	b.e.id = ENTITY_FIREBALL;
-	b.e.r = (Rect){ p,{ FIREBALL_DIM_X,FIREBALL_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (FIREBALL_DIM_Y - 1.0f)},{ FIREBALL_DIM_X,FIREBALL_DIM_Y } };
 	b.e.v = (Vec2){ -FIREBALL_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -1770,7 +1879,7 @@ SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 Firebeam* Firebeam_New(Vec2 p){
 	Firebeam b;
 	b.e.id = ENTITY_FIREBEAM;
-	b.e.r = (Rect){ p,{ FIREBEAM_DIM_X,FIREBEAM_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (FIREBEAM_DIM_Y - 1.0f)},{ FIREBEAM_DIM_X,FIREBEAM_DIM_Y } };
 	b.e.v = (Vec2){ -FIREBEAM_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,0.0f };
 	
@@ -1869,7 +1978,7 @@ SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
 Hammer* Hammer_New(Vec2 p){
 	Hammer b;
 	b.e.id = ENTITY_HAMMER;
-	b.e.r = (Rect){ p,{ HAMMER_DIM_X,HAMMER_DIM_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (HAMMER_DIM_Y - 1.0f)},{ HAMMER_DIM_X,HAMMER_DIM_Y } };
 	b.e.v = (Vec2){ -HAMMER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
@@ -2116,9 +2225,20 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_COOPA:		{
 			if(s == SIDE_TOP){
+				Coopa* b = (Coopa*)other;
+				if(!b->inside){
+					b->inside = 1;
+					b->e.v.x = 0.0f;
+				}else{
+					if(b->e.v.x != 0.0f) 
+						b->e.v.x = 0.0f;
+					else{
+						const float dir = F32_Sign(b->e.r.p.x - m->e.r.p.x);
+						b->e.v.x = dir * COOPA_VEL_ROLLX;
+					}
+				}
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
-				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
@@ -2238,7 +2358,7 @@ void Mario_Free(Mario* m){
 Mario* Mario_New(Vec2 p){
 	Mario b;
 	b.e.id = ENTITY_MARIO;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ { p.x,p.y - (MARIO_DIM_P0_Y - 1.0f)},{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
