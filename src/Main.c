@@ -92,6 +92,7 @@ void Update(AlxWindow* w){
 				const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
 				const Vec2 off = { world.mario.e->r.d.x,0.0f };
 
+				AudioPlayer_Add(&world.ap,"./data/Sound/Fireball.wav");
 				Hammer* fb = (Hammer*)World_Spawn(
 					&world.world,
 					ENTITY_HAMMER,
@@ -116,6 +117,7 @@ void Update(AlxWindow* w){
 				const Vec2 mp = Vec2_Add(world.mario.e->r.p,Vec2_Mulf(world.mario.e->r.d,0.5f));
 				const Vec2 off = { world.mario.e->r.d.x,0.0f };
 
+				AudioPlayer_Add(&world.ap,"./data/Sound/Fireball.wav");
 				Fireball* fb = (Fireball*)World_Spawn(
 					&world.world,
 					ENTITY_FIREBALL,
@@ -146,8 +148,8 @@ void Update(AlxWindow* w){
 		
 		if(world.mario.e->id==ENTITY_MARIO && ((Mario*)world.mario.e)->ground){
 			if(Stroke(ALX_KEY_W).PRESSED || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).PRESSED){
+				AudioPlayer_Add(&world.ap,"./data/Sound/Jump.wav");
 				world.mario.e->v.y = -MARIO_VEL_JP;
-				AudioPlayer_Add(&world.ap,"./data/Sound/jump.wav");
 			}
 		}
 		if(Stroke(ALX_KEY_W).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_X).DOWN){

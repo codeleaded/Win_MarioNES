@@ -385,8 +385,10 @@ void Bowser_Update(Bowser* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowser_Damage(Bowser* m,World* w,unsigned short damage){
-	if((int)m->lifes - (int)damage < 0)
+	if((int)m->lifes - (int)damage < 0){
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/BowserDown.wav");
 		World_Remove(w,(Entity*)m);
+	}
 	
 	m->lifes-=damage;
 }
@@ -408,6 +410,7 @@ void Bowser_WorldCollision(Bowser* m,World* w){
 		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
 		const Vec2 off = { (m->e.r.d.x + FIREBEAM_DIM_X) * 0.51f,0.0f };
 		
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Bowserfire.wav");
 		Firebeam* s = (Firebeam*)World_Spawn(
 			w,
 			ENTITY_FIREBEAM,
@@ -2382,7 +2385,7 @@ void Mario_Move(Mario* m,const float dir){//dir := [-1;1]
 		m->e.a.x = 0.0f;
 }
 void Mario_Die(Mario* m,World* w){
-	AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/dead4.wav");
+	AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Dead.wav");
 	m->dead = ENTITY_TRUE;
 	m->e.v.y = -MARIO_VEL_DEAD;
 }
@@ -2451,13 +2454,9 @@ char Mario_IsSolid(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
 
 	if(b==BLOCK_COIN){
-		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/coin.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Coin.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		return 0;
-	//}else if(b==BLOCK_STAR_COIN){
-	//	AudioPlayer_Add(&ap,"./data/Sound/coin.wav");
-	//	World_Set(w,x,y,BLOCK_NONE);
-	//	return 0;
 	//}else if(b==BLOCK_REDPILZ){
 	//	AudioPlayer_Add(&ap,"./data/Sound/upgrade.wav");
 	//	World_Set(w,x,y,BLOCK_NONE);
@@ -2465,13 +2464,13 @@ char Mario_IsSolid(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 	//	f->r.d.y = 1.8f;
 	//	return 0;
 	//}else if(b==BLOCK_GREENPILZ){
-	//	AudioPlayer_Add(&ap,"./data/Sound/powerup.wav");
+	//	AudioPlayer_Add(&ap,"./data/Sound/OneUp.wav");
 	//	World_Set(w,x,y,BLOCK_NONE);
 	//	f->power = 0;
 	//	f->r.d.y = 0.9f;
 	//	return 0;
 	}else if(b==BLOCK_FIRE_FLOWER){
-		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/upgrade.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		m->power = 2;
         m->e.r.p.x -= MARIO_DIM_P2_X - m->e.r.d.x;
@@ -2480,7 +2479,7 @@ char Mario_IsSolid(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 		m->e.r.d.y = MARIO_DIM_P2_Y;
 		return 0;
 	}else if(b==BLOCK_SUPER_STAR){
-		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/powerup.wav");
+		AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Powerup.wav");
 		World_Set(w,x,y,BLOCK_NONE);
 		//m->power = 3;
         //m->e.r.p.x -= MARIO_DIM_P3_X - m->e.r.d.x;
@@ -2542,12 +2541,19 @@ void Mario_Collision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
         m->ground = FIGURE_TRUE;
 
 	if(s==SIDE_BOTTOM || (s==SIDE_TOP && m->stamp && m->e.v.x==0.0f)){
-		if(b==BLOCK_BRICK)
+		if(b==BLOCK_BRICK){
+			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Breakblock.wav");
 			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
+		}else{
+			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/Bump.wav");
+		}
+		
+		if(b==BLOCK_CLOSE_QUEST_FF){
+			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/PowerupSpawn.wav");
 			World_Set(w,x,y,BLOCK_SOLID);
 			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
 		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/PowerupSpawn.wav");
 			World_Set(w,x,y,BLOCK_SOLID);
 			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
 		}
