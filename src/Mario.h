@@ -89,7 +89,8 @@
 #define BOWSER_DIM_Y					1.9f
 #define BOWSER_VEL_X					0.4f
 #define BOWSER_VEL_Y					20.0f
-#define BOWSER_THROW_DELAY				0.5f
+#define BOWSER_THROW_DELAY				0.9f
+#define BOWSER_LIFES					5U
 
 #define BRO_DIM_X						0.9f
 #define BRO_DIM_Y						1.9f
@@ -149,8 +150,8 @@
 
 #define FIREBEAM_DIM_X					1.9f
 #define FIREBEAM_DIM_Y					0.9f
-#define FIREBEAM_VEL_X					4.0f
-#define FIREBEAM_VEL_Y					4.0f
+#define FIREBEAM_VEL_X					7.0f
+#define FIREBEAM_VEL_Y					0.0f
 
 #define HAMMER_DIM_X					0.9f
 #define HAMMER_DIM_Y					0.9f
@@ -364,6 +365,7 @@ typedef struct Bowser {
 	float startx;
 	char dir;
 	char ground;
+	unsigned short lifes;
 	Timepoint start;
 } Bowser;
 
@@ -382,6 +384,12 @@ void Bowser_Update(Bowser* e,float t){
 	e->e.v = Vec2_Add(e->e.v,Vec2_Mulf(e->e.a,t));
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
+void Bowser_Damage(Bowser* m,World* w,unsigned short damage){
+	if((int)m->lifes - (int)damage < 0)
+		World_Remove(w,(Entity*)m);
+	
+	m->lifes-=damage;
+}
 void Bowser_WorldCollision(Bowser* m,World* w){
 	m->dir = (((MarioWorld*)w)->mario.e->r.p.x - m->e.r.p.x) < 0.0f ? 0 : 1; 
 	
@@ -393,11 +401,12 @@ void Bowser_WorldCollision(Bowser* m,World* w){
 			m->start = Time_Nano();
 	}
 
-	if(m->ground && m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > BOWSER_THROW_DELAY){
+	if(m->ground && m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > BOWSER_THROW_DELAY * 0.5f){
+		m->e.v.y = -BOWSER_VEL_Y;
+	}
+	if(m->start > 0UL && Time_Elapsed(m->start,Time_Nano()) > BOWSER_THROW_DELAY){
 		const Vec2 mp = Vec2_Add(m->e.r.p,Vec2_Mulf(m->e.r.d,0.5f));
 		const Vec2 off = { (m->e.r.d.x + FIREBEAM_DIM_X) * 0.51f,0.0f };
-
-		m->e.v.y = -BOWSER_VEL_Y;
 		
 		Firebeam* s = (Firebeam*)World_Spawn(
 			w,
@@ -417,7 +426,7 @@ void Bowser_WorldCollision(Bowser* m,World* w){
 			)
 		);
 		s->e.v.x = FIREBEAM_VEL_X * F32_Sign(s->e.r.p.x - mp.x);
-		s->e.v.y = -FIREBEAM_VEL_Y + m->e.v.y;
+		s->e.v.y = FIREBEAM_VEL_Y;
 
 		m->start = 0UL;
 	}
@@ -468,18 +477,14 @@ char Bowser_IsSolid(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
 }
 void Bowser_Collision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
 	Block b = World_Get(w,x,y);
-	
-	if(s==SIDE_BOTTOM){
-		if(b==BLOCK_BRICK)
-			World_Set(w,x,y,BLOCK_NONE);
-		else if(b==BLOCK_CLOSE_QUEST_FF){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
-		}else if(b==BLOCK_CLOSE_QUEST_SS){
-			World_Set(w,x,y,BLOCK_SOLID);
-			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
-		}
+
+	if(s==SIDE_TOP && m->e.v.y>0.0f){
+		m->e.v.y = 0.0f;
+		m->ground = 1;
 	}
+	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x = 0.0f;
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x = 0.0f;
 }
 void Bowser_EntityCollision(Bowser* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	
@@ -497,9 +502,9 @@ SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 	unsigned int a = (int)(2.0f * d);
 
 	if(e->start > 0UL && Time_Elapsed(e->start,Time_Nano()) > BOWSER_THROW_DELAY * 0.5f)
-		ox = 2U + a;
-	else
 		ox = a;
+	else
+		ox = 2U + a;
 
 	if(e->dir) ox = 7U - ox;
 
@@ -523,6 +528,7 @@ Bowser* Bowser_New(Vec2 p){
 	b.startx = p.x;
 	b.dir = 0;
 	b.ground = 0;
+	b.lifes = BOWSER_LIFES;
 	b.start = 0UL;
 
 	Bowser* hb = malloc(sizeof(Bowser));
@@ -1789,7 +1795,7 @@ void Explosion_EntityCollision(Explosion* m,World* w,Entity* other,unsigned int 
 			break;
 		}
 		case ENTITY_BOWSER:		{
-			World_Remove(w,other);
+			Bowser_Damage((Bowser*)other,w,1U);
 			break;
 		}
 		case ENTITY_BRO:		{
@@ -1951,7 +1957,7 @@ void Fireball_EntityCollision(Fireball* m,World* w,Entity* other,unsigned int x,
 			break;
 		}
 		case ENTITY_BOWSER:		{
-			World_Remove(w,other);
+			Bowser_Damage((Bowser*)other,w,1U);
 			World_Remove(w,(Entity*)m);
 			break;
 		}
@@ -2097,8 +2103,8 @@ void Firebeam_Collision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side 
 
 	if(s==SIDE_TOP && m->e.v.y>0.0f) 			m->e.v.y = 0.0f;
 	else if(s==SIDE_BOTTOM && m->e.v.y<0.0f) 	m->e.v.y = 0.0f;
-	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		m->e.v.x *= -1.0f;
-	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	m->e.v.x *= -1.0f;
+	else if(s==SIDE_LEFT && m->e.v.x>0.0f) 		World_Remove(w,(Entity*)m);
+	else if(s==SIDE_RIGHT && m->e.v.x<0.0f) 	World_Remove(w,(Entity*)m);
 }
 void Firebeam_EntityCollision(Firebeam* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
 	switch (other->id){
@@ -2107,7 +2113,7 @@ void Firebeam_EntityCollision(Firebeam* m,World* w,Entity* other,unsigned int x,
 			break;
 		}
 		case ENTITY_BOWSER:		{
-			World_Remove(w,other);
+			Bowser_Damage((Bowser*)other,w,1U);
 			break;
 		}
 		case ENTITY_BRO:		{
@@ -2162,7 +2168,7 @@ SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 0.25f;
+	d *= F32_Abs(e->e.v.x) * 1.0f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(2.0f * d);
 
@@ -2255,7 +2261,7 @@ void Hammer_EntityCollision(Hammer* m,World* w,Entity* other,unsigned int x,unsi
 			break;
 		}
 		case ENTITY_BOWSER:		{
-			World_Remove(w,other);
+			Bowser_Damage((Bowser*)other,w,1U);
 			World_Remove(w,(Entity*)m);
 			break;
 		}
@@ -2351,6 +2357,7 @@ typedef struct Mario {
 	unsigned char ground;
 	unsigned char jumping;
 	unsigned char stamp;
+	unsigned char slide;
 	unsigned char reverse;
 	unsigned char power;
 	unsigned char dead;
@@ -2378,6 +2385,20 @@ void Mario_Die(Mario* m,World* w){
 	AudioPlayer_Add(&((MarioWorld*)w)->ap,"./data/Sound/dead4.wav");
 	m->dead = ENTITY_TRUE;
 	m->e.v.y = -MARIO_VEL_DEAD;
+}
+void Mario_Stamp(Mario* m){
+	if(!m->stamp && !m->slide){
+		if(m->ground){
+			if(m->e.v.x == 0.0f)	m->stamp = ENTITY_TRUE;
+			else					m->slide = ENTITY_TRUE;
+		}else{
+			m->stamp = ENTITY_TRUE;
+			m->slide = ENTITY_TRUE;
+			m->e.v.y = MARIO_VEL_JP;
+		}
+	}else{
+		if(m->stamp) m->e.v.x = 0.0f;
+	}
 }
 void Mario_Respawn(Mario* m,Vec2 spawn){
 	m->e.r.p = spawn;
@@ -2672,9 +2693,13 @@ SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
 	if(m->dead)				        ox = 2U,oy = 1U;
 	else if(!m->ground){
 		if(!m->stamp)		        ox = 2U,oy = 0U;
-		else 				        ox = 1U,oy = 1U;
+		else if(m->power==0)		ox = 1U,oy = 1U;
+		else						ox = 1U,oy = 0U;
 	}else if(m->stamp){
-		if(m->e.v.x==0.0f)	        ox = 1U,oy = 1U;
+		if(m->power==0)				ox = 1U,oy = 1U;
+		else						ox = 1U,oy = 0U;
+	}else if(m->slide){
+		if(m->ground)	        	ox = 1U,oy = 1U;
 		else 				        ox = 0U,oy = 1U;
 	}
 	else if(m->reverse)		        ox = 3U,oy = 0U;
@@ -2690,11 +2715,14 @@ SubSprite Mario_GetRender(Mario* m,EntityAtlas* ea){
         oy = 0U;
 	}
 
-	if(m->power==1)			        oy = 1.0f + oy,dy *= 2;
-	else if(m->power==2)	        oy = 3.0f + oy,dy *= 2;
-	//else if(m->power==3)	        oy = 0.0f + oy;
+	if(!m->dead && m->power==1)			        oy = 1.0f + oy,dy *= 2;
+	else if(!m->dead && m->power==2)	        oy = 3.0f + oy,dy *= 2;
+	//else if(!m->dead && m->power==3)	        oy = 0.0f + oy;
 
 	if(m->lookdir==ENTITY_RIGHT)    ox = 15U - ox;
+
+	m->stamp = ENTITY_FALSE;
+	m->slide = ENTITY_FALSE;
 
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -2718,6 +2746,7 @@ Mario* Mario_New(Vec2 p){
 	b.ground = ENTITY_FALSE;
 	b.jumping = ENTITY_FALSE;
 	b.stamp = ENTITY_FALSE;
+	b.slide = ENTITY_FALSE;
 	b.reverse = ENTITY_FALSE;
 	b.power = 0;
 	b.dead = ENTITY_FALSE;

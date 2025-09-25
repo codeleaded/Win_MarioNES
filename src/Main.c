@@ -161,7 +161,7 @@ void Update(AlxWindow* w){
 		}
 		if(Stroke(ALX_KEY_S).DOWN || PS4_Controller_Key(&ps4c,PS4_CONTROLLER_TRI).DOWN){
 			if(world.mario.e->id==ENTITY_MARIO)
-				((Mario*)world.mario.e)->stamp = ENTITY_TRUE;
+				Mario_Stamp((Mario*)world.mario.e);
 		}else
 			if(world.mario.e->id==ENTITY_MARIO)
 				((Mario*)world.mario.e)->stamp = ENTITY_FALSE;
