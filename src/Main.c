@@ -18,7 +18,7 @@ void Setup(AlxWindow* w){
 	AlxFont_Resize(&window.AlxFont,16,16);
 
 	ps4c = PS4_Controller_New("/dev/input/by-id/usb-Sony_Interactive_Entertainment_Wireless_Controller-if03-event-joystick");
-	world = MarioWorld_New("./data/World/Level0.txt","./data/Blocks/","./data/Entity/");
+	world = MarioWorld_New("./data/World/Level0.txt","./data/Blocks/","./data/Entity/","./data/Shooters/");
 	MarioWorld_AudioPlayerStart(&world);
 }
 void Update(AlxWindow* w){

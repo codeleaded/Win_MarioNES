@@ -930,6 +930,8 @@ Gumba* Gumba_New(Vec2 p){
 	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_Collision;
 	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Gumba_EntityCollision;
 	
+	b.dead = 0;
+
 	Gumba* hb = malloc(sizeof(Gumba));
 	memcpy(hb,&b,sizeof(Gumba));
 	return hb;
@@ -1591,9 +1593,12 @@ SubSprite Explosion_GetRender(Explosion* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(3.0f * d);
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Explosion* Explosion_New(Vec2 p){
@@ -1601,7 +1606,7 @@ Explosion* Explosion_New(Vec2 p){
 	b.e.id = ENTITY_EXPLOSION;
 	b.e.r = (Rect){ p,{ EXPLOSION_DIM_X,EXPLOSION_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
-	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Explosion_WorldCollision;
 	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Explosion_IsPickUp;
@@ -1687,9 +1692,12 @@ SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(4.0f * d);
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Fireball* Fireball_New(Vec2 p){
@@ -1783,9 +1791,16 @@ SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	dx *= 2;
+
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
+	if(e->e.v.x > 0.0f) ox = 3 - ox;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Firebeam* Firebeam_New(Vec2 p){
@@ -1793,7 +1808,7 @@ Firebeam* Firebeam_New(Vec2 p){
 	b.e.id = ENTITY_FIREBEAM;
 	b.e.r = (Rect){ p,{ FIREBEAM_DIM_X,FIREBEAM_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
-	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
+	b.e.a = (Vec2){ 0.0f,0.0f };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Firebeam_WorldCollision;
 	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Firebeam_IsPickUp;
@@ -1879,8 +1894,11 @@ SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(4.0f * d);
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
@@ -2125,18 +2143,18 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_BRO:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_COOPA:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
@@ -2159,18 +2177,18 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_FISH:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
 		}
 		case ENTITY_GUMBA:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
@@ -2181,9 +2199,9 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_LAKITU:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
@@ -2206,9 +2224,9 @@ void Mario_EntityCollision(Mario* m,World* w,Entity* other,unsigned int x,unsign
 		}
 		case ENTITY_WILLI:		{
 			if(s == SIDE_TOP){
-				World_Remove(w,other);
 				Resolve_Rect_Rect_Side(&m->e.r,other->r,s);
 				m->e.v.y = -MARIO_VEL_JP;
+				World_Remove(w,other);
 			}else
 				Mario_Die(m,w);
 			break;
@@ -2319,6 +2337,10 @@ Block MarioWorld_Std_Mapper(char c){
 		case '^':	return BLOCK_SPAWN_SPIKE;
 		case 'Q':	return BLOCK_SPAWN_SQUID;
 		case 'I':	return BLOCK_SPAWN_WILLI;
+		case 'x':	return BLOCK_SPAWN_EXPLOSION;
+		case 'l':	return BLOCK_SPAWN_FIREBALL;
+		case 'a':	return BLOCK_SPAWN_FIREBEAM;
+		case 'm':	return BLOCK_SPAWN_HAMMER;
 	}
 	return BLOCK_NONE;
 }
@@ -2360,6 +2382,10 @@ char MarioWorld_Std_MapperR(Block b){
 		case BLOCK_SPAWN_SPIKE:			return '^';
 		case BLOCK_SPAWN_SQUID:			return 'Q';
 		case BLOCK_SPAWN_WILLI:			return 'I';
+		case BLOCK_SPAWN_EXPLOSION:		return 'x';
+		case BLOCK_SPAWN_FIREBALL:		return 'l';
+		case BLOCK_SPAWN_FIREBEAM:		return 'a';
+		case BLOCK_SPAWN_HAMMER:		return 'm';
 	}
 	return '.';
 }
@@ -2378,6 +2404,10 @@ void* MarioWorld_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 		case ENTITY_SPIKE:		*size = sizeof(Spike); 		return Spike_New(p);
 		case ENTITY_SQUID:		*size = sizeof(Squid);	 	return Squid_New(p);
 		case ENTITY_WILLI:		*size = sizeof(Willi); 		return Willi_New(p);
+		case ENTITY_EXPLOSION:	*size = sizeof(Explosion); 	return Explosion_New(p);
+		case ENTITY_FIREBALL:	*size = sizeof(Fireball); 	return Fireball_New(p);
+		case ENTITY_FIREBEAM:	*size = sizeof(Firebeam);	return Firebeam_New(p);
+		case ENTITY_HAMMER:		*size = sizeof(Hammer); 	return Hammer_New(p);
 	}
 	return NULL;
 }
@@ -3137,7 +3167,53 @@ SubSprite MarioWorld_Willi_Get(Animation* a,World* w,unsigned int x,unsigned int
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
 
-MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
+SubSprite MarioWorld_Explosion_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite MarioWorld_Fireball_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite MarioWorld_Firebeam_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+SubSprite MarioWorld_Hammer_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+	unsigned int ox = 0U;
+	unsigned int oy = 0U;
+	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
+	unsigned int dy = a->atlas_img.h / a->atlas_cy;
+
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
+	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
+}
+
+
+MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities,char* path_shooters){
     MarioWorld mw;
     mw.mario = Figure_New(
 		Mario_New((Vec2){ 0.0f,0.0f }),
@@ -3192,6 +3268,10 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
 		    Animation_Make_AtlasPath(path_entities,"Spike.png",ANIMATIONBG_DG,ENTITY_SPIKE,6,1,MarioWorld_Spike_Get),
 		    Animation_Make_AtlasPath(path_entities,"Squid.png",ANIMATIONBG_DG,ENTITY_SQUID,2,1,MarioWorld_Squid_Get),
 		    Animation_Make_AtlasPath(path_entities,"Willi.png",ANIMATIONBG_DG,ENTITY_WILLI,2,1,MarioWorld_Willi_Get),
+		    Animation_Make_AtlasPath(path_shooters,"Explosion.png",ANIMATIONBG_DG,ENTITY_EXPLOSION,3,1,MarioWorld_Explosion_Get),
+		    Animation_Make_AtlasPath(path_shooters,"Fireball.png",ANIMATIONBG_DG,ENTITY_FIREBALL,4,1,MarioWorld_Fireball_Get),
+		    Animation_Make_AtlasPath(path_shooters,"Firebeam.png",ANIMATIONBG_DG,ENTITY_FIREBEAM,8,1,MarioWorld_Firebeam_Get),
+		    Animation_Make_AtlasPath(path_shooters,"Hammer.png",ANIMATIONBG_DG,ENTITY_HAMMER,4,2,MarioWorld_Hammer_Get),
 		    Animation_Null()
 	    },
         (EntityAtlas[]){
@@ -3209,6 +3289,10 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
 		    EntityAtlas_New(path_entities,"Spike.png",6,1,		(void(*)(void*,const float))Spike_Update,		(SubSprite(*)(void*,EntityAtlas*))Spike_GetRender,		(void(*)(void*))Spike_Free),
 		    EntityAtlas_New(path_entities,"Squid.png",2,2,		(void(*)(void*,const float))Squid_Update,		(SubSprite(*)(void*,EntityAtlas*))Squid_GetRender,		(void(*)(void*))Squid_Free),
 		    EntityAtlas_New(path_entities,"Willi.png",2,1,		(void(*)(void*,const float))Willi_Update,		(SubSprite(*)(void*,EntityAtlas*))Willi_GetRender,		(void(*)(void*))Willi_Free),
+		    EntityAtlas_New(path_shooters,"Explosion.png",3,1,	(void(*)(void*,const float))Explosion_Update,	(SubSprite(*)(void*,EntityAtlas*))Explosion_GetRender,	(void(*)(void*))Explosion_Free),
+		    EntityAtlas_New(path_shooters,"Fireball.png",4,1,	(void(*)(void*,const float))Fireball_Update,	(SubSprite(*)(void*,EntityAtlas*))Fireball_GetRender,	(void(*)(void*))Fireball_Free),
+		    EntityAtlas_New(path_shooters,"Firebeam.png",8,1,	(void(*)(void*,const float))Firebeam_Update,	(SubSprite(*)(void*,EntityAtlas*))Firebeam_GetRender,	(void(*)(void*))Firebeam_Free),
+		    EntityAtlas_New(path_shooters,"Hammer.png",4,2,		(void(*)(void*,const float))Hammer_Update,		(SubSprite(*)(void*,EntityAtlas*))Hammer_GetRender,		(void(*)(void*))Hammer_Free),
 		    EntityAtlas_Null()
 	    }
     );
