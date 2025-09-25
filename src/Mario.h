@@ -155,10 +155,10 @@ void Bowler_Update(Bowler* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bowler_WorldCollision(Bowler* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -459,10 +459,10 @@ void Bro_Update(Bro* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Bro_WorldCollision(Bro* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bro_IsPickUp(Bro* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -557,10 +557,10 @@ void Coopa_Update(Coopa* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Coopa_WorldCollision(Coopa* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Coopa_IsPickUp(Coopa* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -653,10 +653,10 @@ void FireJumper_Update(FireJumper* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void FireJumper_WorldCollision(FireJumper* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -749,10 +749,10 @@ void Fish_Update(Fish* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Fish_WorldCollision(Fish* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -836,6 +836,7 @@ Fish* Fish_New(Vec2 p){
 
 typedef struct Gumba {
 	Entity e;
+	char dead;
 } Gumba;
 
 void Gumba_Free(Gumba* e){
@@ -845,10 +846,10 @@ void Gumba_Update(Gumba* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Gumba_WorldCollision(Gumba* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Gumba_IsPickUp(Gumba* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -906,16 +907,21 @@ SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
 
-	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
-	//else 										ox = 1U;
-	
+	FDuration d = Time_Elapsed(0UL,Time_Nano());
+	d = d - F32_Floor(d);
+	d *= F32_Abs(e->e.v.x) * 1.5f;
+	d = d - F32_Floor(d);
+	ox = 0U + (int)(2.0f * d);
+
+	if(e->dead) ox = 2;
+
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
 Gumba* Gumba_New(Vec2 p){
 	Gumba b;
 	b.e.id = ENTITY_GUMBA;
 	b.e.r = (Rect){ p,{ GUMBA_DIM_X,GUMBA_DIM_Y } };
-	b.e.v = (Vec2){ 0.0f,0.0f };
+	b.e.v = (Vec2){ -BOWLER_VEL_X,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
 	
 	b.e.WorldCollision = (void(*)(Entity*,World*))Gumba_WorldCollision;
@@ -941,10 +947,10 @@ void Lakitu_Update(Lakitu* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Lakitu_WorldCollision(Lakitu* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Lakitu_IsPickUp(Lakitu* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1039,10 +1045,10 @@ void PlantUG_Update(PlantUG* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void PlantUG_WorldCollision(PlantUG* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char PlantUG_IsPickUp(PlantUG* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1136,10 +1142,10 @@ void Plant_Update(Plant* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Plant_WorldCollision(Plant* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Plant_IsPickUp(Plant* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1234,10 +1240,10 @@ void Spike_Update(Spike* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Spike_WorldCollision(Spike* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Spike_IsPickUp(Spike* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1330,10 +1336,10 @@ void Squid_Update(Squid* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Squid_WorldCollision(Squid* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Squid_IsPickUp(Squid* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -1428,10 +1434,10 @@ void Willi_Update(Willi* e,float t){
 	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
 }
 void Willi_WorldCollision(Willi* m,World* w){
-	if(m->e.r.p.x < -m->e.r.d.x) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
-	if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
-	if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
+	if(m->e.r.p.x < -m->e.r.d.x) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y < -m->e.r.d.y) 	World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.x>w->width) 		World_Remove(w,(Entity*)m);
+	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Willi_IsPickUp(Willi* m,World* w,unsigned int x,unsigned int y){
 	//Block b = World_Get(w,x,y);
@@ -2699,7 +2705,7 @@ SubSprite MarioWorld_PlantUG_Get(Animation* a,World* w,unsigned int x,unsigned i
 	
 	return SubSprite_New(&a->atlas_img,ox * dx,oy * dy,dx,dy);
 }
-SubSprite MarioWorld_PLant_Get(Animation* a,World* w,unsigned int x,unsigned int y){
+SubSprite MarioWorld_Plant_Get(Animation* a,World* w,unsigned int x,unsigned int y){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = a->atlas_img.w /	a->atlas_cx;
@@ -2795,7 +2801,7 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
 		    Animation_Make_AtlasPath(path_entities,"Gumba.png",ANIMATIONBG_DG,ENTITY_GUMBA,3,3,MarioWorld_Gumba_Get),
 		    Animation_Make_AtlasPath(path_entities,"Lakitu.png",ANIMATIONBG_DG,ENTITY_LAKITU,3,3,MarioWorld_Lakitu_Get),
 		    Animation_Make_AtlasPath(path_entities,"PlantUG.png",ANIMATIONBG_DG,ENTITY_PLANTUG,2,1,MarioWorld_PlantUG_Get),
-		    Animation_Make_AtlasPath(path_entities,"Plant.png",ANIMATIONBG_DG,ENTITY_PLANT,2,1,MarioWorld_PLant_Get),
+		    Animation_Make_AtlasPath(path_entities,"Plant.png",ANIMATIONBG_DG,ENTITY_PLANT,2,1,MarioWorld_Plant_Get),
 		    Animation_Make_AtlasPath(path_entities,"Spike.png",ANIMATIONBG_DG,ENTITY_SPIKE,6,1,MarioWorld_Spike_Get),
 		    Animation_Make_AtlasPath(path_entities,"Squid.png",ANIMATIONBG_DG,ENTITY_SQUID,2,1,MarioWorld_Squid_Get),
 		    Animation_Make_AtlasPath(path_entities,"Willi.png",ANIMATIONBG_DG,ENTITY_WILLI,2,1,MarioWorld_Willi_Get),
