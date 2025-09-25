@@ -1846,7 +1846,7 @@ SubSprite Fireball_GetRender(Fireball* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d *= F32_Abs(e->e.v.x) * 0.25f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(4.0f * d);
 
@@ -1996,7 +1996,7 @@ SubSprite Firebeam_GetRender(Firebeam* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d *= F32_Abs(e->e.v.x) * 0.25f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(2.0f * d);
 
@@ -2156,7 +2156,7 @@ SubSprite Hammer_GetRender(Hammer* e,EntityAtlas* ea){
 
 	FDuration d = Time_Elapsed(0UL,Time_Nano());
 	d = d - F32_Floor(d);
-	d *= F32_Abs(e->e.v.x) * 0.5f;
+	d *= F32_Abs(e->e.v.x) * 0.25f;
 	d = d - F32_Floor(d);
 	ox = 0U + (int)(4.0f * d);
 	
