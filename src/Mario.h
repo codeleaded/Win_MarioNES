@@ -190,7 +190,10 @@ void Bowler_WorldCollision(Bowler* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -371,7 +374,10 @@ void Bowser_WorldCollision(Bowser* m,World* w){
 	}
 }
 char Bowser_IsPickUp(Bowser* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Bowser_IsCollision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -477,7 +483,10 @@ void Bro_WorldCollision(Bro* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Bro_IsPickUp(Bro* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -576,7 +585,10 @@ void Coopa_WorldCollision(Coopa* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Coopa_IsPickUp(Coopa* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -752,7 +764,10 @@ void FireJumper_WorldCollision(FireJumper* m,World* w){
 	}
 }
 char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -823,7 +838,10 @@ void Fish_WorldCollision(Fish* m,World* w){
 	}
 }
 char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -893,7 +911,10 @@ void Gumba_WorldCollision(Gumba* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Gumba_IsPickUp(Gumba* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -996,7 +1017,10 @@ void Lakitu_WorldCollision(Lakitu* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Lakitu_IsPickUp(Lakitu* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1094,7 +1118,10 @@ void PlantUG_WorldCollision(PlantUG* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char PlantUG_IsPickUp(PlantUG* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1194,7 +1221,10 @@ void Plant_WorldCollision(Plant* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Plant_IsPickUp(Plant* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1295,7 +1325,10 @@ void Spike_WorldCollision(Spike* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Spike_IsPickUp(Spike* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1396,7 +1429,10 @@ void Squid_WorldCollision(Squid* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Squid_IsPickUp(Squid* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1494,7 +1530,10 @@ void Willi_WorldCollision(Willi* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Willi_IsPickUp(Willi* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1589,7 +1628,10 @@ void Explosion_WorldCollision(Explosion* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Explosion_IsPickUp(Explosion* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Explosion_IsCollision(Explosion* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1737,7 +1779,10 @@ void Fireball_WorldCollision(Fireball* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Fireball_IsPickUp(Fireball* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Fireball_IsCollision(Fireball* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -1895,7 +1940,10 @@ void Firebeam_WorldCollision(Firebeam* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Firebeam_IsPickUp(Firebeam* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Firebeam_IsCollision(Firebeam* m,World* w,unsigned int x,unsigned int y,Side s){
@@ -2047,7 +2095,10 @@ void Hammer_WorldCollision(Hammer* m,World* w){
 	else if(m->e.r.p.y>w->height) 		World_Remove(w,(Entity*)m);
 }
 char Hammer_IsPickUp(Hammer* m,World* w,unsigned int x,unsigned int y){
-	//Block b = World_Get(w,x,y);
+	Block b = World_Get(w,x,y);
+	if(b==BLOCK_COIN)				return 1;
+	else if(b==BLOCK_FIRE_FLOWER)	return 1;
+	else if(b==BLOCK_SUPER_STAR) 	return 1;
 	return 0;
 }
 char Hammer_IsCollision(Hammer* m,World* w,unsigned int x,unsigned int y,Side s){
