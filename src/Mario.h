@@ -41,7 +41,7 @@
 #define BLOCK_SPAWN_HAMMER				33U
 #define BLOCK_SPAWN_LAKITU				34U
 #define BLOCK_SPAWN_PLANT				35U
-#define BLOCK_SPAWN_PLANT_UG			36U
+#define BLOCK_SPAWN_PLANTUG			36U
 #define BLOCK_SPAWN_SPIKE				37U
 #define BLOCK_SPAWN_SQUID				38U
 #define BLOCK_SPAWN_WILLI				39U
@@ -60,7 +60,7 @@
 #define ENTITY_HAMMER					12U
 #define ENTITY_LAKITU					13U
 #define ENTITY_PLANT					14U
-#define ENTITY_PLANT_UG					15U
+#define ENTITY_PLANTUG					15U
 #define ENTITY_SPIKE					16U
 #define ENTITY_SQUID					17U
 #define ENTITY_WILLI					18U
@@ -82,36 +82,36 @@
 
 #define BOWLER_DIM_X					0.9f
 #define BOWLER_DIM_Y					0.9f
-#define BOWSER_DIM_X					0.9f
-#define BOWSER_DIM_Y					0.9f
+#define BOWSER_DIM_X					1.5f
+#define BOWSER_DIM_Y					2.9f
 #define BRO_DIM_X						0.9f
-#define BRO_DIM_Y						0.9f
+#define BRO_DIM_Y						1.9f
 #define COOPA_DIM_X						0.9f
 #define COOPA_DIM_Y						0.9f
 #define EXPLOSION_DIM_X					0.9f
 #define EXPLOSION_DIM_Y					0.9f
-#define FIREBALL_DIM_X					0.9f
-#define FIREBALL_DIM_Y					0.9f
+#define FIREBALL_DIM_X					0.3f
+#define FIREBALL_DIM_Y					0.3f
 #define FIREBEAM_DIM_X					0.9f
-#define FIREBEAM_DIM_Y					0.9f
+#define FIREBEAM_DIM_Y					0.3f
 #define FIREJUMPER_DIM_X				0.9f
 #define FIREJUMPER_DIM_Y				0.9f
 #define FISH_DIM_X						0.9f
 #define FISH_DIM_Y						0.9f
 #define GUMBA_DIM_X						0.9f
 #define GUMBA_DIM_Y						0.9f
-#define HAMMER_DIM_X					0.9f
-#define HAMMER_DIM_Y					0.9f
+#define HAMMER_DIM_X					0.3f
+#define HAMMER_DIM_Y					0.3f
 #define LAKITU_DIM_X					0.9f
-#define LAKITU_DIM_Y					0.9f
+#define LAKITU_DIM_Y					1.9f
 #define PLANT_DIM_X						0.9f
-#define PLANT_DIM_Y						0.9f
-#define PLANT_UG_DIM_X					0.9f
-#define PLANT_UG_DIM_Y					0.9f
+#define PLANT_DIM_Y						1.9f
+#define PLANTUG_DIM_X					0.9f
+#define PLANTUG_DIM_Y					1.9f
 #define SPIKE_DIM_X						0.9f
 #define SPIKE_DIM_Y						0.9f
 #define SQUID_DIM_X						0.9f
-#define SQUID_DIM_Y						0.9f
+#define SQUID_DIM_Y						1.9f
 #define WILLI_DIM_X						0.9f
 #define WILLI_DIM_Y						0.9f
 
@@ -267,7 +267,7 @@ char Mario_IsCollision(Mario* m,World* w,unsigned int x,unsigned int y,Side s){
 		case BLOCK_SPAWN_HAMMER:	return 0;
 		case BLOCK_SPAWN_LAKITU:	return 0;
 		case BLOCK_SPAWN_PLANT:		return 0;
-		case BLOCK_SPAWN_PLANT_UG:	return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
 		case BLOCK_SPAWN_SPIKE:		return 0;
 		case BLOCK_SPAWN_SQUID:		return 0;
 		case BLOCK_SPAWN_WILLI:		return 0;
@@ -365,7 +365,81 @@ typedef struct Bowler {
 	Entity e;
 } Bowler;
 
+void Bowler_Free(Bowler* e){
+}
 void Bowler_Update(Bowler* e,float t){
+}
+void Bowler_WorldCollision(Bowler* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Bowler_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Bowler_IsPickUp(Bowler* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Bowler_IsCollision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Bowler_Collision(Bowler* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Bowler_EntityCollision(Bowler* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -378,19 +452,19 @@ SubSprite Bowler_GetRender(Bowler* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bowler_Free(Bowler* e){
-}
 Bowler* Bowler_New(Vec2 p){
 	Bowler b;
 	b.e.id = ENTITY_BOWLER;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ BOWLER_DIM_X,BOWLER_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Bowler_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bowler_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowler_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowler_EntityCollision;
+	
 	Bowler* hb = malloc(sizeof(Bowler));
 	memcpy(hb,&b,sizeof(Bowler));
 	return hb;
@@ -401,7 +475,81 @@ typedef struct Bowser {
 	Entity e;
 } Bowser;
 
+void Bowser_Free(Bowser* e){
+}
 void Bowser_Update(Bowser* e,float t){
+}
+void Bowser_WorldCollision(Bowser* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Bowser_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Bowser_IsPickUp(Bowser* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Bowser_IsCollision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Bowser_Collision(Bowser* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Bowser_EntityCollision(Bowser* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -414,19 +562,19 @@ SubSprite Bowser_GetRender(Bowser* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bowser_Free(Bowser* e){
-}
 Bowser* Bowser_New(Vec2 p){
 	Bowser b;
 	b.e.id = ENTITY_BOWSER;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ BOWSER_DIM_X,BOWSER_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Bowser_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bowser_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bowser_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bowser_EntityCollision;
+	
 	Bowser* hb = malloc(sizeof(Bowser));
 	memcpy(hb,&b,sizeof(Bowser));
 	return hb;
@@ -437,7 +585,81 @@ typedef struct Bro {
 	Entity e;
 } Bro;
 
+void Bro_Free(Bro* e){
+}
 void Bro_Update(Bro* e,float t){
+}
+void Bro_WorldCollision(Bro* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Bro_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Bro_IsPickUp(Bro* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Bro_IsCollision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Bro_Collision(Bro* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Bro_EntityCollision(Bro* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -450,19 +672,19 @@ SubSprite Bro_GetRender(Bro* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Bro_Free(Bro* e){
-}
 Bro* Bro_New(Vec2 p){
 	Bro b;
 	b.e.id = ENTITY_BRO;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ BRO_DIM_X,BRO_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Bro_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Bro_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Bro_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Bro_EntityCollision;
+	
 	Bro* hb = malloc(sizeof(Bro));
 	memcpy(hb,&b,sizeof(Bro));
 	return hb;
@@ -473,7 +695,81 @@ typedef struct Coopa {
 	Entity e;
 } Coopa;
 
+void Coopa_Free(Coopa* e){
+}
 void Coopa_Update(Coopa* e,float t){
+}
+void Coopa_WorldCollision(Coopa* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Coopa_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Coopa_IsPickUp(Coopa* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Coopa_IsCollision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Coopa_Collision(Coopa* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Coopa_EntityCollision(Coopa* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Coopa_GetRender(Coopa* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -486,19 +782,19 @@ SubSprite Coopa_GetRender(Coopa* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Coopa_Free(Coopa* e){
-}
 Coopa* Coopa_New(Vec2 p){
 	Coopa b;
 	b.e.id = ENTITY_COOPA;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ COOPA_DIM_X,COOPA_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Coopa_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Coopa_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Coopa_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Coopa_EntityCollision;
+	
 	Coopa* hb = malloc(sizeof(Coopa));
 	memcpy(hb,&b,sizeof(Coopa));
 	return hb;
@@ -509,7 +805,81 @@ typedef struct FireJumper {
 	Entity e;
 } FireJumper;
 
+void FireJumper_Free(FireJumper* e){
+}
 void FireJumper_Update(FireJumper* e,float t){
+}
+void FireJumper_WorldCollision(FireJumper* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				FireJumper_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char FireJumper_IsPickUp(FireJumper* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char FireJumper_IsCollision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void FireJumper_Collision(FireJumper* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void FireJumper_EntityCollision(FireJumper* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite FireJumper_GetRender(FireJumper* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -522,19 +892,19 @@ SubSprite FireJumper_GetRender(FireJumper* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void FireJumper_Free(FireJumper* e){
-}
 FireJumper* FireJumper_New(Vec2 p){
 	FireJumper b;
 	b.e.id = ENTITY_FIREJUMPER;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ FIREJUMPER_DIM_X,FIREJUMPER_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))FireJumper_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))FireJumper_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))FireJumper_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))FireJumper_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))FireJumper_EntityCollision;
+	
 	FireJumper* hb = malloc(sizeof(FireJumper));
 	memcpy(hb,&b,sizeof(FireJumper));
 	return hb;
@@ -545,7 +915,81 @@ typedef struct Fish {
 	Entity e;
 } Fish;
 
+void Fish_Free(Fish* e){
+}
 void Fish_Update(Fish* e,float t){
+}
+void Fish_WorldCollision(Fish* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Fish_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Fish_IsPickUp(Fish* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Fish_IsCollision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Fish_Collision(Fish* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Fish_EntityCollision(Fish* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Fish_GetRender(Fish* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -558,19 +1002,19 @@ SubSprite Fish_GetRender(Fish* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Fish_Free(Fish* e){
-}
 Fish* Fish_New(Vec2 p){
 	Fish b;
 	b.e.id = ENTITY_FISH;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ FISH_DIM_X,FISH_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Fish_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Fish_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Fish_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Fish_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Fish_EntityCollision;
+	
 	Fish* hb = malloc(sizeof(Fish));
 	memcpy(hb,&b,sizeof(Fish));
 	return hb;
@@ -581,7 +1025,81 @@ typedef struct Gumba {
 	Entity e;
 } Gumba;
 
+void Gumba_Free(Gumba* e){
+}
 void Gumba_Update(Gumba* e,float t){
+}
+void Gumba_WorldCollision(Gumba* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Gumba_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Gumba_IsPickUp(Gumba* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Gumba_IsCollision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Gumba_Collision(Gumba* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Gumba_EntityCollision(Gumba* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -594,19 +1112,19 @@ SubSprite Gumba_GetRender(Gumba* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Gumba_Free(Gumba* e){
-}
 Gumba* Gumba_New(Vec2 p){
 	Gumba b;
 	b.e.id = ENTITY_GUMBA;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ GUMBA_DIM_X,GUMBA_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Gumba_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Gumba_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Gumba_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Gumba_EntityCollision;
+	
 	Gumba* hb = malloc(sizeof(Gumba));
 	memcpy(hb,&b,sizeof(Gumba));
 	return hb;
@@ -617,7 +1135,81 @@ typedef struct Lakitu {
 	Entity e;
 } Lakitu;
 
+void Lakitu_Free(Lakitu* e){
+}
 void Lakitu_Update(Lakitu* e,float t){
+}
+void Lakitu_WorldCollision(Lakitu* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Lakitu_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Lakitu_IsPickUp(Lakitu* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Lakitu_IsCollision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Lakitu_Collision(Lakitu* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Lakitu_EntityCollision(Lakitu* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -630,19 +1222,19 @@ SubSprite Lakitu_GetRender(Lakitu* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Lakitu_Free(Lakitu* e){
-}
 Lakitu* Lakitu_New(Vec2 p){
 	Lakitu b;
 	b.e.id = ENTITY_LAKITU;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ LAKITU_DIM_X,LAKITU_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Lakitu_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Lakitu_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Lakitu_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Lakitu_EntityCollision;
+	
 	Lakitu* hb = malloc(sizeof(Lakitu));
 	memcpy(hb,&b,sizeof(Lakitu));
 	return hb;
@@ -653,7 +1245,81 @@ typedef struct PlantUG {
 	Entity e;
 } PlantUG;
 
+void PlantUG_Free(PlantUG* e){
+}
 void PlantUG_Update(PlantUG* e,float t){
+}
+void PlantUG_WorldCollision(PlantUG* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				PlantUG_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char PlantUG_IsPickUp(PlantUG* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char PlantUG_IsCollision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void PlantUG_Collision(PlantUG* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void PlantUG_EntityCollision(PlantUG* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -666,19 +1332,19 @@ SubSprite PlantUG_GetRender(PlantUG* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void PlantUG_Free(PlantUG* e){
-}
 PlantUG* PlantUG_New(Vec2 p){
 	PlantUG b;
-	b.e.id = ENTITY_PLANT_UG;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.id = ENTITY_PLANTUG;
+	b.e.r = (Rect){ p,{ PLANTUG_DIM_X,PLANTUG_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))PlantUG_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))PlantUG_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))PlantUG_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))PlantUG_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))PlantUG_EntityCollision;
+	
 	PlantUG* hb = malloc(sizeof(PlantUG));
 	memcpy(hb,&b,sizeof(PlantUG));
 	return hb;
@@ -689,7 +1355,81 @@ typedef struct Plant {
 	Entity e;
 } Plant;
 
+void Plant_Free(Plant* e){
+}
 void Plant_Update(Plant* e,float t){
+}
+void Plant_WorldCollision(Plant* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Plant_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Plant_IsPickUp(Plant* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Plant_IsCollision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Plant_Collision(Plant* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Plant_EntityCollision(Plant* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -702,19 +1442,19 @@ SubSprite Plant_GetRender(Plant* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Plant_Free(Plant* e){
-}
 Plant* Plant_New(Vec2 p){
 	Plant b;
 	b.e.id = ENTITY_PLANT;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ PLANT_DIM_X,PLANT_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Plant_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Plant_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Plant_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Plant_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Plant_EntityCollision;
+	
 	Plant* hb = malloc(sizeof(Plant));
 	memcpy(hb,&b,sizeof(Plant));
 	return hb;
@@ -725,7 +1465,81 @@ typedef struct Spike {
 	Entity e;
 } Spike;
 
+void Spike_Free(Spike* e){
+}
 void Spike_Update(Spike* e,float t){
+}
+void Spike_WorldCollision(Spike* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Spike_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Spike_IsPickUp(Spike* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Spike_IsCollision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Spike_Collision(Spike* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Spike_EntityCollision(Spike* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Spike_GetRender(Spike* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
@@ -738,19 +1552,19 @@ SubSprite Spike_GetRender(Spike* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Spike_Free(Spike* e){
-}
 Spike* Spike_New(Vec2 p){
 	Spike b;
 	b.e.id = ENTITY_SPIKE;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ SPIKE_DIM_X,SPIKE_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Spike_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Spike_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Spike_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Spike_EntityCollision;
+	
 	Spike* hb = malloc(sizeof(Spike));
 	memcpy(hb,&b,sizeof(Spike));
 	return hb;
@@ -761,10 +1575,83 @@ typedef struct Squid {
 	Entity e;
 } Squid;
 
+void Squid_Free(Squid* e){
+}
 void Squid_Update(Squid* e,float t){
 }
-SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
+void Squid_WorldCollision(Squid* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
 
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Squid_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Squid_IsPickUp(Squid* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Squid_IsCollision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Squid_Collision(Squid* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Squid_EntityCollision(Squid* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
+}
+SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
@@ -775,19 +1662,19 @@ SubSprite Squid_GetRender(Squid* e,EntityAtlas* ea){
 	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
 }
-void Squid_Free(Squid* e){
-}
 Squid* Squid_New(Vec2 p){
 	Squid b;
 	b.e.id = ENTITY_SQUID;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
+	b.e.r = (Rect){ p,{ SQUID_DIM_X,SQUID_DIM_Y } };
 	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Squid_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Squid_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Squid_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Squid_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Squid_EntityCollision;
+	
 	Squid* hb = malloc(sizeof(Squid));
 	memcpy(hb,&b,sizeof(Squid));
 	return hb;
@@ -798,33 +1685,106 @@ typedef struct Willi {
 	Entity e;
 } Willi;
 
+void Willi_Free(Willi* e){
+}
 void Willi_Update(Willi* e,float t){
-	e->e.r.p = Vec2_Add(e->e.r.p,Vec2_Mulf(e->e.v,t));
+}
+void Willi_WorldCollision(Willi* m,World* w){
+	if(m->e.r.p.x < 0.0f) m->e.r.p.x = 0.0f;
+	if(m->e.r.p.y < 0.0f) m->e.r.p.y = 0.0f;
+
+	if(m->e.r.p.y>w->height){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			if((Entity*)m == e){
+				Willi_Free(m);
+				PVector_Remove(&w->entities,i);
+				return;
+			}
+		}
+	}
+}
+char Willi_IsPickUp(Willi* m,World* w,unsigned int x,unsigned int y){
+	//Block b = World_Get(w,x,y);
+	return 0;
+}
+char Willi_IsCollision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+
+	switch(b){
+		case BLOCK_PODEST: 			return s==SIDE_TOP && m->e.v.y>0.0f;
+		case BLOCK_FENCE: 			return 0;
+		case BLOCK_CLOUD: 			return 0;
+		case BLOCK_BUSH: 			return 0;
+		case BLOCK_FLAG: 			return 0;
+		case BLOCK_CASTLE: 			return 0;
+		case BLOCK_GRASFAKE: 		return 0;
+		case BLOCK_TREE: 			return 0;
+		case BLOCK_SNOWTREE: 		return 0;
+		case BLOCK_BACKTREE: 		return s==SIDE_TOP && m->e.v.y>0.0f && World_Get(w,x,y - 1) == BLOCK_NONE;
+		case BLOCK_SPAWN:			return 0;
+		case BLOCK_SPAWN_BOWLER:	return 0;
+		case BLOCK_SPAWN_BOWSER:	return 0;
+		case BLOCK_SPAWN_BRO:		return 0;
+		case BLOCK_SPAWN_COOPA:		return 0;
+		case BLOCK_SPAWN_EXPLOSION:	return 0;
+		case BLOCK_SPAWN_FIREBALL:	return 0;
+		case BLOCK_SPAWN_FIREBEAM:	return 0;
+		case BLOCK_SPAWN_FIREJUMPER:return 0;
+		case BLOCK_SPAWN_FISH:		return 0;
+		case BLOCK_SPAWN_GUMBA:		return 0;
+		case BLOCK_SPAWN_HAMMER:	return 0;
+		case BLOCK_SPAWN_LAKITU:	return 0;
+		case BLOCK_SPAWN_PLANT:		return 0;
+		case BLOCK_SPAWN_PLANTUG:	return 0;
+		case BLOCK_SPAWN_SPIKE:		return 0;
+		case BLOCK_SPAWN_SQUID:		return 0;
+		case BLOCK_SPAWN_WILLI:		return 0;
+	}
+	return 1;
+}
+void Willi_Collision(Willi* m,World* w,unsigned int x,unsigned int y,Side s){
+	Block b = World_Get(w,x,y);
+	
+	if(s==SIDE_BOTTOM){
+		if(b==BLOCK_BRICK)
+			World_Set(w,x,y,BLOCK_NONE);
+		else if(b==BLOCK_CLOSE_QUEST_FF){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_FIRE_FLOWER);
+		}else if(b==BLOCK_CLOSE_QUEST_SS){
+			World_Set(w,x,y,BLOCK_SOLID);
+			World_Set(w,x,y-1,BLOCK_SUPER_STAR);
+		}
+	}
+}
+void Willi_EntityCollision(Willi* m,World* w,Entity* other,unsigned int x,unsigned int y,Side s){
+	
 }
 SubSprite Willi_GetRender(Willi* e,EntityAtlas* ea){
-
 	unsigned int ox = 0U;
 	unsigned int oy = 0U;
 	unsigned int dx = ea->atlas.w / ea->cx;
 	unsigned int dy = ea->atlas.h / ea->cy;
-	
-	if(e->e.v.x > 0.0f) ox = 1U;
 
+	//if(World_Get(w,x,y - 1) != BLOCK_ROCKET) 	ox = 0U;
+	//else 										ox = 1U;
+	
 	return SubSprite_New(&ea->atlas,ox * dx,oy * dy,dx,dy);
-}
-void Willi_Free(Willi* e){
 }
 Willi* Willi_New(Vec2 p){
 	Willi b;
 	b.e.id = ENTITY_WILLI;
-	b.e.r = (Rect){ p,{ MARIO_DIM_P0_X,MARIO_DIM_P0_Y } };
-	b.e.v = (Vec2){ -1.0f,0.0f };
+	b.e.r = (Rect){ p,{ WILLI_DIM_X,WILLI_DIM_Y } };
+	b.e.v = (Vec2){ 0.0f,0.0f };
 	b.e.a = (Vec2){ 0.0f,MARIO_ACC_GRAVITY };
-	b.e.WorldCollision = (void(*)(Entity*,World*))Mario_WorldCollision;
-	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Mario_IsPickUp;
-	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_IsCollision;
-	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Mario_Collision;
-	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Mario_EntityCollision;
+	
+	b.e.WorldCollision = (void(*)(Entity*,World*))Willi_WorldCollision;
+	b.e.IsPickUp = (char(*)(Entity*,World*,unsigned int,unsigned int))Willi_IsPickUp;
+	b.e.IsCollision = (char(*)(Entity*,World*,unsigned int,unsigned int,Side))Willi_IsCollision;
+	b.e.Collision = (void(*)(Entity*,World*,unsigned int,unsigned int,Side))Willi_Collision;
+	b.e.EntityCollision = (void(*)(Entity*,World*,Entity*,unsigned int,unsigned int,Side))Willi_EntityCollision;
+	
 	Willi* hb = malloc(sizeof(Willi));
 	memcpy(hb,&b,sizeof(Willi));
 	return hb;
@@ -864,7 +1824,7 @@ Block MarioWorld_Std_Mapper(char c){
 		case 'H':	return BLOCK_SPAWN_FISH;
 		case 'G':	return BLOCK_SPAWN_GUMBA;
 		case 'L':	return BLOCK_SPAWN_LAKITU;
-		case 'U':	return BLOCK_SPAWN_PLANT_UG;
+		case 'U':	return BLOCK_SPAWN_PLANTUG;
 		case 'P':	return BLOCK_SPAWN_PLANT;
 		case '^':	return BLOCK_SPAWN_SPIKE;
 		case 'Q':	return BLOCK_SPAWN_SQUID;
@@ -905,7 +1865,7 @@ char MarioWorld_Std_MapperR(Block b){
 		case BLOCK_SPAWN_FISH:			return 'H';
 		case BLOCK_SPAWN_GUMBA:			return 'G';
 		case BLOCK_SPAWN_LAKITU:		return 'L';
-		case BLOCK_SPAWN_PLANT_UG:		return 'U';
+		case BLOCK_SPAWN_PLANTUG:		return 'U';
 		case BLOCK_SPAWN_PLANT:			return 'P';
 		case BLOCK_SPAWN_SPIKE:			return '^';
 		case BLOCK_SPAWN_SQUID:			return 'Q';
@@ -923,7 +1883,7 @@ void* MarioWorld_Std_SpawnMapper(Vec2 p,SpawnType st,unsigned int* size){
 		case ENTITY_FISH:		*size = sizeof(Fish); 		return Fish_New(p);
 		case ENTITY_GUMBA:		*size = sizeof(Gumba); 		return Gumba_New(p);
 		case ENTITY_LAKITU:		*size = sizeof(Lakitu); 	return Lakitu_New(p);	
-		case ENTITY_PLANT_UG:	*size = sizeof(PlantUG); 	return PlantUG_New(p);
+		case ENTITY_PLANTUG:	*size = sizeof(PlantUG); 	return PlantUG_New(p);
 		case ENTITY_PLANT:		*size = sizeof(Plant); 		return Plant_New(p);
 		case ENTITY_SPIKE:		*size = sizeof(Spike); 		return Spike_New(p);
 		case ENTITY_SQUID:		*size = sizeof(Squid);	 	return Squid_New(p);
@@ -1746,7 +2706,7 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
 		    Animation_Make_AtlasPath(path_entities,"Fish.png",ANIMATIONBG_DG,ENTITY_FISH,4,3,MarioWorld_Fish_Get),
 		    Animation_Make_AtlasPath(path_entities,"Gumba.png",ANIMATIONBG_DG,ENTITY_GUMBA,3,3,MarioWorld_Gumba_Get),
 		    Animation_Make_AtlasPath(path_entities,"Lakitu.png",ANIMATIONBG_DG,ENTITY_LAKITU,3,3,MarioWorld_Lakitu_Get),
-		    Animation_Make_AtlasPath(path_entities,"Plant_UG.png",ANIMATIONBG_DG,ENTITY_PLANT_UG,2,1,MarioWorld_PlantUG_Get),
+		    Animation_Make_AtlasPath(path_entities,"PlantUG.png",ANIMATIONBG_DG,ENTITY_PLANTUG,2,1,MarioWorld_PlantUG_Get),
 		    Animation_Make_AtlasPath(path_entities,"Plant.png",ANIMATIONBG_DG,ENTITY_PLANT,2,1,MarioWorld_PLant_Get),
 		    Animation_Make_AtlasPath(path_entities,"Spike.png",ANIMATIONBG_DG,ENTITY_SPIKE,6,1,MarioWorld_Spike_Get),
 		    Animation_Make_AtlasPath(path_entities,"Squid.png",ANIMATIONBG_DG,ENTITY_SQUID,2,1,MarioWorld_Squid_Get),
@@ -1763,7 +2723,7 @@ MarioWorld MarioWorld_New(char* path_lvl,char* path_blocks,char* path_entities){
 		    EntityAtlas_New(path_entities,"Fish.png",4,3,		(void(*)(void*,const float))Fish_Update,		(SubSprite(*)(void*,EntityAtlas*))Fish_GetRender,		(void(*)(void*))Fish_Free),
 		    EntityAtlas_New(path_entities,"Gumba.png",3,3,		(void(*)(void*,const float))Gumba_Update,		(SubSprite(*)(void*,EntityAtlas*))Gumba_GetRender,		(void(*)(void*))Gumba_Free),
 		    EntityAtlas_New(path_entities,"Lakitu.png",3,3,		(void(*)(void*,const float))Lakitu_Update,		(SubSprite(*)(void*,EntityAtlas*))Lakitu_GetRender,		(void(*)(void*))Lakitu_Free),
-		    EntityAtlas_New(path_entities,"Plant_UG.png",2,1,	(void(*)(void*,const float))PlantUG_Update,		(SubSprite(*)(void*,EntityAtlas*))PlantUG_GetRender,	(void(*)(void*))PlantUG_Free),
+		    EntityAtlas_New(path_entities,"PlantUG.png",2,1,	(void(*)(void*,const float))PlantUG_Update,		(SubSprite(*)(void*,EntityAtlas*))PlantUG_GetRender,	(void(*)(void*))PlantUG_Free),
 		    EntityAtlas_New(path_entities,"Plant.png",2,1,		(void(*)(void*,const float))Plant_Update,		(SubSprite(*)(void*,EntityAtlas*))Plant_GetRender,		(void(*)(void*))Plant_Free),
 		    EntityAtlas_New(path_entities,"Spike.png",6,1,		(void(*)(void*,const float))Spike_Update,		(SubSprite(*)(void*,EntityAtlas*))Spike_GetRender,		(void(*)(void*))Spike_Free),
 		    EntityAtlas_New(path_entities,"Squid.png",2,1,		(void(*)(void*,const float))Squid_Update,		(SubSprite(*)(void*,EntityAtlas*))Squid_GetRender,		(void(*)(void*))Squid_Free),

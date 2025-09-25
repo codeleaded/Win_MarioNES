@@ -595,10 +595,12 @@ void World_Reload(World* w,unsigned int width,unsigned int height){
 	}
 }
 void World_Update(World* w,float t){
-	for(int i = 0;i<w->entities.size;i++){
-		Entity* e = (Entity*)PVector_Get(&w->entities,i);
-		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
-		if(ea) ea->Update(e,t);
+	if(w->mode!=ANIMATIONBG_DG){
+		for(int i = 0;i<w->entities.size;i++){
+			Entity* e = (Entity*)PVector_Get(&w->entities,i);
+			EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
+			if(ea) ea->Update(e,t);
+		}
 	}
 }
 
@@ -646,6 +648,8 @@ void World_Collision(World* w,Entity* src){
 		}
 
 		Vector_Free(&rects);
+
+		if(src->WorldCollision) src->WorldCollision(src,w);
 	}
 }
 void World_EntityCollision(World* w,Entity* src){
@@ -670,8 +674,8 @@ void World_Collisions(World* w){
 		Entity* e = (Entity*)PVector_Get(&w->entities,i);
 		EntityAtlas* ea = (EntityAtlas*)Vector_Get(&w->entityatlas,e->id - 1);
 		if(ea){
-			World_Collision(w,e);
 			World_EntityCollision(w,e);
+			World_Collision(w,e);
 		}
 	}
 }
